@@ -1,17 +1,28 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const dbConnection = require("./config/db");
-require("dotenv").config();   // 👉 VERY IMPORTANT
+require("dotenv").config();
+
+const itemRoutes = require("./routes/itemRoutes");
 
 const app = express();
 
-// DB connection
+// middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
+
+// database connection
 dbConnection();
 
+// test route
 app.get("/", (req, res) => res.send("Hello UniVault..!"));
 
-const PORT = process.env.PORT || 5000;   // 👉 env eken gannawa
+// item routes
+app.use("/api/items", itemRoutes);
 
-app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
+// port
+const PORT = process.env.PORT || 5000;
 
-//password: 1992Hjg
-//username: admin
+app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT}`);
+});
