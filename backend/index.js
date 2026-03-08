@@ -3,26 +3,32 @@ const bodyParser = require("body-parser");
 const dbConnection = require("./config/db");
 require("dotenv").config();
 
-const itemRoutes = require("./routes/itemRoutes");
-
 const app = express();
 
-// middleware
+// Middleware (read JSON from Postman / frontend)
+app.use(express.json());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
 
-// database connection
+// Database connection
 dbConnection();
 
-// test route
-app.get("/", (req, res) => res.send("Hello UniVault..!"));
+// Import Routes
+const lostRoutes = require("./routes/lostRoutes");
+const itemRoutes = require("./routes/itemRoutes"); // buy & sell items
 
-// item routes
-app.use("/api/items", itemRoutes);
+// Default route
+app.get("/", (req, res) => {
+  res.send("Hello UniVault..!");
+});
 
-// port
+// Use Routes
+app.use("/lost", lostRoutes);
+app.use("/items", itemRoutes);
+
+// Port
 const PORT = process.env.PORT || 5000;
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
