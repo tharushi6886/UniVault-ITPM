@@ -1,17 +1,26 @@
+require("dotenv").config();
+
 const express = require("express");
+const cors = require("cors");
+
 const dbConnection = require("./config/db");
-require("dotenv").config();   // 👉 VERY IMPORTANT
+const userRoutes = require("./Routes/userRoutes");
 
 const app = express();
 
-// DB connection
+app.use(cors());
+app.use(express.json());
+
 dbConnection();
 
-app.get("/", (req, res) => res.send("Hello UniVault..!"));
+app.use("/api/users", userRoutes);
 
-const PORT = process.env.PORT || 5000;   // 👉 env eken gannawa
+app.get("/", (req, res) => {
+  res.send("Backend is running");
+});
 
-app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
+const PORT = process.env.PORT || 5000;
 
-//password: 1992Hjg
-//username: admin
+app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT}`);
+});
