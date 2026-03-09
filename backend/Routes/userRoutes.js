@@ -13,7 +13,7 @@ const {
   changePassword,
   blockUser,
   getUserById,
-} = require("../Controllers/userController");
+} = require("./controllers/userController");
 
 const { protect } = require("../Middlewares/authMiddleware");
 const { authorizeRoles } = require("../Middlewares/roleMiddleware");
