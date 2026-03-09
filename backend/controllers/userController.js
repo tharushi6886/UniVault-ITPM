@@ -1,4 +1,4 @@
-const User = require("./models/User");
+const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const sendEmail = require("../utils/sendEmail");
 
