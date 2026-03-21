@@ -183,6 +183,49 @@ export const FeedPage = ({ openAdPopup, ads }) => (
           </div>
         ))}
       </div>
+
+      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
+        <div className="flex justify-between items-start mb-[12px]">
+          <div>
+            <div className="text-[15px] font-bold text-[#1e1b4b]">🗺️ Nearby Items</div>
+            <div className="text-[11.5px] text-[#6b7280] mt-[2px]">On campus this week</div>
+          </div>
+          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">Map View</button>
+        </div>
+
+        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=150&fit=crop" alt="Dell"/>
+          <div className="flex-1 overflow-hidden">
+            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
+            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Dell XPS 15</div>
+            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Library · 0.3km</div>
+            <div className="text-[10px] text-[#9ca3af] mt-[2px]">5 hours ago</div>
+          </div>
+          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
+        </div>
+
+        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=150&fit=crop" alt="Phone"/>
+          <div className="flex-1 overflow-hidden">
+            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">LOST</span></div>
+            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Samsung Galaxy S23</div>
+            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Cafeteria · 0.5km</div>
+            <div className="text-[10px] text-[#9ca3af] mt-[2px]">2 hours ago</div>
+          </div>
+          <button className="self-center shrink-0 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(79,70,229,0.25)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-all cursor-pointer">View</button>
+        </div>
+
+        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=150&fit=crop" alt="AirPods"/>
+          <div className="flex-1 overflow-hidden">
+            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
+            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">AirPods (2nd gen)</div>
+            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Sports Complex · 0.3km</div>
+            <div className="text-[10px] text-[#9ca3af] mt-[2px]">8 hours ago</div>
+          </div>
+          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
+        </div>
+      </div>
     </div>
   </div>
 );
