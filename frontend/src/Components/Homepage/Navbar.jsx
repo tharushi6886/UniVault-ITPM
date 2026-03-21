@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
+    const navigate = useNavigate();
+
+    const handleNavClick = (e, item) => {
+        e.preventDefault();
+        if (item === 'Lost Items' || item === 'Found Items') {
+            navigate('/lost-found');
+        } else if (item === 'Home') {
+            navigate('/');
+        } else {
+            // Default anchor link behavior for smooth scrolling
+            const targetId = item.toLowerCase().replace(' ', '-');
+            const element = document.getElementById(targetId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.hash = targetId;
+            }
+        }
+    };
     useEffect(() => {
         const fn = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', fn);
@@ -10,8 +30,8 @@ const Navbar = () => {
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-16 py-4 transition-all duration-300 ${scrolled
-                ? 'bg-[#f0eeff]/95 shadow-[0_4px_32px_rgba(79,70,229,0.14)] py-3'
-                : 'bg-[#f0eeff]/80 backdrop-blur-xl border-b border-[#818cf8]/20 shadow-[0_2px_24px_rgba(79,70,229,0.08)]'
+            ? 'bg-[#f0eeff]/95 shadow-[0_4px_32px_rgba(79,70,229,0.14)] py-3'
+            : 'bg-[#f0eeff]/80 backdrop-blur-xl border-b border-[#818cf8]/20 shadow-[0_2px_24px_rgba(79,70,229,0.08)]'
             }`}>
             <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-i2 to-cyan-500 flex items-center justify-center text-base shadow-[0_4px_14px_rgba(79,70,229,0.35)] shrink-0">
@@ -24,7 +44,7 @@ const Navbar = () => {
             <ul className="flex gap-8 list-none m-0 p-0">
                 {['Home', 'Lost Items', 'Found Items', 'Marketplace', 'Bidding', 'About'].map(l => (
                     <li key={l}>
-                        <a href="#home" className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue">
+                        <a href={`#${l.toLowerCase().replace(' ', '-')}`} onClick={(e) => handleNavClick(e, l)} className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue">
                             {l}
                         </a>
                     </li>
