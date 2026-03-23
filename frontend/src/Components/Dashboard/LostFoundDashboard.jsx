@@ -3,49 +3,109 @@ import { useNavigate } from 'react-router-dom';
 
 
 export const Sidebar = () => (
-  <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white/85 backdrop-blur-[28px] border-r-[1.5px] border-[#a5b4fc]/25 flex flex-col z-[300] shadow-[4px_0_36px_rgba(79,70,229,0.07)] hidden lg:flex">
-    <div className="flex items-center gap-[10px] py-[22px] px-[20px] pb-[18px] border-b border-[#a5b4fc]/[0.18]">
-      <div className="w-[38px] h-[38px] rounded-[11px] bg-gradient-to-br from-[#4f46e5] to-[#06b6d4] flex items-center justify-center text-[17px] shadow-[0_4px_14px_rgba(79,70,229,0.35)]">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+  <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
+    <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
+      <div className="flex items-center justify-center w-[36px] h-[36px] bg-[#4f46e5] rounded-[10px]">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </div>
-      <span className="text-[20px] font-bold text-[#1e1b4b] tracking-[-0.02em]">UniVault</span>
+      <span className="text-[20px] font-bold text-[#1e1b4b]">UniVault</span>
     </div>
-    <nav className="flex-1 py-[16px] px-[12px] overflow-y-auto">
-      <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#818cf8] px-[10px] pb-[5px] mt-[6px]">Overview</div>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-semibold text-[#4f46e5] cursor-pointer transition-all duration-200 no-underline mb-[2px] relative bg-gradient-to-br from-[#4f46e5]/10 to-[#6366f1]/[0.07] border border-[#6366f1]/[0.18]">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[24px] bg-gradient-to-b from-[#4f46e5] to-[#6366f1] rounded-r-[3px]"></div>
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#e0e7ff] text-[#4338ca] transition-all duration-200">📊</span>
+    
+    <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
+      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </span>
         Dashboard
       </a>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-medium text-[#6b7280] cursor-pointer transition-all duration-200 no-underline mb-[2px] hover:bg-[#6366f1]/[0.08] hover:text-[#4f46e5] group">
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#f8fafc] text-[#94a3b8] transition-all duration-200 group-hover:bg-[#e2e8f0] group-hover:text-[#475569]">🔍</span>
-        Lost Items<span className="ml-auto text-[10px] font-bold py-[2px] px-[7px] rounded-full bg-gradient-to-br from-[#ef4444] to-[#dc2626] text-white">3</span>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        Lost Items
+        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">3</span>
       </a>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-medium text-[#6b7280] cursor-pointer transition-all duration-200 no-underline mb-[2px] hover:bg-[#6366f1]/[0.08] hover:text-[#4f46e5] group">
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#f0fdf4] text-[#6b7280] transition-all duration-200 group-hover:bg-[#e2e8f0] group-hover:text-[#475569]">✨</span>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
         Found Items
       </a>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-medium text-[#6b7280] cursor-pointer transition-all duration-200 no-underline mb-[2px] hover:bg-[#6366f1]/[0.08] hover:text-[#4f46e5] group">
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#f8f8fb] text-[#7c7e9a] transition-all duration-200 group-hover:bg-[#e2e8f0] group-hover:text-[#475569]">🤖</span>
-        AI Matches<span className="ml-auto text-[10px] font-bold py-[2px] px-[7px] rounded-full bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white">2</span>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
+        </span>
+        AI Matches
+        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-blue-500">2</span>
       </a>
-      <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#818cf8] px-[10px] pb-[5px] mt-[6px]">My Content</div>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-medium text-[#6b7280] cursor-pointer transition-all duration-200 no-underline mb-[2px] hover:bg-[#6366f1]/[0.08] hover:text-[#4f46e5] group">
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#fafaf9] text-[#78716c] transition-all duration-200 group-hover:bg-[#e2e8f0] group-hover:text-[#475569]">🗄️</span>
+
+      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">My Content</div>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </span>
         My Vault
       </a>
-      <a href="#" className="flex items-center gap-[11px] py-[10px] px-[12px] rounded-[12px] text-[13.5px] font-medium text-[#6b7280] cursor-pointer transition-all duration-200 no-underline mb-[2px] hover:bg-[#6366f1]/[0.08] hover:text-[#4f46e5] group">
-        <span className="w-[30px] h-[30px] rounded-[8px] flex flex-shrink-0 items-center justify-center bg-[#fef9f0] text-[#92400e] transition-all duration-200 group-hover:bg-[#e2e8f0] group-hover:text-[#475569]">🗺️</span>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        </span>
         Campus Map
       </a>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </span>
+        Notifications
+        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">5</span>
+      </a>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        Messages
+      </a>
+
+      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">More</div>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </span>
+        Marketplace
+      </a>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+        </span>
+        Bidding
+      </a>
+      
+      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </span>
+        Settings
+      </a>
     </nav>
-    <div className="py-[14px] px-[16px] border-t border-[#a5b4fc]/[0.18] flex items-center gap-[11px]">
-      <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-[#4f46e5] to-[#a78bfa] flex items-center justify-center text-[13px] text-white font-bold flex-shrink-0 shadow-[0_3px_10px_rgba(79,70,229,0.3)]">JD</div>
-      <div>
-        <div className="text-[13px] font-semibold text-[#1e1b4b]">Jane Doe</div>
-        <div className="text-[11px] text-[#6b7280]">Engineering · Year 3</div>
+    
+    <div className="flex items-center gap-[12px] p-[20px] border-t border-gray-200 mt-auto">
+      <div className="w-[40px] h-[40px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[14px] text-white font-bold shrink-0">JD</div>
+      <div className="flex-1 overflow-hidden">
+        <div className="text-[14px] font-semibold text-gray-900 truncate">Jane Doe</div>
+        <div className="text-[12px] text-gray-500 truncate">Engineering · Year 3</div>
       </div>
-      <span className="ml-auto text-[15px] text-[#6b7280] cursor-pointer">⋯</span>
+      <span className="text-[18px] text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-[4px]">⋯</span>
     </div>
   </aside>
 );
