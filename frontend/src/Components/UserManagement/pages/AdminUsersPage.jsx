@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../Homepage/Navbar";
-import { getUsers } from "../api/userApi";
+import { getUsers, blockUser } from "../api/userApi";
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -22,6 +22,31 @@ const AdminUsersPage = () => {
     fetchUsers();
   }, []);
 
+  const handleBlock = async (userId) => {
+  const confirmBlock = window.confirm(
+    "Are you sure you want to block this user?"
+  );
+
+  if (!confirmBlock) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    await blockUser(token, userId);
+
+    alert("User blocked successfully");
+
+    
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user._id === userId ? { ...user, status: "blocked" } : user
+      )
+    );
+  } catch (error) {
+    console.error("Block user error:", error);
+    alert(error.response?.data?.message || "Failed to block user");
+  }
+};
   return (
     <>
       <Navbar />
@@ -29,7 +54,9 @@ const AdminUsersPage = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#f3f0ff] via-[#f8f9ff] to-[#eef6ff] pt-32 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-[#1f1b5b]">Admin User Management</h1>
+            <h1 className="text-4xl font-bold text-[#1f1b5b]">
+              Admin User Management
+            </h1>
             <p className="text-gray-500 mt-2">
               View and manage all registered users in the system
             </p>
@@ -37,21 +64,42 @@ const AdminUsersPage = () => {
 
           <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] border border-[#e9e7ff] overflow-hidden">
             {loading ? (
-              <div className="p-8 text-center text-gray-500 text-lg">Loading users...</div>
+              <div className="p-8 text-center text-gray-500 text-lg">
+                Loading users...
+              </div>
             ) : users.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 text-lg">No users found.</div>
+              <div className="p-8 text-center text-gray-500 text-lg">
+                No users found.
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead className="bg-[#f8f8ff]">
                     <tr>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Name</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Email</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Student ID</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Phone</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Faculty</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Role</th>
-                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">Status</th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Name
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Email
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Student ID
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Phone
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Faculty
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Role
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-sm font-bold text-[#1f1b5b]">
+                        Action
+                      </th>
                     </tr>
                   </thead>
 
@@ -63,11 +111,21 @@ const AdminUsersPage = () => {
                           index % 2 === 0 ? "bg-white" : "bg-[#fcfcff]"
                         }`}
                       >
-                        <td className="px-6 py-4 text-gray-700 font-medium">{user.name}</td>
-                        <td className="px-6 py-4 text-gray-700">{user.email}</td>
-                        <td className="px-6 py-4 text-gray-700">{user.studentId}</td>
-                        <td className="px-6 py-4 text-gray-700">{user.phone || "N/A"}</td>
-                        <td className="px-6 py-4 text-gray-700">{user.faculty || "N/A"}</td>
+                        <td className="px-6 py-4 text-gray-700 font-medium">
+                          {user.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {user.email}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {user.studentId}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {user.phone || "N/A"}
+                        </td>
+                        <td className="px-6 py-4 text-gray-700">
+                          {user.faculty || "N/A"}
+                        </td>
                         <td className="px-6 py-4">
                           <span className="px-3 py-1 rounded-full text-sm font-medium bg-[#eef2ff] text-[#4f46e5]">
                             {user.role}
@@ -85,6 +143,23 @@ const AdminUsersPage = () => {
                           >
                             {user.status}
                           </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          {user.status === "blocked" ? (
+                            <button
+                              disabled
+                              className="bg-gray-300 text-gray-600 px-3 py-1 rounded cursor-not-allowed"
+                            >
+                              Blocked
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleBlock(user._id)}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                            >
+                              Block
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}

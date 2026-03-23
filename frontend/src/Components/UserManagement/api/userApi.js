@@ -28,3 +28,10 @@ export const getUsers = (token) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const blockUser = (token, userId) =>
+  API.put(`/${userId}/block`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

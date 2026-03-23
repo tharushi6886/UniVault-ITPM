@@ -69,44 +69,54 @@ const Navbar = () => {
       </ul>
 
       <div className="flex gap-2.5 items-center">
-        {loggedUser ? (
-          <>
-            <span className="text-sm font-medium text-gray-700 font-epilogue">
-              Hi, {loggedUser.name}
-            </span>
+  {loggedUser ? (
+    <>
+      <span className="text-sm font-medium text-gray-700 font-epilogue">
+        Hi, {loggedUser.name}
+      </span>
 
-            <button
-              onClick={handleProfile}
-              className="bg-white/70 border border-[#818cf8]/30 text-gray-700 text-sm font-epilogue font-medium px-[18px] py-2 rounded-[9px] cursor-pointer transition-all duration-200 hover:border-i3 hover:text-i2 hover:bg-[#eef2ff]/90"
-            >
-              Profile
-            </button>
+      {/* Admin Panel button (ONLY for Admin) */}
+      {loggedUser.role === "Admin" && (
+        <button
+          onClick={() => navigate("/admin/users")}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        >
+          Admin Panel
+        </button>
+      )}
 
-            <button
-              onClick={handleLogout}
-              className="bg-gradient-to-br from-red-500 to-red-700 border-none text-white text-sm font-epilogue font-semibold px-[22px] py-[9px] rounded-lg shadow-[0_4px_14px_rgba(239,68,68,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(239,68,68,0.48)] cursor-pointer"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={handleLogin}
-              className="bg-white/70 border border-[#818cf8]/30 text-gray-700 text-sm font-epilogue font-medium px-[18px] py-2 rounded-[9px] cursor-pointer transition-all duration-200 hover:border-i3 hover:text-i2 hover:bg-[#eef2ff]/90"
-            >
-              Login
-            </button>
+      <button
+        onClick={handleProfile}
+        className="bg-white/70 border border-[#818cf8]/30 text-gray-700 text-sm font-epilogue font-medium px-[18px] py-2 rounded-[9px] cursor-pointer transition-all duration-200 hover:border-i3 hover:text-i2 hover:bg-[#eef2ff]/90"
+      >
+        Profile
+      </button>
 
-            <button
-              onClick={handleRegister}
-              className="bg-gradient-to-br from-[#4f46e5] to-[#3730a3] border-none text-white text-sm font-epilogue font-semibold px-[22px] py-[9px] rounded-lg shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(79,70,229,0.48)] cursor-pointer"
-            >
-              Sign Up
-            </button>
-          </>
-        )}
-      </div>
+      <button
+        onClick={handleLogout}
+        className="bg-gradient-to-br from-red-500 to-red-700 border-none text-white text-sm font-epilogue font-semibold px-[22px] py-[9px] rounded-lg shadow-[0_4px_14px_rgba(239,68,68,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(239,68,68,0.48)] cursor-pointer"
+      >
+        Logout
+      </button>
+    </>
+  ) : (
+    <>
+      <button
+        onClick={handleLogin}
+        className="bg-white/70 border border-[#818cf8]/30 text-gray-700 text-sm font-epilogue font-medium px-[18px] py-2 rounded-[9px] cursor-pointer transition-all duration-200 hover:border-i3 hover:text-i2 hover:bg-[#eef2ff]/90"
+      >
+        Login
+      </button>
+
+      <button
+        onClick={handleRegister}
+        className="bg-gradient-to-br from-[#4f46e5] to-[#3730a3] border-none text-white text-sm font-epilogue font-semibold px-[22px] py-[9px] rounded-lg shadow-[0_4px_14px_rgba(79,70,229,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(79,70,229,0.48)] cursor-pointer"
+      >
+        Sign Up
+      </button>
+    </>
+  )}
+</div>
     </nav>
   );
 };
