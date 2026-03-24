@@ -1,11 +1,22 @@
 import React from "react";
 import "./App.css";
-import Homepage from "./Components/Homepage/Homepage";
+import Dashboard from "./Components/Dashboard/Dashboard";
+import ItemDetails from "./Components/Dashboard/ItemDetails";
+import Myitems from "./Components/Dashboard/Myitems";
+import Deliveryinfo from "./Components/Dashboard/Deliveryinfo";
+import PurchaseDone from "./Components/Dashboard/PurchaseDone";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <>
-      <Homepage />
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/item/:id" element={<ItemDetails />} />
+        <Route path="/myitems" element={<Myitems />} />
+        <Route path="/delivery" element={<Deliveryinfo />} />
+        <Route path="/purchasedone" element={<PurchaseDone />} />
+      </Routes>
     </>
   );
 }
