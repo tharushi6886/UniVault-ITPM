@@ -159,13 +159,13 @@ const ItemForm = ({ onClose, onAddItem }) => {
               </svg>
             </div>
             <div>
-              <div className="font-serif text-[16.5px] font-medium text-white leading-[1.2]">GlassRegistry</div>
+              <div className="font-serif text-[16.5px] font-medium text-white leading-[1.2]">ItemRegistry</div>
               <div className="text-[9px] text-white/50 mt-[1px]">Item management</div>
             </div>
           </div>
 
-          <div className="font-serif text-[20px] italic text-white leading-[1.3] mb-2 relative z-10">Add a new<br/>glass item</div>
-          <div className="text-[11px] text-white/55 leading-[1.65] mb-7 relative z-10">Complete all four steps to register your glass item in the inventory.</div>
+          <div className="font-serif text-[20px] italic text-white leading-[1.3] mb-2 relative z-10">Add a new<br/>university item</div>
+          <div className="text-[11px] text-white/55 leading-[1.65] mb-7 relative z-10">Complete all four steps to register your university item in the inventory.</div>
 
           <div className="flex flex-col flex-1 relative z-10">
             {steps.map((s, i) => {

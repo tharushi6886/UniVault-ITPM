@@ -65,7 +65,12 @@ const Dashboard = () => {
           {navLinks.map((link) => (
             <button
               key={link.name}
-              onClick={() => link.name === 'My Items' ? navigate('/myitems') : setActiveNav(link.name)}
+              onClick={() => {
+                if (link.name === 'My Items') navigate('/myitems');
+                else if (link.name === 'Orders') navigate('/orders');
+                else if (link.name === 'Biddings') navigate('/bidding');
+                else setActiveNav(link.name);
+              }}
               className={`relative flex items-center gap-1.5 py-2 px-3 rounded-lg text-[13.5px] transition-all whitespace-nowrap 
                 ${activeNav === link.name ? 'bg-purple-100 text-indigo-btn font-semibold nav-link active' : 'text-gray-600 font-medium hover:bg-purple-50 hover:text-indigo-btn nav-link'}`}
             >
@@ -143,16 +148,16 @@ const Dashboard = () => {
           </div>
           {/* Floating Cards */}
           {/* Card 1: 50+ Online Courses */}
-          <div className="absolute bg-white rounded-2xl py-3 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center gap-3.5 top-[5%] -left-[12%] animate-[node-float_0.8s_both_0.5s] hover:-translate-y-1 transition duration-300 z-20">
+          <div className="absolute bg-white rounded-2xl py-3 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center gap-3.5 top-[5%] -left-[1%] animate-[node-float_0.8s_both_0.5s] hover:-translate-y-1 transition duration-300 z-20">
             <div className="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center text-xl flex-shrink-0">🎓</div>
             <div>
               <div className="font-syne text-[22px] font-black text-gray-900 leading-none tracking-tight">50+</div>
-              <div className="text-[12px] text-gray-400 font-medium mt-1">Online Courses</div>
+              <div className="text-[12px] text-gray-400 font-medium mt-1"> Uni Selling Items</div>
             </div>
           </div>
 
           {/* Card 2: 10k+ Online Students */}
-          <div className="absolute bg-white rounded-2xl py-3 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center gap-5 top-[15%] -right-[15%] animate-[node-float_0.8s_both_0.7s] hover:-translate-y-1 transition duration-300 z-20">
+          <div className="absolute bg-white rounded-2xl py-3 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-center gap-5 top-[15%] -right-[45%] animate-[node-float_0.8s_both_0.7s] hover:-translate-y-1 transition duration-300 z-20">
             <div>
               <div className="font-syne text-[22px] font-black text-gray-900 leading-none tracking-tight">10k+</div>
               <div className="text-[12px] text-gray-400 font-medium mt-1">Online Students</div>
@@ -166,10 +171,10 @@ const Dashboard = () => {
           </div>
 
           {/* Card 3: UI Design Class */}
-          <div className="absolute bg-white rounded-2xl py-4 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-start gap-4 bottom-[15%] -left-[20%] animate-[node-float_0.8s_both_0.9s] hover:-translate-y-1 transition duration-300 z-20 min-w-[220px]">
+          <div className="absolute bg-white rounded-2xl py-4 px-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex items-start gap-4 bottom-[15%] -left-[8%] animate-[node-float_0.8s_both_0.9s] hover:-translate-y-1 transition duration-300 z-20 min-w-[220px]">
             <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-lg flex-shrink-0 mt-0.5">🎨</div>
             <div>
-              <div className="font-syne text-[17px] font-extrabold text-gray-900 leading-none mb-1.5 tracking-tight">UI Design Class</div>
+              <div className="font-syne text-[17px] font-extrabold text-gray-900 leading-none mb-1.5 tracking-tight">List  Your  Item</div>
               <div className="text-[12px] text-gray-400 font-medium mb-3">Starts Monday &mdash; Free</div>
               <button className="bg-indigo-600 text-white text-[11px] font-bold py-1.5 px-3.5 rounded-md hover:bg-indigo-700 transition tracking-wide shadow-sm">
                 Join Now &rarr;
@@ -256,7 +261,7 @@ const Dashboard = () => {
             <div className="mb-6">
               <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-gray-500 mb-3">Popular Tags</div>
               <div className="flex flex-wrap gap-2">
-                {['#MATH101', '#Apple', '#Bio', '#DormLife', '#Furniture', '#Chargers'].map(tag => (
+                {['#Laptops', '#Iphones', '#NIC', '#Student ID', '#Chargers', '#Books'].map(tag => (
                   <div key={tag} className="py-1 px-3 rounded-full text-xs text-gray-700 border border-gray-200 bg-white cursor-pointer transition hover:border-indigo-btn hover:text-indigo-btn hover:bg-purple-50">
                     {tag}
                   </div>
@@ -264,6 +269,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+
 
           {/* CONTENT AREA */}
           <div className="flex-1 min-w-0">
@@ -276,7 +282,7 @@ const Dashboard = () => {
                   Freshman Bundle
                 </div>
                 <div className="font-syne text-[34px] font-extrabold text-white leading-[1.1] mb-3">
-                  Back to School <span className="text-cyan-400">Sale</span>
+                  Back to UniVault <span className="text-cyan-400">Sale</span>
                 </div>
                 <div className="text-[14px] text-white/65 mb-5 max-w-[300px]">
                   Get everything you need for the new semester up to 40% off retail prices.
