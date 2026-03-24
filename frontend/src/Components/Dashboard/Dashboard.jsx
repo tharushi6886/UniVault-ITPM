@@ -69,6 +69,7 @@ const Dashboard = () => {
                 if (link.name === 'My Items') navigate('/myitems');
                 else if (link.name === 'Orders') navigate('/orders');
                 else if (link.name === 'Biddings') navigate('/bidding');
+                else if (link.name === 'Messages') navigate('/massage');
                 else setActiveNav(link.name);
               }}
               className={`relative flex items-center gap-1.5 py-2 px-3 rounded-lg text-[13.5px] transition-all whitespace-nowrap 
