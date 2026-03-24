@@ -35,3 +35,24 @@ export const blockUser = (token, userId) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const unblockUser = (token, userId) =>
+  API.put(`/${userId}/unblock`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const deleteUser = (token, userId) =>
+  API.delete(`/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const getAdminDashboardStats = (token) =>
+  API.get("/admin/dashboard-stats", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

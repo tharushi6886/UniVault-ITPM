@@ -13,6 +13,8 @@ const {
   getUserById,
   blockUser,
   deleteUser,
+  unblockUser,
+  getAdminDashboardStats,
 } = require("../Controllers/userController");
 
 const { protect } = require("../Middlewares/authMiddleware");
@@ -45,9 +47,11 @@ router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
 
 // Admin
+router.get("/admin/dashboard-stats", protect, authorizeRoles("Admin"), getAdminDashboardStats);
 router.get("/", protect, authorizeRoles("Admin"), getUsers);
 router.get("/:id", protect, authorizeRoles("Admin"), getUserById);
 router.put("/:id/block", protect, authorizeRoles("Admin"), blockUser);
 router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
+router.put("/:id/unblock", protect, authorizeRoles("Admin"), unblockUser);
 
 module.exports = router;

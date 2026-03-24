@@ -68,5 +68,5 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// ✅ FIXED EXPORT
+
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

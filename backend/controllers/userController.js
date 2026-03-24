@@ -80,24 +80,30 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        message: "Login successful",
-        token: generateToken(user._id, user.role),
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          studentId: user.studentId,
-          role: user.role,
-          phone: user.phone,
-          faculty: user.faculty,
-          status: user.status,
-        },
-      });
-    } else {
-      res.status(401).json({ message: "Invalid email or password" });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    if (user.status === "blocked") {
+      return res.status(403).json({
+        message: "Your account has been blocked. Contact admin.",
+      });
+    }
+
+    res.json({
+      message: "Login successful",
+      token: generateToken(user._id, user.role),
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        studentId: user.studentId,
+        role: user.role,
+        phone: user.phone,
+        faculty: user.faculty,
+        status: user.status,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -227,6 +233,55 @@ const deleteUser = async (req, res) => {
   }
 };
 
+//Unblock User
+
+const unblockUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      user.status = "active";
+      await user.save();
+      res.json({ message: "User unblocked successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Admin Dashboard Stats
+const getAdminDashboardStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const activeUsers = await User.countDocuments({ status: "active" });
+    const pendingUsers = await User.countDocuments({ status: "pending" });
+    const blockedUsers = await User.countDocuments({ status: "blocked" });
+    const adminUsers = await User.countDocuments({ role: "Admin" });
+    const studentUsers = await User.countDocuments({ role: "Student" });
+
+    res.json({
+      totalUsers,
+      activeUsers,
+      pendingUsers,
+      blockedUsers,
+      adminUsers,
+      studentUsers,
+
+      // placeholders for other modules for now
+      totalLostItems: 0,
+      totalFoundItems: 0,
+      totalMarketplaceItems: 0,
+      totalBids: 0,
+      pendingClaims: 0,
+    });
+  } catch (error) {
+    console.error("Dashboard stats error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyOtp,
@@ -238,4 +293,6 @@ module.exports = {
   getUserById,
   blockUser,
   deleteUser,
+  unblockUser,
+  getAdminDashboardStats,
 };

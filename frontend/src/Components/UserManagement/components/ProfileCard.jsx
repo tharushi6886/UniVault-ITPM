@@ -48,51 +48,79 @@ const ProfileCard = ({ user }) => {
         </button>
       </div>
 
-      <div className="lg:col-span-2 bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] p-8 border border-[#e9e7ff]">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-[#1f1b5b]">Account Details</h3>
+      <div className="lg:col-span-2 space-y-6">
+        <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] p-8 border border-[#e9e7ff]">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold text-[#1f1b5b]">Account Details</h3>
 
-          <button
-            onClick={() => navigate("/profile/edit")}
-            className="px-5 py-2 rounded-xl bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white font-medium shadow-[0_6px_18px_rgba(79,70,229,0.24)]"
-          >
-            Edit Profile
-          </button>
+            <button
+              onClick={() => navigate("/profile/edit")}
+              className="px-5 py-2 rounded-xl bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white font-medium shadow-[0_6px_18px_rgba(79,70,229,0.24)]"
+            >
+              Edit Profile
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Full Name</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.name}</p>
+            </div>
+
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Email Address</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.email}</p>
+            </div>
+
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Student ID</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.studentId}</p>
+            </div>
+
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Phone Number</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.phone || "N/A"}</p>
+            </div>
+
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Faculty</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.faculty || "N/A"}</p>
+            </div>
+
+            <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
+              <p className="text-sm text-gray-500 mb-1">Account Status</p>
+              <p className="text-lg font-semibold text-[#1f1b5b]">{user.status}</p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Full Name</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">{user.name}</p>
-          </div>
+        <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] p-8 border border-[#e9e7ff]">
+          <h3 className="text-2xl font-bold text-[#1f1b5b] mb-5">My Activity</h3>
 
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Email Address</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">{user.email}</p>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="rounded-2xl p-5 border border-[#dde3ff] bg-gradient-to-br from-[#eef2ff] to-white">
+              <p className="text-sm text-gray-500">My Lost Items</p>
+              <p className="text-2xl font-bold text-[#4f46e5] mt-1">0</p>
+              <p className="text-xs text-gray-400 mt-2">Connect with Lost & Found module</p>
+            </div>
 
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Student ID</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">{user.studentId}</p>
-          </div>
+            <div className="rounded-2xl p-5 border border-[#cffafe] bg-gradient-to-br from-[#ecfeff] to-white">
+              <p className="text-sm text-gray-500">My Found Items</p>
+              <p className="text-2xl font-bold text-cyan-600 mt-1">0</p>
+              <p className="text-xs text-gray-400 mt-2">Connect with Found Items module</p>
+            </div>
 
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Phone Number</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">
-              {user.phone || "N/A"}
-            </p>
-          </div>
+            <div className="rounded-2xl p-5 border border-[#dcfce7] bg-gradient-to-br from-[#f0fdf4] to-white">
+              <p className="text-sm text-gray-500">My Listings</p>
+              <p className="text-2xl font-bold text-green-600 mt-1">0</p>
+              <p className="text-xs text-gray-400 mt-2">Connect with Marketplace module</p>
+            </div>
 
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Faculty</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">
-              {user.faculty || "N/A"}
-            </p>
-          </div>
-
-          <div className="bg-[#f8f8ff] rounded-2xl p-4 border border-[#ecebff]">
-            <p className="text-sm text-gray-500 mb-1">Account Status</p>
-            <p className="text-lg font-semibold text-[#1f1b5b]">{user.status}</p>
+            <div className="rounded-2xl p-5 border border-[#ede9fe] bg-gradient-to-br from-[#f5f3ff] to-white">
+              <p className="text-sm text-gray-500">My Bids</p>
+              <p className="text-2xl font-bold text-violet-600 mt-1">0</p>
+              <p className="text-xs text-gray-400 mt-2">Connect with Bidding module</p>
+            </div>
           </div>
         </div>
       </div>

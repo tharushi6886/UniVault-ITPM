@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { registerUser } from "../api/userApi";
+import { toast } from "react-toastify";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -27,9 +29,12 @@ const RegisterForm = () => {
     try {
       const res = await registerUser(formData);
 
-      alert(res.data.message || "Registration successful");
+      toast.success(res.data.message || "Registration successful");
+      //toast.success(res.data.message || "Registration successful");
 
-      console.log("Register success:", res.data);
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1000);
 
       setFormData({
         name: "",
@@ -40,93 +45,140 @@ const RegisterForm = () => {
         faculty: "",
       });
     } catch (error) {
-      console.error("Register error:", error);
-
       const message =
         error.response?.data?.message ||
         error.response?.data?.errors?.[0]?.msg ||
         "Registration failed";
 
-      alert(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-md"
-      >
-        <h2 className="text-3xl font-bold text-center mb-6">Register</h2>
+    <div className="w-full max-w-xl mx-auto">
+      <div className="bg-white/90 backdrop-blur-md p-8 md:p-10 rounded-[28px] shadow-[0_18px_50px_rgba(79,70,229,0.12)] border border-[#e9e7ff]">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#4f46e5] to-cyan-500 flex items-center justify-center text-white text-2xl shadow-lg">
+            👤
+          </div>
+          <h2 className="text-4xl font-bold text-[#1f1b5b] mt-4">Register</h2>
+          <p className="text-gray-500 mt-2">
+            Create your UniVault account to continue
+          </p>
+        </div>
 
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full p-3 border rounded mb-4 outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your full name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+            />
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full p-3 border rounded mb-4 outline-none focus:ring-2 focus:ring-green-500"
-        />
+          <div>
+            <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your university email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+            />
+          </div>
 
-        <input
-          type="text"
-          name="studentId"
-          placeholder="Student ID"
-          value={formData.studentId}
-          onChange={handleChange}
-          required
-          className="w-full p-3 border rounded mb-4 outline-none focus:ring-2 focus:ring-green-500"
-        />
+          <div>
+            <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+              Student ID
+            </label>
+            <input
+              type="text"
+              name="studentId"
+              placeholder="Enter your student ID"
+              value={formData.studentId}
+              onChange={handleChange}
+              required
+              className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+            />
+          </div>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full p-3 border rounded mb-4 outline-none focus:ring-2 focus:ring-green-500"
-        />
+          <div>
+            <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Create a secure password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+            />
+          </div>
 
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone Number"
-          value={formData.phone}
-          onChange={handleChange}
-          className="w-full p-3 border rounded mb-4 outline-none focus:ring-2 focus:ring-green-500"
-        />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                name="phone"
+                placeholder="Enter phone number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+              />
+            </div>
 
-        <input
-          type="text"
-          name="faculty"
-          placeholder="Faculty"
-          value={formData.faculty}
-          onChange={handleChange}
-          className="w-full p-3 border rounded mb-6 outline-none focus:ring-2 focus:ring-green-500"
-        />
+            <div>
+              <label className="block text-sm font-semibold text-[#1f1b5b] mb-2">
+                Faculty
+              </label>
+              <input
+                type="text"
+                name="faculty"
+                placeholder="Enter faculty"
+                value={formData.faculty}
+                onChange={handleChange}
+                className="w-full h-14 px-4 border border-[#dfe3f0] rounded-2xl bg-[#fbfcff] outline-none focus:ring-2 focus:ring-[#4f46e5] focus:border-transparent transition"
+              />
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition duration-200 disabled:bg-gray-400"
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-[#4f46e5] to-cyan-500 text-white font-semibold text-lg shadow-[0_10px_24px_rgba(79,70,229,0.22)] hover:opacity-95 transition disabled:opacity-60"
+          >
+            {loading ? "Registering..." : "Create Account"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-semibold text-[#4f46e5] hover:underline"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
