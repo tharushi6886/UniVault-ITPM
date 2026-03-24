@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/userApi";
 import { toast } from "react-toastify";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,11 +32,12 @@ const RegisterForm = () => {
       const res = await registerUser(formData);
 
       toast.success(res.data.message || "Registration successful");
-      //toast.success(res.data.message || "Registration successful");
 
-          setTimeout(() => {
-            window.location.href = "/login";
-          }, 1000);
+      setTimeout(() => {
+        navigate("/verify-otp", {
+          state: { email: res.data.email || formData.email },
+        });
+      }, 1000);
 
       setFormData({
         name: "",

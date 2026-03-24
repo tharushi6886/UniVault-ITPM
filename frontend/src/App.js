@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Homepage from "./Components/Homepage/Homepage";
 import LoginPage from "./Components/UserManagement/pages/LoginPage";
 import RegisterPage from "./Components/UserManagement/pages/RegisterPage";
+import VerifyOtpPage from "./Components/UserManagement/pages/VerifyOtpPage";
 import ProfilePage from "./Components/UserManagement/pages/ProfilePage";
 import EditProfilePage from "./Components/UserManagement/pages/EditProfilePage";
 import AdminUsersPage from "./Components/UserManagement/pages/AdminUsersPage";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-otp" element={<VerifyOtpPage />} />
 
           <Route
             path="/profile"

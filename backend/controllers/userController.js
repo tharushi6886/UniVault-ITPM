@@ -1,10 +1,17 @@
 const User = require("../Models/User");
 const generateToken = require("../utils/generateToken");
+const nodemailer = require("nodemailer");
 
 // Register User
 const registerUser = async (req, res) => {
   try {
     const { name, email, studentId, password, phone, faculty } = req.body;
+
+    if (!email.endsWith("@my.sliit.lk")) {
+      return res.status(400).json({
+        message: "Only @my.sliit.lk email addresses are allowed",
+      });
+    }
 
     const existingUser = await User.findOne({
       $or: [{ email }, { studentId }],
@@ -16,6 +23,8 @@ const registerUser = async (req, res) => {
       });
     }
 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
     const user = await User.create({
       name,
       email,
@@ -24,21 +33,38 @@ const registerUser = async (req, res) => {
       role: "Student",
       phone,
       faculty,
+      otp,
+      otpExpires: Date.now() + 10 * 60 * 1000,
+      isVerified: false,
+      status: "pending",
     });
 
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "UniVault OTP Verification",
+        text: `Your UniVault OTP is: ${otp}. It will expire in 10 minutes.`,
+      });
+    } catch (mailError) {
+      await User.findByIdAndDelete(user._id);
+
+      return res.status(500).json({
+        message: "Failed to send OTP email. Please try again.",
+      });
+    }
+
     res.status(201).json({
-      message: "User registered successfully",
-      token: generateToken(user._id, user.role),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        studentId: user.studentId,
-        role: user.role,
-        phone: user.phone,
-        faculty: user.faculty,
-        status: user.status,
-      },
+      message: "Registration successful. OTP sent to your university email.",
+      email: user.email,
     });
   } catch (error) {
     console.error("Register error:", error);
@@ -47,8 +73,7 @@ const registerUser = async (req, res) => {
     });
   }
 };
-
-// Verify OTP
+//verifyOTP
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -58,23 +83,33 @@ const verifyOtp = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.otp !== otp || (user.otpExpires && user.otpExpires < Date.now())) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+    if (!user.otp || !user.otpExpires) {
+      return res.status(400).json({ message: "No OTP found for this account" });
+    }
+
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "OTP has expired" });
     }
 
     user.isVerified = true;
     user.status = "active";
     user.otp = null;
     user.otpExpires = null;
+
     await user.save();
 
-    res.json({ message: "OTP verified successfully, account active." });
+    res.json({
+      message: "OTP verified successfully. Your account is now active.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-};
-
-// Login User
+  
+};// Login User
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -89,6 +124,17 @@ const loginUser = async (req, res) => {
         message: "Your account has been blocked. Contact admin.",
       });
     }
+
+    if (!user.isVerified || user.status === "pending") {
+      return res.status(403).json({
+        message: "Please verify your university email with OTP before login.",
+      });
+    }
+    if (!user.isVerified) {
+      return res.status(403).json({
+       message: "Please verify your email before logging in",
+      });
+}
 
     res.json({
       message: "Login successful",
@@ -108,7 +154,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 // Get User Profile
 const getUserProfile = async (req, res) => {
   try {
