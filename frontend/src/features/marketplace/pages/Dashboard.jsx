@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toppicImg from '../../assets/toppic.jpg';
-import ItemForm from './ItemForm';
+import toppicImg from '../../../assets/toppic.jpg';
+import ItemForm from '../components/ItemForm';
 
 const Dashboard = () => {
   const navigate = useNavigate();

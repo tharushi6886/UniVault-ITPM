@@ -1,13 +1,13 @@
 import React from "react";
 import "./App.css";
-import Dashboard from "./Components/Dashboard/Dashboard";
-import ItemDetails from "./Components/Dashboard/ItemDetails";
-import Myitems from "./Components/Dashboard/Myitems";
-import Deliveryinfo from "./Components/Dashboard/Deliveryinfo";
-import PurchaseDone from "./Components/Dashboard/PurchaseDone";
-import OrderPage from "./Components/Dashboard/OrderPage";
-import Bid from "./Components/Dashboard/Bid";
-import Massage from "./Components/Dashboard/Massage";
+import Dashboard from "./features/marketplace/pages/Dashboard";
+import ItemDetails from "./features/marketplace/pages/ItemDetails";
+import Myitems from "./features/marketplace/pages/Myitems";
+import Deliveryinfo from "./features/marketplace/pages/Deliveryinfo";
+import PurchaseDone from "./features/marketplace/pages/PurchaseDone";
+import OrderPage from "./features/marketplace/pages/OrderPage";
+import Bid from "./features/marketplace/pages/Bid";
+import Massage from "./features/marketplace/pages/Massage";
 import { Routes, Route } from "react-router-dom";
 
 function App() {

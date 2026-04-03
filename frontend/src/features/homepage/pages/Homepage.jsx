@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import Navbar from './Navbar';
-import Hero from './Hero';
-import Search from './Search';
-import Features from './Features';
-import { LostCarousel, FoundCarousel } from './LostFound';
-import Marketplace from './Marketplace';
-import Footer from './Footer';
+import Navbar from '../components/Navbar';
+import Hero from '../components/Hero';
+import Search from '../components/Search';
+import Features from '../components/Features';
+import { LostCarousel, FoundCarousel } from '../components/LostFound';
+import Marketplace from '../components/Marketplace';
+import Footer from '../components/Footer';
 
 function useReveal() {
   useEffect(() => {
