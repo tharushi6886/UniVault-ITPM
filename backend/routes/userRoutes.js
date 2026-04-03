@@ -7,17 +7,18 @@ const {
   verifyOtp,
   loginUser,
   getUserProfile,
-  getUsers,
   updateUserProfile,
-  deleteUser,
   changePassword,
-  blockUser,
+  getUsers,
   getUserById,
-} = require("../controllers/userController");
+  blockUser,
+  deleteUser,
+  unblockUser,
+  getAdminDashboardStats,
+} = require("../Controllers/userController");
 
-const { protect } = require("../middlewares/authMiddleware");
-const { authorizeRoles } = require("../middlewares/roleMiddleware");
-
+const { protect } = require("../Middlewares/authMiddleware");
+const { authorizeRoles } = require("../Middlewares/roleMiddleware");
 const {
   registerValidation,
   loginValidation,
@@ -35,20 +36,22 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Auth routes
+// Auth
 router.post("/register", registerValidation, validate, registerUser);
 router.post("/verify-otp", verifyOtp);
 router.post("/login", loginValidation, validate, loginUser);
 
-// User routes
+// User profile
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
 
-// Admin routes
+// Admin
+router.get("/admin/dashboard-stats", protect, authorizeRoles("Admin"), getAdminDashboardStats);
 router.get("/", protect, authorizeRoles("Admin"), getUsers);
-router.put("/block/:id", protect, authorizeRoles("Admin"), blockUser);
-router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
 router.get("/:id", protect, authorizeRoles("Admin"), getUserById);
+router.put("/:id/block", protect, authorizeRoles("Admin"), blockUser);
+router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
+router.put("/:id/unblock", protect, authorizeRoles("Admin"), unblockUser);
 
 module.exports = router;
