@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { verifyOtp } from "../api/userApi";
+import { verifyOtp } from "../../../api/userApi";
 import { toast } from "react-toastify";
 
 const VerifyOtpPage = () => {
@@ -13,6 +13,27 @@ const VerifyOtpPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(600);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return `${mins}:${secs}`;
+  };
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -43,7 +64,6 @@ const VerifyOtpPage = () => {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#f5f6fb]">
-      {/* Left side */}
       <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-[#4f46e5] via-[#4f46e5] to-cyan-500 text-white">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-[radial-gradient(circle,white_1px,transparent_1px)] [background-size:28px_28px]" />
@@ -62,23 +82,25 @@ const VerifyOtpPage = () => {
 
           <div className="max-w-xl">
             <h2 className="text-5xl font-bold leading-tight">
-              Verify Your
+              Complete Your
               <br />
-              <span className="text-cyan-300">University Email</span>
+              <span className="text-cyan-300">Verification</span>
             </h2>
 
             <p className="mt-6 text-xl text-white/85 leading-9">
-              We sent a one-time password to your university email. Enter it to
-              activate your account and continue securely.
+              We sent a one-time password to your university email. Verify your
+              account to activate secure access to UniVault.
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
               <div className="px-6 py-4 rounded-2xl bg-white/12 border border-white/20 backdrop-blur-md shadow-lg">
-                <p className="text-lg font-semibold">Secure Student Access</p>
+                <p className="text-lg font-semibold">University Only Access</p>
               </div>
 
               <div className="px-6 py-4 rounded-2xl bg-white/12 border border-white/20 backdrop-blur-md shadow-lg">
-                <p className="text-lg font-semibold">OTP Valid for 10 Minutes</p>
+                <p className="text-lg font-semibold">
+                  OTP Expires In {formatTime(secondsLeft)}
+                </p>
               </div>
             </div>
           </div>
@@ -87,7 +109,6 @@ const VerifyOtpPage = () => {
         </div>
       </div>
 
-      {/* Right side */}
       <div className="flex items-center justify-center px-6 py-10">
         <div className="w-full max-w-2xl">
           <div className="bg-white/95 rounded-[34px] border border-[#e5e7f2] shadow-[0_20px_60px_rgba(31,27,91,0.12)] px-8 md:px-12 py-10">
@@ -100,11 +121,14 @@ const VerifyOtpPage = () => {
             </div>
 
             <div className="mb-8">
-              <h2 className="text-4xl md:text-5xl font-bold text-[#1f1b5b] leading-tight">
+              <h2 className="text-5xl font-bold text-[#1f1b5b] leading-tight">
                 Verify Your Account
               </h2>
-              <p className="mt-3 text-xl text-gray-500">
+              <p className="mt-3 text-2xl text-gray-500">
                 Enter the OTP sent to your university email
+              </p>
+              <p className="mt-2 text-sm font-medium text-[#4f46e5]">
+                OTP expires in: {formatTime(secondsLeft)}
               </p>
             </div>
 
@@ -163,6 +187,13 @@ const VerifyOtpPage = () => {
                   Login
                 </Link>
               </p>
+
+              <button
+                type="button"
+                className="mt-4 text-sm font-semibold text-[#4f46e5] hover:underline"
+              >
+                Resend OTP
+              </button>
 
               <div className="mt-6 inline-flex items-center gap-6 px-6 py-3 rounded-full bg-[#f7f8ff] border border-[#ebedfa]">
                 <span className="text-sm font-bold text-green-600">EMAIL SECURED</span>

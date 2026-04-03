@@ -12,6 +12,13 @@ const registerUser = async (req, res) => {
         message: "Only @my.sliit.lk email addresses are allowed",
       });
     }
+    const emailPrefix = email.split("@")[0].toUpperCase();
+    if (emailPrefix !== studentId.toUpperCase()) {
+      return res.status(400).json({
+        message: "Student ID must match email",
+      });
+    }
+
 
     const existingUser = await User.findOne({
       $or: [{ email }, { studentId }],
@@ -77,8 +84,12 @@ const registerUser = async (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
-    const user = await User.findOne({ email });
 
+    if (!otp || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({ message: "OTP must be exactly 6 digits" });
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

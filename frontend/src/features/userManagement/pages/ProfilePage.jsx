@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getProfile } from "../api/userApi";
+import { getProfile } from "../../../api/userApi";
 import ProfileCard from "../components/ProfileCard";
-import Navbar from "../../Homepage/Navbar";
+import Navbar from "../../homepage/components/Navbar";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -57,11 +57,17 @@ const ProfilePage = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-[#f3f0ff] via-[#f8f9ff] to-[#eef6ff] pt-32 pb-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-[#1f1b5b]">My Profile</h1>
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#e2defd] text-[#4f46e5] text-sm font-semibold shadow-sm">
+              👤 USER DASHBOARD / PROFILE MANAGEMENT
+            </span>
+            <h1 className="text-4xl font-bold text-[#1f1b5b] mt-4">
+              My Profile Dashboard
+            </h1>
             <p className="text-gray-500 mt-2">
-              Manage your account details and view your activity
+              View your personal details, trust score, activity, feedback, and
+              marketplace history
             </p>
           </div>
 

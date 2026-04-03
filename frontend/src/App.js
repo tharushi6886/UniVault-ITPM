@@ -4,17 +4,25 @@ import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import Homepage from "./Components/Homepage/Homepage";
-import LoginPage from "./Components/UserManagement/pages/LoginPage";
-import RegisterPage from "./Components/UserManagement/pages/RegisterPage";
-import VerifyOtpPage from "./Components/UserManagement/pages/VerifyOtpPage";
-import ProfilePage from "./Components/UserManagement/pages/ProfilePage";
-import EditProfilePage from "./Components/UserManagement/pages/EditProfilePage";
-import AdminUsersPage from "./Components/UserManagement/pages/AdminUsersPage";
-import AdminDashboardPage from "./Components/UserManagement/pages/AdminDashboardPage";
+import Homepage from "./features/homepage/pages/Homepage";
+import LoginPage from "./features/userManagement/pages/LoginPage";
+import RegisterPage from "./features/userManagement/pages/RegisterPage";
+import VerifyOtpPage from "./features/userManagement/pages/VerifyOtpPage";
+import ProfilePage from "./features/userManagement/pages/ProfilePage";
+import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
+import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
+import AdminDashboardPage from "./features/userManagement/pages/AdminDashboardPage";
 
-import ProtectedRoute from "./Components/UserManagement/components/ProtectedRoute";
-import AdminRoute from "./Components/UserManagement/components/AdminRoute";
+import BuySellHistoryPage from "./features/userManagement/pages/BuySellHistoryPage";
+import ItemsPostedPage from "./features/userManagement/pages/ItemsPostedPage";
+import ItemsSoldPage from "./features/userManagement/pages/ItemsSoldPage";
+import FoundReturnedPage from "./features/userManagement/pages/FoundReturnedPage";
+import LostReportsPage from "./features/userManagement/pages/LostReportsPage";
+import MyBidsPage from "./features/userManagement/pages/MyBidsPage";
+import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage";
+
+import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
+import AdminRoute from "./features/userManagement/components/AdminRoute";
 
 function App() {
   return (
@@ -40,6 +48,69 @@ function App() {
             element={
               <ProtectedRoute>
                 <EditProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/buy-sell-history"
+            element={
+              <ProtectedRoute>
+                <BuySellHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/items-posted"
+            element={
+              <ProtectedRoute>
+                <ItemsPostedPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/items-sold"
+            element={
+              <ProtectedRoute>
+                <ItemsSoldPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/found-returned"
+            element={
+              <ProtectedRoute>
+                <FoundReturnedPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/lost-reports"
+            element={
+              <ProtectedRoute>
+                <LostReportsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/my-bids"
+            element={
+              <ProtectedRoute>
+                <MyBidsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/profile/feedback-trust"
+            element={
+              <ProtectedRoute>
+                <FeedbackTrustPage />
               </ProtectedRoute>
             }
           />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getProfile, updateProfile } from "../api/userApi";
+import { getProfile, updateProfile } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../Homepage/Navbar";
+import Navbar from "../../homepage/components/Navbar";
 
 const EditProfilePage = () => {
   const navigate = useNavigate();

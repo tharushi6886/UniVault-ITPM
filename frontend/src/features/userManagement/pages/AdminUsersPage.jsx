@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Homepage/Navbar";
-import { getUsers, blockUser, unblockUser, deleteUser } from "../api/userApi";
+import Navbar from "../../homepage/components/Navbar";
+import { getUsers, blockUser, unblockUser, deleteUser } from "../../../api/userApi";
 import { toast } from "react-toastify";
 
 const AdminUsersPage = () => {
