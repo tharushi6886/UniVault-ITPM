@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const RF_CATS = [
   '💻 Laptops & Computers','📱 Phones & Tablets','🎧 Audio & Headphones',
@@ -16,18 +18,27 @@ export default function LostFoundForm({ setAds }) {
   const navigate = useNavigate();
   const location = useLocation();
   const initialType = location.state?.type || 'Lost';
-
-  const [rfMode, setRfMode] = useState(initialType.toLowerCase() === 'found' ? 'Found' : 'Lost');
+  const editData = location.state?.editData || null;
+  const rfModeFixed = editData ? (editData.type === 'LOST' ? 'Lost' : 'Found') : (initialType === 'found' ? 'Found' : 'Lost');
+  
+  const [rfMode, setRfMode] = useState(rfModeFixed);
   const [rfStep, setRfStep] = useState(0);
-  const [rfCat, setRfCat] = useState('');
+  const [rfCat, setRfCat] = useState(editData?.category ? `📁 ${editData.category}` : '');
   const [rfStatus, setRfStatus] = useState('Active');
   const [rfError, setRfError] = useState('');
   const [drag, setDrag] = useState(false);
-  const [rfSubmitting, setRfSubmitting] = useState(0);
+  const [rfSubmitting, setRfSubmitting] = useState(0); 
 
-  const [form, setForm] = useState({ 
-    name:'', sid:'', date:new Date().toISOString().split('T')[0], 
-    title:'', desc:'', loc:'', phone:'', wa:'', img:null 
+  const [form, setForm] = useState({
+    name: editData?.student || '', 
+    sid: editData?.studentId || '', 
+    date: editData?.date ? new Date(editData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    title: editData?.title || '', 
+    desc: editData?.description || editData?.desc || '', 
+    loc: editData?.location || '', 
+    phone: editData?.contactNumber || editData?.phone || '', 
+    wa: editData?.whatsappLink || '', 
+    img: editData?.imageUrl || editData?.img || null
   });
 
   const A = RF_ACCENT[rfMode];
@@ -58,38 +69,58 @@ export default function LostFoundForm({ setAds }) {
   };
   const goBack = () => { setRfError(''); setRfStep(rfStep - 1); };
 
-  const doSubmit = () => {
+  const doSubmit = async () => {
     const err = validate();
     setRfError(err || '');
     if(err) return;
+    
     setRfSubmitting(1);
     
-    setTimeout(() => {
+    try {
+      const isEdit = !!editData;
+      const endpoint = rfMode === 'Lost' ? '/api/lost-items' : '/api/found-items';
+      const url = isEdit ? `http://localhost:5000${endpoint}/${editData._id}` : `http://localhost:5000${endpoint}`;
+      
+      const payload = {
+        itemName: form.title,
+        studentId: form.sid,
+        title: form.title,
+        description: form.desc,
+        category: rfCat.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '').trim(),
+        location: form.loc,
+        date: form.date,
+        contactNumber: form.phone,
+        whatsappLink: form.wa,
+        imageUrl: form.img || 'https://images.unsplash.com/photo-1544365558-35aa4af41144?w=800&h=500&fit=crop',
+        brand: editData?.brand || "",
+        color: editData?.color || ""
+      };
+
+      const res = isEdit ? await axios.put(url, payload) : await axios.post(url, payload);
+      
       setRfSubmitting(2);
+      toast.success(`${rfMode} item ${isEdit ? 'updated' : 'reported'} successfully!`);
+      
       setTimeout(() => {
-        const newId = `ad_${Date.now()}`;
-        setAds(prev => ({
-          [newId]: {
-            img: form.img || 'https://images.unsplash.com/photo-1544365558-35aa4af41144?w=800&h=500&fit=crop',
-            status: rfStatus,
-            statusClass: rfStatus === 'Active' ? 'bg-[rgba(16,185,129,0.88)] text-white' : 'bg-gray-500/88 text-white',
-            type: rfMode.toUpperCase(),
-            typeClass: rfMode === 'Lost' ? 'bg-[rgba(239,68,68,0.88)] text-white' : 'bg-[rgba(16,185,129,0.88)] text-white',
-            title: form.title,
-            desc: form.desc,
-            tags: [rfCat, rfMode === 'Lost' ? 'Missing' : 'Recovered'],
-            student: form.name,
-            year: form.sid,
-            phone: form.phone,
-            location: form.loc,
-            date: new Date(form.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            category: rfCat.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '').trim()
-          },
-          ...prev
-        }));
-        navigate('/lost-found');
+        if (setAds) {
+          setAds(prev => ({
+            [res.data._id]: {
+              ...res.data,
+              img: res.data.imageUrl,
+              statusClass: rfMode === 'Lost' ? 'bg-[rgba(239,68,68,0.88)] text-white' : 'bg-[rgba(16,185,129,0.88)] text-white',
+              typeClass: rfMode === 'Lost' ? 'bg-[rgba(239,68,68,0.88)] text-white' : 'bg-[rgba(16,185,129,0.88)] text-white',
+              type: rfMode.toUpperCase()
+            },
+            ...prev
+          }));
+        }
+        navigate('/lost-items');
       }, 1200);
-    }, 1500);
+    } catch (error) {
+      console.error("Submission error:", error);
+      setRfError(error.response?.data?.message || "Failed to submit report. Please try again.");
+      setRfSubmitting(0);
+    }
   };
 
   const buildWa = (p) => {
@@ -118,7 +149,7 @@ export default function LostFoundForm({ setAds }) {
         {/* Header */}
         <div className="relative p-[32px] px-[36px] pb-[28px] shrink-0 overflow-hidden rounded-t-[26px] bg-gradient-to-br transition-all duration-350" style={{background:`linear-gradient(135deg, ${A.from}, ${A.to})`}}>
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/20 to-transparent via-transparent via-60%"></div>
-          <button className="absolute top-[24px] right-[24px] w-[36px] h-[36px] rounded-full bg-white/[0.22] hover:bg-white/[0.38] text-white/90 text-[18px] flex items-center justify-center transition-all cursor-pointer border-none" onClick={() => navigate('/lost-found')}>✕</button>
+          <button className="absolute top-[24px] right-[24px] w-[36px] h-[36px] rounded-full bg-white/[0.22] hover:bg-white/[0.38] text-white/90 text-[18px] flex items-center justify-center transition-all cursor-pointer border-none" onClick={() => navigate('/lost-items')}>✕</button>
 
           <div className="flex gap-[8px] mb-[18px]">
             <button onClick={() => setRfMode('Lost')} className={`px-[20px] py-[8px] rounded-full text-[13px] font-bold cursor-pointer transition-all border-[1.5px] border-white/[0.42] ${rfMode==='Lost'?'bg-white/[0.94] text-[${A.from}] shadow-md':'bg-white/20 text-white'}`} style={rfMode==='Lost'?{color:A.from}:{}}>🔴 Lost Item</button>

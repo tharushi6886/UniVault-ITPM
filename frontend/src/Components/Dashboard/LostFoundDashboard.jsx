@@ -1,114 +1,135 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AIMatchesPanel from '../Matches/AIMatchesPanel';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 
-export const Sidebar = () => (
-  <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
-    <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
-      <div className="flex items-center justify-center w-[36px] h-[36px] bg-[#4f46e5] rounded-[10px]">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+export const Sidebar = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // Display user details or fallback to default
+  const userName = user?.name || "Jane Doe";
+  const userRole = user?.department ? `${user.department} · Year ${user.year || '3'}` : "Engineering · Year 3";
+  const userInitials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+  return (
+    <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
+      <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
+        <div className="flex items-center justify-center w-[36px] h-[36px] bg-[#4f46e5] rounded-[10px]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <span className="text-[20px] font-bold text-[#1e1b4b]">UniVault</span>
       </div>
-      <span className="text-[20px] font-bold text-[#1e1b4b]">UniVault</span>
-    </div>
-    
-    <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
-      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
       
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </span>
-        Dashboard
-      </a>
+      <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
+        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </span>
+          Dashboard
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </span>
+          Lost Items
+          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">3</span>
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          Found Items
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
+          </span>
+          AI Matches
+          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-blue-500">2</span>
+        </a>
+  
+        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">My Content</div>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </span>
+          My Vault
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          </span>
+          Campus Map
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </span>
+          Notifications
+          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">5</span>
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </span>
+          Messages
+        </a>
+  
+        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">More</div>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </span>
+          Marketplace
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+          </span>
+          Bidding
+        </a>
+        
+        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
+          Settings
+        </a>
+      </nav>
       
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </span>
-        Lost Items
-        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">3</span>
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </span>
-        Found Items
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
-        </span>
-        AI Matches
-        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-blue-500">2</span>
-      </a>
-
-      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">My Content</div>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        </span>
-        My Vault
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        </span>
-        Campus Map
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        </span>
-        Notifications
-        <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">5</span>
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        </span>
-        Messages
-      </a>
-
-      <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">More</div>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        </span>
-        Marketplace
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
-        </span>
-        Bidding
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-        <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </span>
-        Settings
-      </a>
-    </nav>
-    
-    <div className="flex items-center gap-[12px] p-[20px] border-t border-gray-200 mt-auto">
-      <div className="w-[40px] h-[40px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[14px] text-white font-bold shrink-0">JD</div>
-      <div className="flex-1 overflow-hidden">
-        <div className="text-[14px] font-semibold text-gray-900 truncate">Jane Doe</div>
-        <div className="text-[12px] text-gray-500 truncate">Engineering · Year 3</div>
+      <div className="flex items-center gap-[12px] p-[20px] border-t border-gray-200 mt-auto">
+        <div className="w-[40px] h-[40px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[14px] text-white font-bold shrink-0">
+          {userInitials}
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <div className="text-[14px] font-semibold text-gray-900 truncate">{userName}</div>
+          <div className="text-[12px] text-gray-500 truncate">{userRole}</div>
+        </div>
+        <span className="text-[18px] text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-[4px]">⋯</span>
       </div>
-      <span className="text-[18px] text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-[4px]">⋯</span>
-    </div>
-  </aside>
-);
+    </aside>
+  );
+};
 
 const bgImgCls = "absolute rounded-[18px] overflow-hidden shadow-[0_28px_60px_rgba(10,5,40,0.55),0_8px_24px_rgba(10,5,40,0.4)] border-2 border-white/20 pointer-events-auto cursor-pointer transition-transform hover:z-[6] hover:scale-105 hover:-translate-y-[10px] origin-center";
 export const Topbar = () => (
@@ -161,188 +182,218 @@ export const Topbar = () => (
     </div>
   </header>
 );
-export const FeedPage = ({ openAdPopup, ads }) => (
-  <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] !px-0 !pb-0 overflow-hidden">
-        <div className="flex justify-between items-start mb-[12px] px-[16px]">
-          <div>
-            <div className="text-[15px] font-bold text-[#1e1b4b]">📋 Campus Lost & Found Board</div>
-            <div className="text-[11.5px] text-[#6b7280] mt-[2px]">All items reported by students</div>
-          </div>
-          <div className="flex gap-[6px]">
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border border-transparent font-epilogue transition-all bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(79,70,229,0.28)]">All</button>
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] font-epilogue transition-all hover:border-[#818cf8] hover:text-[#4f46e5]">Lost</button>
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] font-epilogue transition-all hover:border-[#818cf8] hover:text-[#4f46e5]">Found</button>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[14px] px-[16px] pb-[16px]">
-          {Object.keys(ads).map((key, i) => {
-            const ad = ads[key];
-            if (!ad) return null;
-            const bgColors = ['from-[#4f46e5] to-[#818cf8]', 'from-[#7c3aed] to-[#a78bfa]', 'from-[#059669] to-[#34d399]', 'from-[#0ea5e9] to-[#38bdf8]', 'from-[#dc2626] to-[#f87171]'];
-            const bg = bgColors[i % bgColors.length];
-            const initials = ad.student ? ad.student.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
-            const badgeCls = ad.type === 'LOST' || ad.type.includes('LOST') ? 'bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22' : 'bg-[#10b981]/11 text-[#059669] border-[#10b981]/22';
-            const time = key.startsWith('ad_') ? 'Just now' : `${(i * 3) + 9} min ago`;
+export const FeedPage = ({ openAdPopup, ads, selectedLostItemId, setSelectedLostItemId, setRefreshMatches }) => {
+  const [filter, setFilter] = useState('All');
 
-            return (
-              <div key={key} onClick={() => openAdPopup(key)} className="bg-white/88 border-[1.5px] border-[#a5b4fc]/[0.18] rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_3px_16px_rgba(79,70,229,0.06)] hover:-translate-y-[5px] hover:shadow-[0_14px_40px_rgba(79,70,229,0.14)] hover:border-[#6366f1]/30 group">
-                <div className="relative h-[200px] lg:h-[240px] overflow-hidden">
-                  <img src={ad.img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <span className={`absolute top-[10px] left-[10px] z-[2] text-[10px] font-bold py-[3px] px-[9px] rounded-[6px] tracking-[0.05em] uppercase border ${badgeCls}`}>{ad.type.split(' ')[0]}</span>
-                  <span className="absolute bottom-[10px] right-[10px] z-[2] bg-black/55 backdrop-blur-[8px] text-white text-[10px] font-bold py-[3px] px-[9px] rounded-full">{time}</span>
-                </div>
-                <div className="p-[12px] px-[13px] pb-[13px]">
-                  <div className="font-clash text-[14px] font-bold text-[#1e1b4b] mb-[8px] truncate">{ad.title}</div>
-                  <div className="flex flex-wrap gap-[6px] mb-[10px]">
-                    <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#eef2ff] text-[#4338ca] border border-[#c7d2fe]">📅 {ad.date}</span>
-                    <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">📍 {ad.location}</span>
-                  </div>
-                  <div className="flex items-center gap-[7px] text-[11.5px] text-[#6b7280] font-semibold mb-[10px]">
-                    <div className={`w-[24px] h-[24px] rounded-full bg-gradient-to-br flex items-center justify-center text-white text-[9px] font-bold shrink-0 ${bg}`}>{initials}</div>
-                    <span>{ad.student} · {ad.year}</span>
-                  </div>
-                  <div className="flex gap-[7px]">
-                    {ad.type === 'LOST' || ad.type.includes('LOST')
-                      ? <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#eef2ff] text-[#4f46e5] border-[1.5px] border-[#c7d2fe] hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>I Found It →</button>
-                      : <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#f0fdf4] text-[#166534] border-[1.5px] border-[#bbf7d0] hover:bg-[#dcfce7] hover:border-[#86efac]" onClick={(e) => e.stopPropagation()}>Claim Mine →</button>}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="px-[16px] pb-[14px]">
-          <button className="flex items-center justify-center gap-[7px] w-full p-[11px] rounded-[12px] mt-[6px] bg-white/55 border-[1.5px] border-[#a5b4fc]/22 text-[13px] font-semibold text-[#4f46e5] cursor-pointer transition-all font-epilogue hover:border-[#818cf8] hover:bg-[#eef2ff]/90">⬇ Load More Items</button>
-        </div>
-      </div>
-    </div>
+  const filteredIds = Object.keys(ads).filter(key => {
+    const ad = ads[key];
+    if (!ad) return false;
+    if (filter === 'All') return true;
+    return ad.type === filter.toUpperCase();
+  });
 
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] mb-[12px]">
-        <div className="flex justify-between items-start mb-[12px]">
-          <div><div className="text-[15px] font-bold text-[#1e1b4b]">🤖 AI Matches</div><div className="text-[11.5px] text-[#6b7280] mt-[2px]">Possible matches</div></div>
-          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">View All</button>
-        </div>
-        {(['1', '2']).map(i => (
-          <div key={i} className="bg-gradient-to-br from-[#4f46e5]/[0.06] to-[#8b5cf6]/[0.05] border-[1.5px] border-[#6366f1]/20 rounded-[16px] p-[15px] mb-[12px] last:mb-0 cursor-pointer transition-all hover:border-[#6366f1]/40 hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(79,70,229,0.12)]">
-            <div className="flex justify-between items-start mb-[11px]">
-              <div><div className="text-[10px] font-bold text-[#6b7280] uppercase tracking-[0.06em]">Lost Report</div><div className="text-[13.5px] font-bold text-[#1e1b4b] mt-[2px]">{i === '1' ? 'Apple Watch Series 7' : 'Blue Folder (Bio 101)'}</div><div className="text-[11px] text-[#6b7280] mt-[2px]">📍 Library</div></div>
-              <div className="font-clash text-[26px] font-bold text-[#4f46e5] leading-none text-right">{i === '1' ? '95%' : '78%'}<small className="text-[11px] text-[#6b7280] font-epilogue font-medium block">MATCH</small></div>
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
+      <div>
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] !px-0 !pb-0 overflow-hidden">
+          <div className="flex justify-between items-start mb-[12px] px-[16px]">
+            <div>
+              <div className="text-[15px] font-bold text-[#1e1b4b]">📋 Campus Lost & Found Board</div>
+              <div className="text-[11.5px] text-[#6b7280] mt-[2px]">All items reported by students</div>
             </div>
-            <div className="flex items-center gap-[8px] mb-[11px]">
-              <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=130&fit=crop'} />
-              <div className="text-[#818cf8] text-[18px] shrink-0">⟷</div>
-              <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1600267185393-1b14be5afa09?w=200&h=130&fit=crop'} />
-            </div>
-            <div className="flex gap-[7px]">
-              <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-[#6366f1]/[0.09] text-[#4f46e5] border border-[#6366f1]/20 hover:bg-[#6366f1]/[0.18]">Compare</button>
-              <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white shadow-[0_2px_8px_rgba(79,70,229,0.28)] hover:shadow-[0_4px_14px_rgba(79,70,229,0.44)]">Verify Match →</button>
+            <div className="flex gap-[6px]">
+              {['All', 'Lost', 'Found'].map(f => (
+                <button 
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border-[1.5px] font-epilogue transition-all ${filter === f ? 'bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white border-transparent shadow-[0_3px_10px_rgba(79,70,229,0.28)]' : 'border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] hover:border-[#818cf8] hover:text-[#4f46e5]'}`}
+                >
+                  {f}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[14px] px-[16px] pb-[16px]">
+            {filteredIds.map((key, i) => {
+              const ad = ads[key];
+              if (!ad) return null;
+              const initials = ad.student ? ad.student.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
+              const badgeCls = ad.type === 'LOST' || ad.type === 'Lost' ? 'bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22' : 'bg-[#10b981]/11 text-[#059669] border-[#10b981]/22';
 
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
-        <div className="flex justify-between items-start mb-[12px]">
-          <div>
-            <div className="text-[15px] font-bold text-[#1e1b4b]">🗺️ Nearby Items</div>
-            <div className="text-[11.5px] text-[#6b7280] mt-[2px]">On campus this week</div>
-          </div>
-          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">Map View</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=150&fit=crop" alt="Dell"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Dell XPS 15</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Library · 0.3km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">5 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=150&fit=crop" alt="Phone"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">LOST</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Samsung Galaxy S23</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Cafeteria · 0.5km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">2 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(79,70,229,0.25)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-all cursor-pointer">View</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=150&fit=crop" alt="AirPods"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">AirPods (2nd gen)</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Sports Complex · 0.3km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">8 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-export const VaultPage = ({ openAdPopup, ads }) => (
-  <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
-        <div className="flex justify-between items-start mb-[12px]">
-          <div><div className="text-[15px] font-bold text-[#1e1b4b]">📢 My Posted Items</div><div className="text-[11.5px] text-[#6b7280] mt-[2px]">Items you've reported as lost or found</div></div>
-          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15">+ New Post</button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[18px]">
-          {(Object.keys(ads).filter(k => k.startsWith('ad'))).map(v => {
-            const ad = ads[v];
-            return (
-              <div key={v} onClick={() => openAdPopup(v)} className="bg-white border-[1.5px] border-[#a5b4fc]/22 rounded-[22px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_6px_28px_rgba(79,70,229,0.09)] hover:-translate-y-[7px] hover:shadow-[0_22px_56px_rgba(79,70,229,0.18)] hover:border-[#6366f1]/40 group">
-                <div className="relative h-[250px] lg:h-[300px] overflow-hidden">
-                  <img src={ad.img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <span className={`absolute top-[14px] left-[14px] z-[2] text-[10.5px] font-bold py-[5px] px-[13px] rounded-[8px] tracking-[0.06em] uppercase backdrop-blur-[10px] ${ad.statusClass}`}>{ad.status}</span>
-                  <span className={`absolute bottom-[14px] left-[14px] z-[2] text-[10px] font-extrabold py-[4px] px-[11px] rounded-[7px] tracking-[0.08em] uppercase backdrop-blur-[10px] ${ad.typeClass}`}>{ad.type}</span>
-                  {v === 'ad2' && <div className="absolute top-[14px] right-[14px] z-[2] bg-white/96 backdrop-blur-[10px] rounded-full py-[5px] px-[12px] text-[11.5px] font-bold text-[#4f46e5] flex items-center gap-[5px] shadow-[0_2px_8px_rgba(79,70,229,0.15)]">🤖 95% match</div>}
-                </div>
-                <div className="p-[16px] px-[18px] pb-[18px]">
-                  <div className="text-[16px] font-bold text-[#1e1b4b] mb-[6px] font-clash">{ad.title}</div>
-                  <div className="text-[12px] text-[#6b7280] leading-[1.55] mb-[10px] line-clamp-2">{ad.desc}</div>
-                  <div className="flex flex-col gap-[5px] mb-[12px]">
-                    <div className="flex items-center gap-[8px] text-[12px] text-[#374151]"><span className="w-[22px] h-[22px] rounded-[6px] bg-[#f1f5f9] flex items-center justify-center text-[11px] shrink-0">📍</span><span>{ad.location}</span></div>
-                    <div className="flex items-center gap-[8px] text-[12px] text-[#374151]"><span className="w-[22px] h-[22px] rounded-[6px] bg-[#f1f5f9] flex items-center justify-center text-[11px] shrink-0">📅</span><span>{ad.date}</span></div>
+              return (
+                <div key={key} onClick={() => openAdPopup(key)} className="bg-white/88 border-[1.5px] border-[#a5b4fc]/[0.18] rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_3px_16px_rgba(79,70,229,0.06)] hover:-translate-y-[5px] hover:shadow-[0_14px_40px_rgba(79,70,229,0.14)] hover:border-[#6366f1]/30 group">
+                  <div className="relative h-[200px] lg:h-[240px] overflow-hidden">
+                    <img src={ad.img || ad.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <span className={`absolute top-[10px] left-[10px] z-[2] text-[10px] font-bold py-[3px] px-[9px] rounded-[6px] tracking-[0.05em] uppercase border ${badgeCls}`}>{ad.type}</span>
                   </div>
-                  <div className="flex gap-[9px] mt-[4px]">
-                    <button className="flex-1 bg-[#eef2ff] text-[#4f46e5] text-[12px] font-bold py-[8px] px-[16px] rounded-[9px] border-[1.5px] border-[#c7d2fe] cursor-pointer transition-all font-epilogue hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>Contact Admin</button>
+                  <div className="p-[12px] px-[13px] pb-[13px]">
+                    <div className="font-clash text-[14px] font-bold text-[#1e1b4b] mb-[8px] truncate">{ad.title}</div>
+                    <div className="flex flex-wrap gap-[6px] mb-[10px]">
+                      <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#eef2ff] text-[#4338ca] border border-[#c7d2fe]">📅 {new Date(ad.date).toLocaleDateString()}</span>
+                      <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">📍 {ad.location}</span>
+                    </div>
+                    <div className="flex items-center gap-[7px] text-[11.5px] text-[#6b7280] font-semibold mb-[10px]">
+                      <div className="w-[24px] h-[24px] rounded-full bg-[#4f46e5]/10 flex items-center justify-center text-[#4f46e5] text-[9px] font-bold shrink-0">{initials}</div>
+                      <span>{ad.student || ad.studentId}</span>
+                    </div>
+                    <div className="flex gap-[7px]">
+                      {ad.type === 'LOST' || ad.type === 'Lost'
+                        ? <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#eef2ff] text-[#4f46e5] border-[1.5px] border-[#c7d2fe] hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>I Found It</button>
+                        : <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#f0fdf4] text-[#166534] border-[1.5px] border-[#bbf7d0] hover:bg-[#dcfce7] hover:border-[#86efac]" onClick={(e) => e.stopPropagation()}>Claim Mine</button>}
+                      
+                      {(ad.type === 'LOST' || ad.type === 'Lost') && (
+                        <button 
+                          className={`flex-1 text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] border-[1.5px] cursor-pointer transition-all font-epilogue ${selectedLostItemId === key ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
+                          onClick={(e) => { e.stopPropagation(); setSelectedLostItemId(key); }}
+                        >
+                          {selectedLostItemId === key ? 'Selected' : 'Scan'}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )
-          })}
+              );
+            })}
+          </div>
+          <div className="px-[16px] pb-[14px]">
+            <button className="flex items-center justify-center gap-[7px] w-full p-[11px] rounded-[12px] mt-[6px] bg-white/55 border-[1.5px] border-[#a5b4fc]/22 text-[13px] font-semibold text-[#4f46e5] cursor-pointer transition-all font-epilogue hover:border-[#818cf8] hover:bg-[#eef2ff]/90">⬇ Load More Items</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <AIMatchesPanel 
+          lostItemId={selectedLostItemId} 
+          onUpdate={() => setRefreshMatches(prev => prev + 1)}
+        />
+        <div className="mt-4 bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
+          <div className="flex justify-between items-start mb-[12px]">
+            <div>
+              <div className="text-[15px] font-bold text-[#1e1b4b]">🗺️ Nearby Items</div>
+              <div className="text-[11.5px] text-[#6b7280] mt-[2px]">On campus this week</div>
+            </div>
+          </div>
+          {[
+            { img: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=150&fit=crop', title: 'Dell XPS 15', loc: 'Library', type: 'FOUND' },
+            { img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=150&fit=crop', title: 'Samsung S23', loc: 'Cafeteria', type: 'LOST' }
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-[10px] py-[8px] border-b border-gray-100 last:border-0">
+               <img src={item.img} className="w-[40px] h-[40px] rounded-lg object-cover" />
+               <div className="flex-1 min-w-0">
+                 <div className="text-[12px] font-bold truncate">{item.title}</div>
+                 <div className="text-[10px] text-gray-500 truncate">📍 {item.loc}</div>
+               </div>
+               <span className={`text-[8px] font-bold px-2 py-1 rounded-md ${item.type === 'LOST' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>{item.type}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
-        <div className="flex justify-between items-start mb-[12px]"><div className="text-[15px] font-bold text-[#1e1b4b]">🕐 Recent Activity</div></div>
-        {[
-          { icon: '🤖', bg: 'from-[#ede9fe] to-[#c4b5fd]', t: 'New match for Apple Watch', s: 'AI matched 95% — verify now', time: '2m' },
-          { icon: '✅', bg: 'from-[#dcfce7] to-[#86efac]', t: 'Samsung Phone returned!', s: 'Claimed from Science Block', time: '1h' },
-          { icon: '📢', bg: 'from-[#fef3c7] to-[#fde68a]', t: 'Ad expiring in 2 days', s: 'MacBook Air — renew now', time: '3h' }
-        ].map((a, i) => (
-          <div key={i} className="flex items-start gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-            <div className={`w-[33px] h-[33px] rounded-[9px] shrink-0 flex items-center justify-center text-[14px] bg-gradient-to-br ${a.bg}`}>{a.icon}</div>
-            <div className="flex-1"><div className="text-[12.5px] font-semibold text-[#1e1b4b] leading-[1.4]">{a.t}</div><div className="text-[11px] text-[#6b7280] mt-[2px]">{a.s}</div></div>
-            <div className="text-[10.5px] text-[#94a3b8] shrink-0 mt-[2px]">{a.time}</div>
+  );
+};
+
+export const VaultPage = ({ openAdPopup, ads, selectedLostItemId, setSelectedLostItemId, setRefreshMatches }) => {
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) setCurrentUser(JSON.parse(user));
+  }, []);
+
+  const handleDelete = async (e, id, type) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    
+    try {
+      const endpoint = type === 'LOST' || type === 'Lost' ? '/api/lost-items' : '/api/found-items';
+      await axios.delete(`http://localhost:5000${endpoint}/${id}`);
+      toast.success("Post deleted successfully!");
+      if (setRefreshMatches) setRefreshMatches(prev => prev + 1);
+    } catch (err) {
+      toast.error("Failed to delete post.");
+    }
+  };
+
+  const handleEdit = (e, ad) => {
+    e.stopPropagation();
+    navigate('/report-item', { state: { editData: ad } });
+  };
+
+  const myAds = Object.keys(ads).filter(id => {
+    const ad = ads[id];
+    const adStudentId = ad?.studentId || ad?.sid;
+    const currentStudentId = currentUser?.studentId || currentUser?._id;
+    return ad && currentUser && (adStudentId === currentStudentId);
+  });
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
+      <div>
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
+          <div className="flex justify-between items-start mb-[12px]">
+            <div><div className="text-[15px] font-bold text-[#1e1b4b]">📢 My Posted Items</div><div className="text-[11.5px] text-[#6b7280] mt-[2px]">Items you've reported as lost or found</div></div>
+            <button onClick={() => navigate('/report-item', { state: { type: 'lost' } })} className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15">+ New Post</button>
           </div>
-        ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-[18px]">
+            {myAds.length === 0 ? (
+              <div className="col-span-full py-[40px] text-center text-gray-500 text-[14px]">You haven't posted any items yet.</div>
+            ) : (
+              myAds.sort((a,b) => b.localeCompare(a)).map(v => {
+                const ad = ads[v];
+                if (!ad) return null;
+                return (
+                  <div key={v} onClick={() => openAdPopup(v)} className="bg-white border-[1.5px] border-[#a5b4fc]/22 rounded-[22px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_6px_28px_rgba(79,70,229,0.09)] hover:-translate-y-[7px] hover:shadow-[0_22px_56px_rgba(79,70,229,0.18)] hover:border-[#6366f1]/40 group">
+                    <div className="relative h-[250px] lg:h-[300px] overflow-hidden">
+                      <img src={ad.img || ad.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <span className={`absolute top-[14px] left-[14px] z-[2] text-[10.5px] font-bold py-[5px] px-[13px] rounded-[8px] tracking-[0.06em] uppercase backdrop-blur-[10px] ${ad.statusClass || (ad.type==='LOST'?'bg-red-500 text-white':'bg-green-500 text-white')}`}>{ad.status || 'Active'}</span>
+                      <span className={`absolute bottom-[14px] left-[14px] z-[2] text-[10px] font-extrabold py-[4px] px-[11px] rounded-[7px] tracking-[0.08em] uppercase backdrop-blur-[10px] ${ad.typeClass || 'bg-white/40 text-white'}`}>{ad.type}</span>
+                      <div className="absolute top-[14px] right-[14px] z-[10] flex gap-[6px] opacity-0 group-hover:opacity-100 transition-opacity translate-y-[10px] group-hover:translate-y-0 shadow-sm duration-300">
+                        <button onClick={(e) => handleEdit(e, ad)} className="w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center text-[15px] border border-gray-100 hover:bg-gray-50">✏️</button>
+                        <button onClick={(e) => handleDelete(e, ad._id, ad.type)} className="w-[34px] h-[34px] rounded-full bg-white flex items-center justify-center text-[15px] border border-gray-100 hover:bg-red-50">🗑️</button>
+                      </div>
+                    </div>
+                    <div className="p-[16px] px-[18px] pb-[18px]">
+                      <div className="text-[16px] font-bold text-[#1e1b4b] mb-[6px] truncate">{ad.title}</div>
+                      <div className="text-[12px] text-[#6b7280] leading-[1.5] mb-[10px] line-clamp-2">{ad.desc || ad.description}</div>
+                      <div className="flex flex-col gap-[5px] mb-[12px]">
+                        <div className="flex items-center gap-[8px] text-[12px] text-[#374151]"><span className="shrink-0 text-[11px]">📍</span><span>{ad.location}</span></div>
+                        <div className="flex items-center gap-[8px] text-[12px] text-[#374151]"><span className="shrink-0 text-[11px]">📅</span><span>{new Date(ad.date).toLocaleDateString()}</span></div>
+                      </div>
+                      <div className="flex gap-[8px]">
+                        <button className="flex-1 bg-indigo-50 text-indigo-600 text-[11.5px] font-bold py-[8px] rounded-xl border border-indigo-100" onClick={(e) => e.stopPropagation()}>Details</button>
+                        {(ad.type === 'LOST' || ad.type === 'Lost') && (
+                          <button className={`flex-1 text-[11.5px] font-bold py-[8px] rounded-xl border transition-all ${selectedLostItemId === v ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-indigo-600 border-indigo-200'}`} onClick={(e) => { e.stopPropagation(); setSelectedLostItemId(v); }}>
+                            {selectedLostItemId === v ? 'Selected' : 'Scan'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
+          <div className="flex justify-between items-start mb-[12px]"><div className="text-[15px] font-bold text-[#1e1b4b]">🕐 Recent Activity</div></div>
+          {[
+            { icon: '🤖', bg: 'from-[#ede9fe] to-[#c4b5fd]', t: 'AI Match Found', s: '95% match for your Watch', time: '2m' },
+            { icon: '✅', bg: 'from-[#dcfce7] to-[#86efac]', t: 'Post Updated', s: 'Item details saved', time: '10m' }
+          ].map((a, i) => (
+            <div key={i} className="flex items-start gap-[10px] py-[10px] border-b border-gray-50 last:border-0 text-[12px]">
+              <div className={`w-[28px] h-[28px] rounded-lg bg-gradient-to-br flex items-center justify-center ${a.bg}`}>{a.icon}</div>
+              <div className="flex-1"><strong>{a.t}</strong><br/><span className="text-gray-500">{a.s}</span></div>
+              <span className="text-[10px] text-gray-400">{a.time}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 export const AdPopupModal = ({ popupData, closePopup }) => (
   <div className="fixed inset-0 z-[1000] bg-[#0f0a28]/55 backdrop-blur-[6px] flex items-center justify-center" onClick={(e) => { if (e.target === e.currentTarget) closePopup(); }}>
     <div className="bg-white rounded-[26px] w-[94vw] lg:w-[680px] max-h-[90vh] overflow-y-auto shadow-[0_32px_80px_rgba(15,10,40,0.35)] transform transition-transform">
@@ -358,20 +409,26 @@ export const AdPopupModal = ({ popupData, closePopup }) => (
           <div className="font-clash text-[22px] font-bold text-[#1e1b4b]">{popupData.title}</div>
           <button className="w-[34px] h-[34px] rounded-full bg-[#f1f5f9] border-none cursor-pointer text-[16px] flex items-center justify-center shrink-0 transition-colors text-[#374151] hover:bg-[#e2e8f0]" onClick={closePopup}>✕</button>
         </div>
-        <p className="text-[13.5px] text-[#4b5563] leading-[1.65] mb-[18px]">{popupData.desc}</p>
+        <p className="text-[13.5px] text-[#4b5563] leading-[1.65] mb-[18px]">{popupData.desc || popupData.description}</p>
         <div className="bg-[#f8fafc] rounded-[16px] py-[18px] px-[20px] mb-[20px] border border-[#e2e8f0]">
           <div className="text-[11px] font-extrabold tracking-[0.1em] uppercase text-[#94a3b8] mb-[14px]">Advertisement Details</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px]">
-            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#eef2ff]">👤</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Student</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.student}</div></div></div>
-            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#f0fdf4]">📞</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Contact</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.phone}</div></div></div>
+            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#eef2ff]">👤</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Student</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.student || popupData.studentId}</div></div></div>
+            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#f0fdf4]">📞</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Contact</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.phone || popupData.contactNumber}</div></div></div>
             <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#fffbeb]">📍</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Location</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.location}</div></div></div>
           </div>
         </div>
         <div className="flex gap-[10px]">
           {popupData.source === 'vault' && <button className="flex-1 py-[12px] px-[18px] rounded-[12px] cursor-pointer font-epilogue text-[13px] font-bold bg-[#eef2ff] text-[#4338ca] border-[1.5px] border-[#c7d2fe] transition-colors hover:bg-[#e0e7ff] hover:border-[#a5b4fc]">Contact Admin</button>}
-          {popupData.source !== 'vault' && <a href={`https://wa.me/${popupData.phone.replace(/\D/g, '')}`} target="_blank" className="flex-1 py-[12px] px-[18px] rounded-[12px] cursor-pointer font-epilogue text-[13px] font-bold bg-[#25d366] text-white border-none transition-all shadow-[0_4px_14px_rgba(37,211,102,0.35)] hover:bg-[#1ebe5d] hover:shadow-[0_6px_20px_rgba(37,211,102,0.5)] hover:-translate-y-[1px] inline-flex items-center justify-center gap-[8px] no-underline">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L.057 23.926a.5.5 0 0 0 .608.632l6.288-1.643A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.875 9.875 0 0 1-5.031-1.378l-.36-.214-3.733.976.999-3.648-.235-.374A9.861 9.861 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118S21.882 6.533 21.882 12 17.467 21.882 12 21.882z" /></svg> WhatsApp
-          </a>}
+          {popupData.source !== 'vault' && (
+            <a 
+              href={`https://wa.me/${(popupData.phone || popupData.contactNumber || '').replace(/\D/g, '')}`} 
+              target="_blank" 
+              className="flex-1 py-[12px] px-[18px] rounded-[12px] cursor-pointer font-epilogue text-[13px] font-bold bg-[#25d366] text-white border-none transition-all shadow-[0_4px_14px_rgba(37,211,102,0.35)] hover:bg-[#1ebe5d] hover:shadow-[0_6px_20px_rgba(37,211,102,0.5)] hover:-translate-y-[1px] inline-flex items-center justify-center gap-[8px] no-underline"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.855L.057 23.926a.5.5 0 0 0 .608.632l6.288-1.643A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.882a9.875 9.875 0 0 1-5.031-1.378l-.36-.214-3.733.976.999-3.648-.235-.374A9.861 9.861 0 0 1 2.118 12C2.118 6.533 6.533 2.118 12 2.118S21.882 6.533 21.882 12 17.467 21.882 12 21.882z" /></svg> WhatsApp
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -651,9 +708,57 @@ export default function LostFoundDashboard({ ads }) {
   const [popupData, setPopupData] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportModalType, setReportModalType] = useState('lost');
+  const [selectedLostItemId, setSelectedLostItemId] = useState(null); // For scanning
+  const [refreshMatches, setRefreshMatches] = useState(0);
+  const [allAds, setAllAds] = useState(ads || {});
+
+  useEffect(() => {
+    const fetchRealItems = async () => {
+      try {
+        const [lostRes, foundRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/lost-items'),
+          axios.get('http://localhost:5000/api/found-items')
+        ]);
+
+        const realAds = {};
+        
+        // Process lost items
+        lostRes.data.forEach(item => {
+          realAds[item._id] = {
+            ...item,
+            img: item.imageUrl,
+            type: "LOST",
+            status: "Active",
+            statusClass: "bg-[rgba(239,68,68,0.88)] text-white",
+            typeClass: "bg-[rgba(239,68,68,0.88)] text-white"
+          };
+        });
+
+        // Process found items
+        foundRes.data.forEach(item => {
+          realAds[item._id] = {
+            ...item,
+            img: item.imageUrl,
+            type: "FOUND",
+            status: "Active",
+            statusClass: "bg-[rgba(16,185,129,0.88)] text-white",
+            typeClass: "bg-[rgba(16,185,129,0.88)] text-white"
+          };
+        });
+
+        setAllAds(prev => ({ ...prev, ...realAds }));
+      } catch (err) {
+        console.error("Error fetching real items:", err);
+      }
+    };
+
+    fetchRealItems();
+  }, [refreshMatches]);
+
+  const displayAds = allAds;
 
   const openAdPopup = (id, source = 'feed') => {
-    setPopupData({ ...ads[id], uid: id, source });
+    setPopupData({ ...displayAds[id], uid: id, source });
     document.body.style.overflow = 'hidden';
   };
 
@@ -721,7 +826,17 @@ export default function LostFoundDashboard({ ads }) {
                 <div className="text-[17px] font-bold leading-[1.2] mb-[4px] font-clash tracking-wide drop-shadow-sm">AI Match Scan</div>
                 <div className="text-[12px] text-blue-100/90 leading-[1.3] font-medium">Let AI find matches for your report</div>
               </div>
-              <button className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/10 hover:bg-white/20 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm">Scan Now →</button>
+              <button onClick={() => {
+                // For demo/UX: if no item selected, tell user to go to vault
+                if (!selectedLostItemId) {
+                  setActiveTab('vault');
+                  toast.info("Please select one of your lost items to scan matches for.");
+                } else {
+                  // In a real flow, the scan is handled inside AIMatchesPanel
+                  // This button could scroll there
+                  document.querySelector('.ai-matches-panel')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }} className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/10 hover:bg-white/20 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm cursor-pointer">Scan Now →</button>
             </div>
           </div>
 
@@ -765,7 +880,22 @@ export default function LostFoundDashboard({ ads }) {
             <button onClick={() => setActiveTab('vault')} className={`font-epilogue text-[13.5px] font-bold py-[9px] px-[22px] rounded-t-[10px] border-none cursor-pointer border-b-[2px] -mb-[2px] transition-colors ${activeTab === 'vault' ? 'text-[#4f46e5] border-b-[#4f46e5] bg-[#6366f1]/[0.07]' : 'text-[#6b7280] border-b-transparent bg-transparent hover:text-[#6366f1] hover:bg-[#6366f1]/[0.04]'}`}>🗄️ My Vault</button>
           </div>
 
-          {activeTab === 'feed' ? <FeedPage openAdPopup={openAdPopup} ads={ads} /> : <VaultPage openAdPopup={openAdPopup} ads={ads} />}
+          {activeTab === 'feed' ? (
+            <FeedPage 
+              openAdPopup={openAdPopup} 
+              ads={displayAds} 
+              selectedLostItemId={selectedLostItemId} 
+              setRefreshMatches={setRefreshMatches} 
+            />
+          ) : (
+            <VaultPage 
+              openAdPopup={openAdPopup} 
+              ads={displayAds} 
+              selectedLostItemId={selectedLostItemId} 
+              setSelectedLostItemId={setSelectedLostItemId} 
+              setRefreshMatches={setRefreshMatches}
+            />
+          )}
         </div>
       </main>
 

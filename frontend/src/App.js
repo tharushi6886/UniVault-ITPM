@@ -34,6 +34,7 @@ import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
 import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
+import LostFoundForm from "./Components/Dashboard/LostFoundForm";
 
 import { initialAdData } from "./data/mockAds";
 
@@ -54,6 +55,7 @@ function App() {
         <Route path="/delivery" element={<Deliveryinfo />} />
         <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
         <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
         <Route path="/purchasedone" element={<PurchaseDone />} />
 
         <Route path="/login" element={<LoginPage />} />
