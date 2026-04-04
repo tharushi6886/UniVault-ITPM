@@ -48,6 +48,9 @@ const Marketplace = () => {
                     <Link to="/marketplace" className="inline-block bg-white/15 backdrop-blur-md border-[1.5px] border-white/30 text-white font-epilogue font-semibold text-[14px] py-2.5 px-6 rounded-xl cursor-pointer transition-all duration-200 hover:bg-white/25 hover:border-white/50 hover:-translate-y-[1px] reveal whitespace-nowrap no-underline">
                         Explore Full Marketplace →
                     </Link>
+                    <button className="bg-white/15 backdrop-blur-md border-[1.5px] border-white/30 text-white font-epilogue font-semibold text-[14px] py-2.5 px-6 rounded-xl cursor-pointer transition-all duration-200 hover:bg-white/25 hover:border-white/50 hover:-translate-y-[1px] reveal whitespace-nowrap">
+                        Explore Full Marketplace →
+                    </button>
                 </div>
             </div>
             <div className="relative z-[2] overflow-x-auto overflow-y-hidden cursor-grab scrollbar-hide" ref={wrapRef}>

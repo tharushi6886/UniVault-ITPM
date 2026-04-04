@@ -99,6 +99,9 @@ const Hero = () => {
                     <Link to="/marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-0.5 no-underline">
                         🛍️ Explore Marketplace
                     </Link>
+                    <a href="#marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-0.5 no-underline">
+                        🛍️ Explore Marketplace
+                    </a>
                 </div>
             </div>
 
