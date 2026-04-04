@@ -1,10 +1,20 @@
 const mongoose = require("mongoose");
 
 const LostSchema = new mongoose.Schema({
+  name: {
+    type:String,
+    required:true
+  },
 
-  studentID: {
+  StudentId: {
     type: String,
     required: true
+  },
+
+  itemType: {
+    type: String,
+    required: true,
+    enum: ["Lost", "Found"]
   },
 
   title: {
@@ -22,12 +32,12 @@ const LostSchema = new mongoose.Schema({
     required: true
   },
 
-  locationLost: {
+  location: {
     type: String,
     required: true
   },
 
-  dateLost: {
+  date: {
     type: Date,
     required: true
   },
@@ -42,15 +52,18 @@ const LostSchema = new mongoose.Schema({
     required: true
   },
 
+  imageUrl: {
+    type: String
+  },
+
   status: {
     type: String,
     default: "Active"
   },
 
-  expiryDate: {
-    type: Date
-  }
+
 
 }, { timestamps: true });
+
 
 module.exports = mongoose.model("Lost", LostSchema);
