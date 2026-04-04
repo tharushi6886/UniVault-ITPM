@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Homepage from "./features/homepage/pages/Homepage";
+import AboutPage from "./features/homepage/pages/AboutPage";
 
 import Dashboard from "./features/marketplace/pages/Dashboard";
 import ItemDetails from "./features/marketplace/pages/ItemDetails";
@@ -32,9 +33,8 @@ import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
+import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
 
-import LostFoundDashboard from "./features/lostFoundManagement/pages/LostFoundDashboard";
-import LostFoundForm from "./features/lostAndFound/components/LostFoundForm";
 import { initialAdData } from "./data/mockAds";
 
 function App() {
@@ -44,6 +44,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/marketplace" element={<Dashboard />} />
         <Route path="/item/:id" element={<ItemDetails />} />
         <Route path="/myitems" element={<Myitems />} />
@@ -51,6 +52,8 @@ function App() {
         <Route path="/bidding" element={<Bid />} />
         <Route path="/massage" element={<Massage />} />
         <Route path="/delivery" element={<Deliveryinfo />} />
+        <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
         <Route path="/purchasedone" element={<PurchaseDone />} />
 
         <Route path="/login" element={<LoginPage />} />
@@ -155,9 +158,6 @@ function App() {
             </AdminRoute>
           }
         />
-
-        <Route path="/lost-found" element={<LostFoundDashboard ads={ads} />} />
-        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} />
