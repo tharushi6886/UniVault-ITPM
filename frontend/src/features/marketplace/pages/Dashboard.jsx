@@ -56,7 +56,7 @@ const Dashboard = () => {
 
       {/* NAVBAR */}
       <nav className="bg-white border-b border-gray-200 px-8 flex items-center h-[66px] sticky top-0 z-50">
-        <div className="flex items-center gap-2.5 flex-shrink-0 mr-7">
+        <div className="flex items-center gap-2.5 flex-shrink-0 mr-7 cursor-pointer" onClick={() => navigate('/')}>
           <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white">UV</div>
           <div className="font-syne font-bold text-xl text-gray-900 hidden lg:block">UniVault</div>
         </div>
@@ -70,6 +70,7 @@ const Dashboard = () => {
                 else if (link.name === 'Orders') navigate('/orders');
                 else if (link.name === 'Biddings') navigate('/bidding');
                 else if (link.name === 'Messages') navigate('/massage');
+                else if (link.name === 'Home') navigate('/');
                 else setActiveNav(link.name);
               }}
               className={`relative flex items-center gap-1.5 py-2 px-3 rounded-lg text-[13.5px] transition-all whitespace-nowrap 
@@ -203,7 +204,7 @@ const Dashboard = () => {
       <div className="max-w-[1320px] mx-auto px-10">
         {/* BREADCRUMB */}
         <div className="py-3.5 text-[13px] text-gray-500 flex items-center gap-1.5">
-          <a href="#" className="hover:text-indigo-btn transition">Home</a>
+          <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} className="hover:text-indigo-btn transition">Home</a>
           <span>/</span>
           <span className="text-indigo-btn font-medium">Marketplace</span>
         </div>

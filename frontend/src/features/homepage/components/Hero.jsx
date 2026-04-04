@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const NODE_DATA = [
     { id: 'node1', wave: 0, t: 0.18, iconClass: 'bg-gradient-to-br from-[#4f46e5] to-[#6366f1] shadow-[0_4px_12px_rgba(79,70,229,0.4)]', icon: '🔍', label: 'LOST ITEM SEARCH', sub: 'Scanning 12K+ records...', badgeClass: 'bg-[#e0e7ff] text-[#3730a3] border border-[#c7d2fe]', badge: 'LIVE' },
@@ -95,9 +96,9 @@ const Hero = () => {
                     <a href="#lost" className="flex items-center gap-2 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white border-none font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_6px_24px_rgba(79,70,229,0.4)] transition-all duration-250 hover:-translate-y-0.5 hover:shadow-[0_10px_36px_rgba(79,70,229,0.52)] no-underline">
                         🔍 Report Lost Item
                     </a>
-                    <a href="#marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-0.5 no-underline">
+                    <Link to="/marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-0.5 no-underline">
                         🛍️ Explore Marketplace
-                    </a>
+                    </Link>
                 </div>
             </div>
 

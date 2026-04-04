@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -7,6 +8,15 @@ const Navbar = () => {
         window.addEventListener('scroll', fn);
         return () => window.removeEventListener('scroll', fn);
     }, []);
+
+    const navLinks = [
+        { name: 'Home', path: '#home', isScroll: true },
+        { name: 'Lost Items', path: '#lost', isScroll: true },
+        { name: 'Found Items', path: '#found', isScroll: true },
+        { name: 'Marketplace', path: '/marketplace', isScroll: false },
+        { name: 'Bidding', path: '/bidding', isScroll: false },
+        { name: 'About', path: '#about', isScroll: true }
+    ];
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-16 py-4 transition-all duration-300 ${scrolled
@@ -22,11 +32,17 @@ const Navbar = () => {
                 </span>
             </div>
             <ul className="flex gap-8 list-none m-0 p-0">
-                {['Home', 'Lost Items', 'Found Items', 'Marketplace', 'Bidding', 'About'].map(l => (
-                    <li key={l}>
-                        <a href="#home" className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue">
-                            {l}
-                        </a>
+                {navLinks.map(l => (
+                    <li key={l.name}>
+                        {l.isScroll ? (
+                            <a href={l.path} className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue">
+                                {l.name}
+                            </a>
+                        ) : (
+                            <Link to={l.path} className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue">
+                                {l.name}
+                            </Link>
+                        )}
                     </li>
                 ))}
             </ul>

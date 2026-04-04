@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 // Hooks
 function useCarouselDrag(ref) {
@@ -44,9 +45,9 @@ const Marketplace = () => {
                         <h2 className="font-clash text-[clamp(26px,3vw,40px)] tracking-[-0.03em] font-bold text-white mb-3 reveal">Shop Safe From Fellow Students</h2>
                         <p className="font-epilogue text-[14px] text-white/55 leading-[1.7] mt-1 reveal">All sellers are identity-verified. Zero scams guaranteed.</p>
                     </div>
-                    <button className="bg-white/15 backdrop-blur-md border-[1.5px] border-white/30 text-white font-epilogue font-semibold text-[14px] py-2.5 px-6 rounded-xl cursor-pointer transition-all duration-200 hover:bg-white/25 hover:border-white/50 hover:-translate-y-[1px] reveal whitespace-nowrap">
+                    <Link to="/marketplace" className="inline-block bg-white/15 backdrop-blur-md border-[1.5px] border-white/30 text-white font-epilogue font-semibold text-[14px] py-2.5 px-6 rounded-xl cursor-pointer transition-all duration-200 hover:bg-white/25 hover:border-white/50 hover:-translate-y-[1px] reveal whitespace-nowrap no-underline">
                         Explore Full Marketplace →
-                    </button>
+                    </Link>
                 </div>
             </div>
             <div className="relative z-[2] overflow-x-auto overflow-y-hidden cursor-grab scrollbar-hide" ref={wrapRef}>

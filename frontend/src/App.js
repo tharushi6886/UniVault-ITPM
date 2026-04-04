@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import Homepage from "./features/homepage/pages/Homepage";
 import Dashboard from "./features/marketplace/pages/Dashboard";
 import ItemDetails from "./features/marketplace/pages/ItemDetails";
 import Myitems from "./features/marketplace/pages/Myitems";
@@ -14,7 +15,8 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Homepage />} />
+        <Route path="/marketplace" element={<Dashboard />} />
         <Route path="/item/:id" element={<ItemDetails />} />
         <Route path="/myitems" element={<Myitems />} />
         <Route path="/orders" element={<OrderPage />} />
