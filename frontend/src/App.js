@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Homepage from "./Components/Homepage/Homepage";
-import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
-import LostFoundForm from "./Components/Dashboard/LostFoundForm";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AdminDashboard from "./features/lostAndFound/pages/AdminDashboard";
+import LostFoundDashboard from "./features/lostAndFound/pages/LostFoundDashboard";
+import Homepage from "./features/homepage/pages/Homepage";
 import { initialAdData } from "./data/mockAds";
 
-function App() {
-  const [ads, setAds] = useState(initialAdData);
-
+export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Homepage />} />
-      <Route path="/lost-found" element={<LostFoundDashboard ads={ads} />} />
-      <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
-    </Routes>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/lost-found" element={<LostFoundDashboard ads={initialAdData} />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

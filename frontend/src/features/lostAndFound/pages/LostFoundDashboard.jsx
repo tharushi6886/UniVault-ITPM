@@ -1,104 +1,105 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 
 
 export const Sidebar = () => (
   <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
-    <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
+    <Link to="/" className="flex items-center gap-[12px] py-[24px] px-[24px] no-underline">
       <div className="flex items-center justify-center w-[36px] h-[36px] bg-[#4f46e5] rounded-[10px]">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
       </div>
       <span className="text-[20px] font-bold text-[#1e1b4b]">UniVault</span>
-    </div>
-    
+    </Link>
+
     <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
       <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
+
+      <Link to="/lost-found" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
         </span>
         Dashboard
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+      </Link>
+
+      <Link to="/lost-found" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
         </span>
         Lost Items
         <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">3</span>
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+      </Link>
+
+      <Link to="/lost-found" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
         </span>
         Found Items
-      </a>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+      </Link>
+
+      <Link to="/lost-found" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10" /><path d="M12 8v4l3 3" /><path d="M18.5 2.5l2 2L17 8" /></svg>
         </span>
         AI Matches
         <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-blue-500">2</span>
-      </a>
+      </Link>
 
       <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">My Content</div>
-      
-      <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+
+      <Link to="/lost-found" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>
         </span>
         My Vault
-      </a>
-      
+      </Link>
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>
         </span>
         Campus Map
       </a>
-      
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
         </span>
         Notifications
         <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">5</span>
       </a>
-      
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
         </span>
         Messages
       </a>
 
       <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">More</div>
-      
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
         </span>
         Marketplace
       </a>
-      
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z" /><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" /><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z" /><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z" /><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z" /><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" /><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z" /><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z" /></svg>
         </span>
         Bidding
       </a>
-      
+
       <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
         <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
         </span>
         Settings
       </a>
     </nav>
-    
+
     <div className="flex items-center gap-[12px] p-[20px] border-t border-gray-200 mt-auto">
       <div className="w-[40px] h-[40px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[14px] text-white font-bold shrink-0">JD</div>
       <div className="flex-1 overflow-hidden">
@@ -111,7 +112,7 @@ export const Sidebar = () => (
 );
 
 const bgImgCls = "absolute rounded-[18px] overflow-hidden shadow-[0_28px_60px_rgba(10,5,40,0.55),0_8px_24px_rgba(10,5,40,0.4)] border-2 border-white/20 pointer-events-auto cursor-pointer transition-transform hover:z-[6] hover:scale-105 hover:-translate-y-[10px] origin-center";
-export const Topbar = () => (
+export const Topbar = ({ searchTerm, setSearchTerm }) => (
   <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[200px] lg:h-[310px] z-[200] overflow-hidden bg-gradient-to-br from-[#5b21b6] via-[#4338ca] via-[#4f46e5] via-[#2563eb] to-[#1d4ed8]">
     <div className="absolute inset-0 z-[1] pointer-events-none hidden lg:block">
       <div className={`${bgImgCls} w-[210px] h-[155px] top-[30px] left-[-20px] -rotate-[13deg] z-[3]`}><img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=360&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
@@ -144,7 +145,7 @@ export const Topbar = () => (
       <div className="text-[14px] text-white/75 leading-[1.6] max-w-[380px] mb-[20px]">Smart AI-powered campus hub to report, match and recover lost belongings.</div>
       <div className="flex items-center bg-white/20 backdrop-blur-[20px] border-[1.5px] border-white/40 rounded-[14px] p-[5px] pl-[16px] max-w-[420px] transition-all focus-within:bg-white/25 focus-within:border-white/65">
         <span className="text-white/65 text-[14px] shrink-0">🔍</span>
-        <input type="text" placeholder="Search for items, locations, brands…" className="flex-1 bg-transparent border-none outline-none text-[14px] text-white font-epilogue py-[7px] px-[8px] placeholder:text-white/55" />
+        <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search for items, locations, brands…" className="flex-1 bg-transparent border-none outline-none text-[14px] text-white font-epilogue py-[7px] px-[8px] placeholder:text-white/55" />
         <button className="bg-white text-[#4f46e5] border-none rounded-[10px] font-epilogue text-[13px] font-bold py-[10px] px-[20px] cursor-pointer shadow-[0_3px_14px_rgba(10,5,40,0.22)] transition-transform hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(10,5,40,0.32)]">Search</button>
       </div>
     </div>
@@ -161,135 +162,144 @@ export const Topbar = () => (
     </div>
   </header>
 );
-export const FeedPage = ({ openAdPopup, ads }) => (
-  <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] !px-0 !pb-0 overflow-hidden">
-        <div className="flex justify-between items-start mb-[12px] px-[16px]">
-          <div>
-            <div className="text-[15px] font-bold text-[#1e1b4b]">📋 Campus Lost & Found Board</div>
-            <div className="text-[11.5px] text-[#6b7280] mt-[2px]">All items reported by students</div>
+export const FeedPage = ({ openAdPopup, ads }) => {
+  const [filterType, setFilterType] = useState('All');
+
+  const filteredFeedAds = Object.keys(ads).filter(key => {
+    if (!ads[key]) return false;
+    if (filterType === 'All') return true;
+    return ads[key].type.toUpperCase() === filterType.toUpperCase();
+  });
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
+      <div>
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] !px-0 !pb-0 overflow-hidden">
+          <div className="flex justify-between items-start mb-[12px] px-[16px]">
+            <div>
+              <div className="text-[15px] font-bold text-[#1e1b4b]">📋 Campus Lost & Found Board</div>
+              <div className="text-[11.5px] text-[#6b7280] mt-[2px]">All items reported by students</div>
+            </div>
+            <div className="flex gap-[6px]">
+              <button onClick={() => setFilterType('All')} className={`text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer font-epilogue transition-all ${filterType === 'All' ? 'border border-transparent bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(79,70,229,0.28)]' : 'border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] hover:border-[#818cf8] hover:text-[#4f46e5]'}`}>All</button>
+              <button onClick={() => setFilterType('Lost')} className={`text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer font-epilogue transition-all ${filterType === 'Lost' ? 'border border-transparent bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(79,70,229,0.28)]' : 'border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] hover:border-[#818cf8] hover:text-[#4f46e5]'}`}>Lost</button>
+              <button onClick={() => setFilterType('Found')} className={`text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer font-epilogue transition-all ${filterType === 'Found' ? 'border border-transparent bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(79,70,229,0.28)]' : 'border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] hover:border-[#818cf8] hover:text-[#4f46e5]'}`}>Found</button>
+            </div>
           </div>
-          <div className="flex gap-[6px]">
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border border-transparent font-epilogue transition-all bg-gradient-to-br from-[#4f46e5] to-[#6366f1] text-white shadow-[0_3px_10px_rgba(79,70,229,0.28)]">All</button>
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] font-epilogue transition-all hover:border-[#818cf8] hover:text-[#4f46e5]">Lost</button>
-            <button className="text-[12px] font-semibold py-[6px] px-[16px] rounded-full cursor-pointer border-[1.5px] border-[#a5b4fc]/28 bg-white/60 text-[#6b7280] font-epilogue transition-all hover:border-[#818cf8] hover:text-[#4f46e5]">Found</button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[14px] px-[16px] pb-[16px]">
+            {filteredFeedAds.map((key, i) => {
+              const ad = ads[key];
+              const bgColors = ['from-[#4f46e5] to-[#818cf8]', 'from-[#7c3aed] to-[#a78bfa]', 'from-[#059669] to-[#34d399]', 'from-[#0ea5e9] to-[#38bdf8]', 'from-[#dc2626] to-[#f87171]'];
+              const bg = bgColors[i % bgColors.length];
+              const initials = ad.student ? ad.student.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
+              const badgeCls = ad.type === 'LOST' || ad.type.includes('LOST') ? 'bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22' : 'bg-[#10b981]/11 text-[#059669] border-[#10b981]/22';
+              const time = key.startsWith('ad_') ? 'Just now' : `${(i * 3) + 9} min ago`;
+
+              return (
+                <div key={key} onClick={() => openAdPopup(key)} className="bg-white/88 border-[1.5px] border-[#a5b4fc]/[0.18] rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_3px_16px_rgba(79,70,229,0.06)] hover:-translate-y-[5px] hover:shadow-[0_14px_40px_rgba(79,70,229,0.14)] hover:border-[#6366f1]/30 group">
+                  <div className="relative h-[200px] lg:h-[240px] overflow-hidden">
+                    <img src={ad.img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <span className={`absolute top-[10px] left-[10px] z-[2] text-[10px] font-bold py-[3px] px-[9px] rounded-[6px] tracking-[0.05em] uppercase border ${badgeCls}`}>{ad.type.split(' ')[0]}</span>
+                    <span className="absolute bottom-[10px] right-[10px] z-[2] bg-black/55 backdrop-blur-[8px] text-white text-[10px] font-bold py-[3px] px-[9px] rounded-full">{time}</span>
+                  </div>
+                  <div className="p-[12px] px-[13px] pb-[13px]">
+                    <div className="font-clash text-[14px] font-bold text-[#1e1b4b] mb-[8px] truncate">{ad.title}</div>
+                    <div className="flex flex-wrap gap-[6px] mb-[10px]">
+                      <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#eef2ff] text-[#4338ca] border border-[#c7d2fe]">📅 {ad.date}</span>
+                      <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">📍 {ad.location}</span>
+                    </div>
+                    <div className="flex items-center gap-[7px] text-[11.5px] text-[#6b7280] font-semibold mb-[10px]">
+                      <div className={`w-[24px] h-[24px] rounded-full bg-gradient-to-br flex items-center justify-center text-white text-[9px] font-bold shrink-0 ${bg}`}>{initials}</div>
+                      <span>{ad.student} · {ad.year}</span>
+                    </div>
+                    <div className="flex gap-[7px]">
+                      {ad.type === 'LOST' || ad.type.includes('LOST')
+                        ? <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#eef2ff] text-[#4f46e5] border-[1.5px] border-[#c7d2fe] hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>I Found It →</button>
+                        : <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#f0fdf4] text-[#166534] border-[1.5px] border-[#bbf7d0] hover:bg-[#dcfce7] hover:border-[#86efac]" onClick={(e) => e.stopPropagation()}>Claim Mine →</button>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="px-[16px] pb-[14px]">
+            <button className="flex items-center justify-center gap-[7px] w-full p-[11px] rounded-[12px] mt-[6px] bg-white/55 border-[1.5px] border-[#a5b4fc]/22 text-[13px] font-semibold text-[#4f46e5] cursor-pointer transition-all font-epilogue hover:border-[#818cf8] hover:bg-[#eef2ff]/90">⬇ Load More Items</button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[14px] px-[16px] pb-[16px]">
-          {Object.keys(ads).map((key, i) => {
-            const ad = ads[key];
-            if (!ad) return null;
-            const bgColors = ['from-[#4f46e5] to-[#818cf8]', 'from-[#7c3aed] to-[#a78bfa]', 'from-[#059669] to-[#34d399]', 'from-[#0ea5e9] to-[#38bdf8]', 'from-[#dc2626] to-[#f87171]'];
-            const bg = bgColors[i % bgColors.length];
-            const initials = ad.student ? ad.student.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
-            const badgeCls = ad.type === 'LOST' || ad.type.includes('LOST') ? 'bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22' : 'bg-[#10b981]/11 text-[#059669] border-[#10b981]/22';
-            const time = key.startsWith('ad_') ? 'Just now' : `${(i * 3) + 9} min ago`;
+      </div>
 
-            return (
-              <div key={key} onClick={() => openAdPopup(key)} className="bg-white/88 border-[1.5px] border-[#a5b4fc]/[0.18] rounded-[16px] overflow-hidden cursor-pointer transition-all duration-300 shadow-[0_3px_16px_rgba(79,70,229,0.06)] hover:-translate-y-[5px] hover:shadow-[0_14px_40px_rgba(79,70,229,0.14)] hover:border-[#6366f1]/30 group">
-                <div className="relative h-[200px] lg:h-[240px] overflow-hidden">
-                  <img src={ad.img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <span className={`absolute top-[10px] left-[10px] z-[2] text-[10px] font-bold py-[3px] px-[9px] rounded-[6px] tracking-[0.05em] uppercase border ${badgeCls}`}>{ad.type.split(' ')[0]}</span>
-                  <span className="absolute bottom-[10px] right-[10px] z-[2] bg-black/55 backdrop-blur-[8px] text-white text-[10px] font-bold py-[3px] px-[9px] rounded-full">{time}</span>
-                </div>
-                <div className="p-[12px] px-[13px] pb-[13px]">
-                  <div className="font-clash text-[14px] font-bold text-[#1e1b4b] mb-[8px] truncate">{ad.title}</div>
-                  <div className="flex flex-wrap gap-[6px] mb-[10px]">
-                    <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#eef2ff] text-[#4338ca] border border-[#c7d2fe]">📅 {ad.date}</span>
-                    <span className="text-[11px] font-semibold py-[4px] px-[10px] rounded-[8px] inline-flex items-center gap-[4px] bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">📍 {ad.location}</span>
-                  </div>
-                  <div className="flex items-center gap-[7px] text-[11.5px] text-[#6b7280] font-semibold mb-[10px]">
-                    <div className={`w-[24px] h-[24px] rounded-full bg-gradient-to-br flex items-center justify-center text-white text-[9px] font-bold shrink-0 ${bg}`}>{initials}</div>
-                    <span>{ad.student} · {ad.year}</span>
-                  </div>
-                  <div className="flex gap-[7px]">
-                    {ad.type === 'LOST' || ad.type.includes('LOST')
-                      ? <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#eef2ff] text-[#4f46e5] border-[1.5px] border-[#c7d2fe] hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>I Found It →</button>
-                      : <button className="flex-1 font-epilogue text-[11.5px] font-bold py-[7px] px-[10px] rounded-[9px] cursor-pointer transition-colors whitespace-nowrap bg-[#f0fdf4] text-[#166534] border-[1.5px] border-[#bbf7d0] hover:bg-[#dcfce7] hover:border-[#86efac]" onClick={(e) => e.stopPropagation()}>Claim Mine →</button>}
-                  </div>
-                </div>
+      <div>
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] mb-[12px]">
+          <div className="flex justify-between items-start mb-[12px]">
+            <div><div className="text-[15px] font-bold text-[#1e1b4b]">🤖 AI Matches</div><div className="text-[11.5px] text-[#6b7280] mt-[2px]">Possible matches</div></div>
+            <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">View All</button>
+          </div>
+          {(['1', '2']).map(i => (
+            <div key={i} className="bg-gradient-to-br from-[#4f46e5]/[0.06] to-[#8b5cf6]/[0.05] border-[1.5px] border-[#6366f1]/20 rounded-[16px] p-[15px] mb-[12px] last:mb-0 cursor-pointer transition-all hover:border-[#6366f1]/40 hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(79,70,229,0.12)]">
+              <div className="flex justify-between items-start mb-[11px]">
+                <div><div className="text-[10px] font-bold text-[#6b7280] uppercase tracking-[0.06em]">Lost Report</div><div className="text-[13.5px] font-bold text-[#1e1b4b] mt-[2px]">{i === '1' ? 'Apple Watch Series 7' : 'Blue Folder (Bio 101)'}</div><div className="text-[11px] text-[#6b7280] mt-[2px]">📍 Library</div></div>
+                <div className="font-clash text-[26px] font-bold text-[#4f46e5] leading-none text-right">{i === '1' ? '95%' : '78%'}<small className="text-[11px] text-[#6b7280] font-epilogue font-medium block">MATCH</small></div>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-[8px] mb-[11px]">
+                <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=130&fit=crop'} />
+                <div className="text-[#818cf8] text-[18px] shrink-0">⟷</div>
+                <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1600267185393-1b14be5afa09?w=200&h=130&fit=crop'} />
+              </div>
+              <div className="flex gap-[7px]">
+                <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-[#6366f1]/[0.09] text-[#4f46e5] border border-[#6366f1]/20 hover:bg-[#6366f1]/[0.18]">Compare</button>
+                <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white shadow-[0_2px_8px_rgba(79,70,229,0.28)] hover:shadow-[0_4px_14px_rgba(79,70,229,0.44)]">Verify Match →</button>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="px-[16px] pb-[14px]">
-          <button className="flex items-center justify-center gap-[7px] w-full p-[11px] rounded-[12px] mt-[6px] bg-white/55 border-[1.5px] border-[#a5b4fc]/22 text-[13px] font-semibold text-[#4f46e5] cursor-pointer transition-all font-epilogue hover:border-[#818cf8] hover:bg-[#eef2ff]/90">⬇ Load More Items</button>
+
+        <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
+          <div className="flex justify-between items-start mb-[12px]">
+            <div>
+              <div className="text-[15px] font-bold text-[#1e1b4b]">🗺️ Nearby Items</div>
+              <div className="text-[11.5px] text-[#6b7280] mt-[2px]">On campus this week</div>
+            </div>
+            <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">Map View</button>
+          </div>
+
+          <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+            <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=150&fit=crop" alt="Dell" />
+            <div className="flex-1 overflow-hidden">
+              <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
+              <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Dell XPS 15</div>
+              <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Library · 0.3km</div>
+              <div className="text-[10px] text-[#9ca3af] mt-[2px]">5 hours ago</div>
+            </div>
+            <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
+          </div>
+
+          <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+            <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=150&fit=crop" alt="Phone" />
+            <div className="flex-1 overflow-hidden">
+              <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">LOST</span></div>
+              <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Samsung Galaxy S23</div>
+              <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Cafeteria · 0.5km</div>
+              <div className="text-[10px] text-[#9ca3af] mt-[2px]">2 hours ago</div>
+            </div>
+            <button className="self-center shrink-0 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(79,70,229,0.25)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-all cursor-pointer">View</button>
+          </div>
+
+          <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
+            <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=150&fit=crop" alt="AirPods" />
+            <div className="flex-1 overflow-hidden">
+              <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
+              <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">AirPods (2nd gen)</div>
+              <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Sports Complex · 0.3km</div>
+              <div className="text-[10px] text-[#9ca3af] mt-[2px]">8 hours ago</div>
+            </div>
+            <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
+          </div>
         </div>
       </div>
     </div>
-
-    <div>
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)] mb-[12px]">
-        <div className="flex justify-between items-start mb-[12px]">
-          <div><div className="text-[15px] font-bold text-[#1e1b4b]">🤖 AI Matches</div><div className="text-[11.5px] text-[#6b7280] mt-[2px]">Possible matches</div></div>
-          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">View All</button>
-        </div>
-        {(['1', '2']).map(i => (
-          <div key={i} className="bg-gradient-to-br from-[#4f46e5]/[0.06] to-[#8b5cf6]/[0.05] border-[1.5px] border-[#6366f1]/20 rounded-[16px] p-[15px] mb-[12px] last:mb-0 cursor-pointer transition-all hover:border-[#6366f1]/40 hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(79,70,229,0.12)]">
-            <div className="flex justify-between items-start mb-[11px]">
-              <div><div className="text-[10px] font-bold text-[#6b7280] uppercase tracking-[0.06em]">Lost Report</div><div className="text-[13.5px] font-bold text-[#1e1b4b] mt-[2px]">{i === '1' ? 'Apple Watch Series 7' : 'Blue Folder (Bio 101)'}</div><div className="text-[11px] text-[#6b7280] mt-[2px]">📍 Library</div></div>
-              <div className="font-clash text-[26px] font-bold text-[#4f46e5] leading-none text-right">{i === '1' ? '95%' : '78%'}<small className="text-[11px] text-[#6b7280] font-epilogue font-medium block">MATCH</small></div>
-            </div>
-            <div className="flex items-center gap-[8px] mb-[11px]">
-              <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=130&fit=crop'} />
-              <div className="text-[#818cf8] text-[18px] shrink-0">⟷</div>
-              <img className="flex-1 h-[64px] rounded-[10px] object-cover border-[2px] border-[#a5b4fc]/30" src={i === '1' ? 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=130&fit=crop' : 'https://images.unsplash.com/photo-1600267185393-1b14be5afa09?w=200&h=130&fit=crop'} />
-            </div>
-            <div className="flex gap-[7px]">
-              <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-[#6366f1]/[0.09] text-[#4f46e5] border border-[#6366f1]/20 hover:bg-[#6366f1]/[0.18]">Compare</button>
-              <button className="flex-1 text-[11.5px] font-semibold py-[7px] px-[10px] rounded-[8px] cursor-pointer font-epilogue bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white shadow-[0_2px_8px_rgba(79,70,229,0.28)] hover:shadow-[0_4px_14px_rgba(79,70,229,0.44)]">Verify Match →</button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
-        <div className="flex justify-between items-start mb-[12px]">
-          <div>
-            <div className="text-[15px] font-bold text-[#1e1b4b]">🗺️ Nearby Items</div>
-            <div className="text-[11.5px] text-[#6b7280] mt-[2px]">On campus this week</div>
-          </div>
-          <button className="bg-[#6366f1]/[0.08] text-[#4f46e5] text-[12px] font-semibold py-[8px] px-[16px] rounded-[9px] border border-[#6366f1]/20 cursor-pointer font-epilogue hover:bg-[#6366f1]/15 transition-colors">Map View</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=200&h=150&fit=crop" alt="Dell"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Dell XPS 15</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Library · 0.3km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">5 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=150&fit=crop" alt="Phone"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#ef4444]/11 text-[#dc2626] border-[#ef4444]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">LOST</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">Samsung Galaxy S23</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Cafeteria · 0.5km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">2 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(79,70,229,0.25)] hover:shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-all cursor-pointer">View</button>
-        </div>
-
-        <div className="flex items-center gap-[10px] py-[10px] border-b border-[#a5b4fc]/10 last:border-b-0">
-          <img className="w-[48px] h-[48px] rounded-[10px] object-cover shrink-0 border-[1.5px] border-[#a5b4fc]/20" src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=200&h=150&fit=crop" alt="AirPods"/>
-          <div className="flex-1 overflow-hidden">
-            <div className="flex gap-[5px] mb-[4px]"><span className="bg-[#10b981]/11 text-[#059669] border-[#10b981]/22 text-[9px] font-extrabold py-[3px] px-[6px] rounded-[5px] tracking-[0.06em] uppercase border">FOUND</span></div>
-            <div className="text-[12.5px] font-bold text-[#1e1b4b] truncate">AirPods (2nd gen)</div>
-            <div className="text-[11px] text-[#6b7280] mt-[2px] truncate">📍 Sports Complex · 0.3km</div>
-            <div className="text-[10px] text-[#9ca3af] mt-[2px]">8 hours ago</div>
-          </div>
-          <button className="self-center shrink-0 bg-gradient-to-br from-[#10b981] to-[#047857] text-white text-[11px] font-bold py-[6px] px-[11px] rounded-[8px] border-none shadow-[0_2px_8px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_12px_rgba(16,185,129,0.4)] transition-all cursor-pointer">Claim</button>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-export const VaultPage = ({ openAdPopup, ads }) => (
+  );
+};
+export const VaultPage = ({ openAdPopup, ads, onEdit, onDelete }) => (
   <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-[14px]">
     <div>
       <div className="bg-white/75 backdrop-blur-[18px] border-[1.5px] border-white/92 rounded-[20px] p-[14px] px-[16px] shadow-[0_4px_24px_rgba(79,70,229,0.07)]">
@@ -316,7 +326,8 @@ export const VaultPage = ({ openAdPopup, ads }) => (
                     <div className="flex items-center gap-[8px] text-[12px] text-[#374151]"><span className="w-[22px] h-[22px] rounded-[6px] bg-[#f1f5f9] flex items-center justify-center text-[11px] shrink-0">📅</span><span>{ad.date}</span></div>
                   </div>
                   <div className="flex gap-[9px] mt-[4px]">
-                    <button className="flex-1 bg-[#eef2ff] text-[#4f46e5] text-[12px] font-bold py-[8px] px-[16px] rounded-[9px] border-[1.5px] border-[#c7d2fe] cursor-pointer transition-all font-epilogue hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => e.stopPropagation()}>Contact Admin</button>
+                    <button className="flex-1 bg-[#eef2ff] text-[#4f46e5] text-[12px] font-bold py-[8px] px-[16px] rounded-[9px] border-[1.5px] border-[#c7d2fe] cursor-pointer transition-all font-epilogue hover:bg-[#e0e7ff] hover:border-[#818cf8]" onClick={(e) => { e.stopPropagation(); onEdit(v); }}>Edit</button>
+                    <button className="flex-1 bg-[#fef2f2] text-[#ef4444] text-[12px] font-bold py-[8px] px-[16px] rounded-[9px] border-[1.5px] border-[#fecaca] cursor-pointer transition-all font-epilogue hover:bg-[#fee2e2] hover:border-[#fca5a5]" onClick={(e) => { e.stopPropagation(); onDelete(v); }}>Delete</button>
                   </div>
                 </div>
               </div>
@@ -400,7 +411,7 @@ const RF_ACCENT = {
   Found: { from: '#7c3aed', to: '#a78bfa', shadow: 'rgba(124,58,237,0.42)' }
 };
 
-const ReportItemModal = ({ isOpen, onClose, initialType }) => {
+const ReportItemModal = ({ isOpen, onClose, initialType, onAddAd, editId, editData }) => {
   const [rfMode, setRfMode] = useState('Lost');
   const [rfStep, setRfStep] = useState(0);
   const [rfCat, setRfCat] = useState('');
@@ -416,12 +427,22 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
 
   useEffect(() => {
     if (isOpen) {
-      setRfMode(initialType === 'found' ? 'Found' : 'Lost');
-      setRfStep(0); setRfCat(''); setRfStatus('Active'); setRfError('');
-      setRfSubmitting(0);
-      setForm(f => ({ ...f, name: '', sid: '', date: new Date().toISOString().split('T')[0], title: '', desc: '', loc: '', phone: '', wa: '', img: null }));
+      if (editData) {
+        setRfMode(editData.type.toUpperCase() === 'LOST' ? 'Lost' : 'Found');
+        setRfStep(0);
+        setRfCat(editData.category || '');
+        setRfStatus(editData.status || 'Active');
+        setRfError('');
+        setRfSubmitting(0);
+        setForm(f => ({ ...f, name: editData.student || '', sid: editData.sid || '', date: editData.date || new Date().toISOString().split('T')[0], title: editData.title || '', desc: editData.desc || '', loc: editData.location || '', phone: editData.phone || '', wa: '', img: editData.img || null }));
+      } else {
+        setRfMode(initialType === 'found' ? 'Found' : 'Lost');
+        setRfStep(0); setRfCat(''); setRfStatus('Active'); setRfError('');
+        setRfSubmitting(0);
+        setForm(f => ({ ...f, name: '', sid: '', date: new Date().toISOString().split('T')[0], title: '', desc: '', loc: '', phone: '', wa: '', img: null }));
+      }
     }
-  }, [isOpen, initialType]);
+  }, [isOpen, initialType, editData]);
 
   const fileInputRef = React.useRef(null);
 
@@ -432,9 +453,16 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
 
   const validate = () => {
     if (rfStep === 0) {
-      if (!form.name.trim()) return 'Full name is required';
+      const nameRegex = /^[A-Z][a-zA-Z\s.-]{2,}$/;
+      if (!nameRegex.test(form.name.trim())) return 'Full name must start with a capital letter and min 3 chars';
       if (!form.sid.trim()) return 'Student ID is required';
+      const sidRegex = /^[A-Za-z]{2}\d{4,8}$/;
+      if (!sidRegex.test(form.sid.trim())) return 'Invalid Student ID format (e.g. IT21001)';
       if (!form.date) return 'Date is required';
+      const selectedD = new Date(form.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedD > today) return 'Date cannot be in the future';
     }
     if (rfStep === 1) {
       if (!form.title.trim()) return 'Item title is required';
@@ -444,6 +472,8 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
     }
     if (rfStep === 2) {
       if (!form.phone.trim()) return 'Contact number is required';
+      const phoneRegex = /^\d{1,10}$/;
+      if (!phoneRegex.test(form.phone.trim())) return 'Phone must be up to 10 digits without symbols or letters';
     }
     return null;
   };
@@ -462,6 +492,26 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
     setRfSubmitting(1);
     setTimeout(() => {
       setRfSubmitting(2);
+
+      const newAdKey = editId || `ad_${Date.now()}`;
+      const newAd = {
+        title: form.title,
+        desc: form.desc,
+        student: form.name,
+        sid: form.sid,
+        phone: form.phone,
+        type: rfMode.toUpperCase(),
+        typeClass: rfMode === 'Lost' ? 'bg-[#ef4444]/88 text-white' : 'bg-[rgba(16,185,129,0.88)] text-white',
+        status: rfStatus,
+        statusClass: rfStatus === 'Resolved' ? 'bg-[#3b82f6]/88 text-white' : 'bg-[rgba(16,185,129,0.88)] text-white',
+        date: form.date,
+        location: form.loc,
+        category: rfCat,
+        img: form.img || 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=500&fit=crop',
+        tags: [rfCat.split(' ')[1] || 'Item'],
+      };
+      if (onAddAd) onAddAd(newAdKey, newAd);
+
       setTimeout(onClose, 1200);
     }, 1500);
   };
@@ -496,7 +546,7 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
             <button onClick={() => setRfMode('Lost')} className={`px-[18px] py-[6px] rounded-full text-[12px] font-bold cursor-pointer transition-all border-[1.5px] border-white/[0.42] ${rfMode === 'Lost' ? 'bg-white/[0.94] text-[${A.from}]' : 'bg-white/20 text-white'}`} style={rfMode === 'Lost' ? { color: A.from } : {}}>🔴 Lost Item</button>
             <button onClick={() => setRfMode('Found')} className={`px-[18px] py-[6px] rounded-full text-[12px] font-bold cursor-pointer transition-all border-[1.5px] border-white/[0.42] ${rfMode === 'Found' ? 'bg-white/[0.94] text-[${A.from}]' : 'bg-white/20 text-white'}`} style={rfMode === 'Found' ? { color: A.from } : {}}>🟢 Found Item</button>
           </div>
-          <div className="font-clash text-[24px] font-bold text-white mb-[4px]">{rfMode === 'Lost' ? 'Report a Lost Item' : 'Post a Found Item'}</div>
+          <div className="font-clash text-[24px] font-bold text-white mb-[4px]">{editId ? 'Edit Item' : (rfMode === 'Lost' ? 'Report a Lost Item' : 'Post a Found Item')}</div>
           <div className="text-[13px] text-white/[0.72]">{rfMode === 'Lost' ? 'Fill in the details to help the community find your item' : 'Help someone reunite with their belonging'}</div>
 
           <div className="flex items-center gap-[8px] mt-[18px]">
@@ -575,7 +625,7 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
             <div>
               <div className="mb-[18px]">
                 <div className="flex items-center gap-[6px] mb-[8px] flex-wrap"><strong className="text-[13px] font-bold text-[#1e1b4b]">📞 Contact Number</strong><span className="text-[#ef4444]">*</span></div>
-                <input className="w-full p-[12px] px-[16px] rounded-[12px] text-[14px] border-[1.5px] border-[#a5b4fc]/35 bg-[#f8fafc]/90 text-[#1e1b4b] outline-none transition-all focus:bg-white" value={form.phone} onChange={e => { setV('phone', e.target.value); buildWa(e.target.value); }} type="tel" placeholder="+94 77 123 4567" onFocus={e => { e.target.style.borderColor = A.from; e.target.style.boxShadow = `0 0 0 3px ${A.from}18`; }} onBlur={e => { e.target.style.borderColor = ''; e.target.style.boxShadow = ''; }} />
+                <input className="w-full p-[12px] px-[16px] rounded-[12px] text-[14px] border-[1.5px] border-[#a5b4fc]/35 bg-[#f8fafc]/90 text-[#1e1b4b] outline-none transition-all focus:bg-white" value={form.phone} onChange={e => { setV('phone', e.target.value); buildWa(e.target.value); }} type="tel" placeholder="0771234567" onFocus={e => { e.target.style.borderColor = A.from; e.target.style.boxShadow = `0 0 0 3px ${A.from}18`; }} onBlur={e => { e.target.style.borderColor = ''; e.target.style.boxShadow = ''; }} />
               </div>
               <div className="mb-[18px]">
                 <div className="flex items-center gap-[6px] mb-[8px] flex-wrap"><strong className="text-[13px] font-bold text-[#1e1b4b]">💬 WhatsApp Link</strong><span className="text-[11px] text-[#9ca3af]">— Auto-generated, editable</span></div>
@@ -651,9 +701,49 @@ export default function LostFoundDashboard({ ads }) {
   const [popupData, setPopupData] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportModalType, setReportModalType] = useState('lost');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [localAds, setLocalAds] = useState(ads);
+  const [editingAdId, setEditingAdId] = useState(null);
+
+  const handleEdit = (id) => {
+    setEditingAdId(id);
+    setReportModalType(localAds[id].type.toLowerCase() === 'lost' ? 'lost' : 'found');
+    setReportModalOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this ad?")) {
+      setLocalAds(prev => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      });
+    }
+  };
+
+  const filteredAds = React.useMemo(() => {
+    if (!searchTerm.trim()) return localAds;
+    const term = searchTerm.toLowerCase();
+    const result = {};
+    if (!localAds) return result;
+    Object.keys(localAds).forEach(k => {
+      const ad = localAds[k];
+      if (
+        ad.title?.toLowerCase().includes(term) ||
+        ad.desc?.toLowerCase().includes(term) ||
+        ad.location?.toLowerCase().includes(term) ||
+        ad.student?.toLowerCase().includes(term) ||
+        ad.type?.toLowerCase().includes(term)
+      ) {
+        result[k] = ad;
+      }
+    });
+    return result;
+  }, [localAds, searchTerm]);
 
   const openAdPopup = (id, source = 'feed') => {
-    setPopupData({ ...ads[id], uid: id, source });
+    setPopupData({ ...localAds[id], uid: id, source });
     document.body.style.overflow = 'hidden';
   };
 
@@ -670,6 +760,7 @@ export default function LostFoundDashboard({ ads }) {
 
   const closeReportModal = () => {
     setReportModalOpen(false);
+    setTimeout(() => setEditingAdId(null), 300);
     document.body.style.overflow = '';
   };
 
@@ -687,7 +778,7 @@ export default function LostFoundDashboard({ ads }) {
   return (
     <div className="font-epilogue text-[#1e1b4b] bg-[radial-gradient(ellipse_80%_50%_at_10%_0%,rgba(196,181,253,0.55),transparent),radial-gradient(ellipse_70%_60%_at_90%_20%,rgba(147,197,253,0.45),transparent),radial-gradient(ellipse_60%_50%_at_50%_80%,rgba(167,139,250,0.3),transparent),radial-gradient(ellipse_50%_40%_at_80%_60%,rgba(191,219,254,0.35),transparent),radial-gradient(ellipse_40%_35%_at_20%_70%,rgba(216,180,254,0.25),transparent),linear-gradient(160deg,#f8f6ff_0%,#ede9fe_22%,#e8eeff_44%,#dbeafe_66%,#eff6ff_100%)] min-h-screen relative">
       <Sidebar />
-      <Topbar />
+      <Topbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <main className="ml-0 lg:ml-[260px] pt-[200px] lg:pt-[310px]">
         <div className="p-[16px] lg:px-[20px] lg:pb-[36px] max-w-[1200px] mx-auto">
           <AlertBanner />
@@ -701,7 +792,7 @@ export default function LostFoundDashboard({ ads }) {
                 <div className="text-[17px] font-bold leading-[1.2] mb-[4px] font-clash tracking-wide drop-shadow-sm">Report Lost Item</div>
                 <div className="text-[12px] text-indigo-100/90 leading-[1.3] font-medium">Describe & post your missing item</div>
               </div>
-              <button onClick={() => navigate('/report-item', { state: { type: 'lost' } })} className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/20 hover:bg-white/30 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm cursor-pointer">Report Now →</button>
+              <button onClick={() => openReportModal('lost')} className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/20 hover:bg-white/30 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm cursor-pointer">Report Now →</button>
             </div>
 
             <div className="flex-1 flex items-center p-[18px] rounded-[22px] shadow-[0_8px_24px_rgba(168,85,247,0.15)] hover:-translate-y-[4px] transition-all cursor-pointer bg-gradient-to-br from-[#a855f7] to-[#8b5cf6] text-white overflow-hidden relative group">
@@ -711,7 +802,7 @@ export default function LostFoundDashboard({ ads }) {
                 <div className="text-[17px] font-bold leading-[1.2] mb-[4px] font-clash tracking-wide drop-shadow-sm">Post Found Item</div>
                 <div className="text-[12px] text-purple-100/90 leading-[1.3] font-medium">Help reunite someone with their item</div>
               </div>
-              <button onClick={() => navigate('/report-item', { state: { type: 'found' } })} className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/10 hover:bg-white/20 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm cursor-pointer">Post Found →</button>
+              <button onClick={() => openReportModal('found')} className="px-[16px] py-[10px] rounded-[10px] text-[13px] font-bold transition-all whitespace-nowrap ml-[12px] bg-white/10 hover:bg-white/20 border-2 border-white/20 hover:border-white/40 text-white shadow-sm font-epilogue relative z-10 backdrop-blur-sm cursor-pointer">Post Found →</button>
             </div>
 
             <div className="flex-1 flex items-center p-[18px] rounded-[22px] shadow-[0_8px_24px_rgba(59,130,246,0.15)] hover:-translate-y-[4px] transition-all cursor-pointer bg-gradient-to-br from-[#3b82f6] to-[#0ea5e9] text-white overflow-hidden relative group">
@@ -765,7 +856,7 @@ export default function LostFoundDashboard({ ads }) {
             <button onClick={() => setActiveTab('vault')} className={`font-epilogue text-[13.5px] font-bold py-[9px] px-[22px] rounded-t-[10px] border-none cursor-pointer border-b-[2px] -mb-[2px] transition-colors ${activeTab === 'vault' ? 'text-[#4f46e5] border-b-[#4f46e5] bg-[#6366f1]/[0.07]' : 'text-[#6b7280] border-b-transparent bg-transparent hover:text-[#6366f1] hover:bg-[#6366f1]/[0.04]'}`}>🗄️ My Vault</button>
           </div>
 
-          {activeTab === 'feed' ? <FeedPage openAdPopup={openAdPopup} ads={ads} /> : <VaultPage openAdPopup={openAdPopup} ads={ads} />}
+          {activeTab === 'feed' ? <FeedPage openAdPopup={openAdPopup} ads={filteredAds} /> : <VaultPage openAdPopup={openAdPopup} ads={filteredAds} onEdit={handleEdit} onDelete={handleDelete} />}
         </div>
       </main>
 
@@ -777,7 +868,14 @@ export default function LostFoundDashboard({ ads }) {
       </nav>
 
       {popupData && <AdPopupModal popupData={popupData} closePopup={closePopup} />}
-
+      <ReportItemModal
+        isOpen={reportModalOpen}
+        onClose={closeReportModal}
+        initialType={reportModalType}
+        onAddAd={(key, ad) => setLocalAds(prev => ({ ...prev, [key]: ad }))}
+        editId={editingAdId}
+        editData={editingAdId ? localAds[editingAdId] : null}
+      />
     </div>
   );
 }
