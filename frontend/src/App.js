@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 import React from "react";
+=======
+import React, { useState } from "react";
+>>>>>>> 4a1e826808b2597ab95e99e27f27ff5963f1e979
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Homepage from "./features/homepage/pages/Homepage";
+import AboutPage from "./features/homepage/pages/AboutPage";
+
 import Dashboard from "./features/marketplace/pages/Dashboard";
 import ItemDetails from "./features/marketplace/pages/ItemDetails";
 import Myitems from "./features/marketplace/pages/Myitems";
@@ -10,8 +19,11 @@ import PurchaseDone from "./features/marketplace/pages/PurchaseDone";
 import OrderPage from "./features/marketplace/pages/OrderPage";
 import Bid from "./features/marketplace/pages/Bid";
 import Massage from "./features/marketplace/pages/Massage";
+<<<<<<< HEAD
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+=======
+>>>>>>> 4a1e826808b2597ab95e99e27f27ff5963f1e979
 
 import LoginPage from "./features/userManagement/pages/LoginPage";
 import RegisterPage from "./features/userManagement/pages/RegisterPage";
@@ -20,7 +32,6 @@ import ProfilePage from "./features/userManagement/pages/ProfilePage";
 import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
 import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
 import AdminDashboardPage from "./features/userManagement/pages/AdminDashboardPage";
-
 import BuySellHistoryPage from "./features/userManagement/pages/BuySellHistoryPage";
 import ItemsPostedPage from "./features/userManagement/pages/ItemsPostedPage";
 import ItemsSoldPage from "./features/userManagement/pages/ItemsSoldPage";
@@ -31,12 +42,19 @@ import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
+import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
+import LostFoundForm from "./Components/Dashboard/LostFoundForm";
+
+import { initialAdData } from "./data/mockAds";
 
 function App() {
+  const [ads, setAds] = useState(initialAdData);
+
   return (
     <>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/marketplace" element={<Dashboard />} />
         <Route path="/item/:id" element={<ItemDetails />} />
         <Route path="/myitems" element={<Myitems />} />
@@ -44,6 +62,9 @@ function App() {
         <Route path="/bidding" element={<Bid />} />
         <Route path="/massage" element={<Massage />} />
         <Route path="/delivery" element={<Deliveryinfo />} />
+        <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
         <Route path="/purchasedone" element={<PurchaseDone />} />
 
         <Route path="/login" element={<LoginPage />} />
