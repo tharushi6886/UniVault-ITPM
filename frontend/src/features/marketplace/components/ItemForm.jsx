@@ -87,12 +87,12 @@ const ItemForm = ({ onClose, onAddItem }) => {
 
     if (allValid) {
       const categoryColorMap = {
-        'Laboratory': 'bg-teal-50',
-        'Decorative': 'bg-pink-50',
-        'Kitchenware': 'bg-orange-50',
-        'Industrial': 'bg-gray-100',
-        'Optical': 'bg-blue-50',
-        'Architectural': 'bg-emerald-50',
+        'Textbooks': 'bg-teal-50',
+        'Electronics': 'bg-pink-50',
+        'Dorm Essentials': 'bg-orange-50',
+        'Lab Equipment': 'bg-gray-100',
+        'Note & Study': 'bg-blue-50',
+        'Services': 'bg-emerald-50',
         'Other': 'bg-purple-50'
       };
 
@@ -298,8 +298,8 @@ const ItemForm = ({ onClose, onAddItem }) => {
                     <div className="relative">
                       <select name="category" value={formData.category} onChange={handleChange} onBlur={handleBlur} className={`${getInputClass('category')} pr-[30px] cursor-pointer`}>
                         <option value="">Select…</option>
-                        <option>Laboratory</option><option>Decorative</option><option>Kitchenware</option>
-                        <option>Industrial</option><option>Optical</option><option>Architectural</option><option>Other</option>
+                        <option>Textbooks</option><option>Electronics</option><option>Dorm Essentials</option>
+                        <option>Lab Equipment</option><option>Note & Study</option><option>Services</option><option>Other</option>
                       </select>
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-[#8b5cf6] pointer-events-none"></div>
                     </div>
