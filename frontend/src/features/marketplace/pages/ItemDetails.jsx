@@ -73,8 +73,12 @@ const ItemDetails = () => {
                     <span className="bg-white/90 border border-[#e4d9f7] rounded-md px-2.5 py-1 text-[10px] font-semibold text-[#6d28d9] tracking-wider uppercase">Laboratory</span>
                     <span className="bg-white/90 border border-[#e4d9f7] rounded-md px-2.5 py-1 text-[10px] font-semibold text-[#166534] tracking-wider uppercase">New</span>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-2.5 text-[#c4b5fd] relative z-10 w-full h-full">
-                    <span className="text-[80px] leading-none drop-shadow-md">{item.emoji}</span>
+                  <div className="flex flex-col items-center justify-center gap-2.5 text-[#c4b5fd] relative z-10 w-full h-full overflow-hidden">
+                    {item.image ? (
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform hover:scale-110 duration-700" />
+                    ) : (
+                      <span className="text-[80px] leading-none drop-shadow-md">{item.emoji || '📦'}</span>
+                    )}
                   </div>
                 </div>
 
@@ -281,12 +285,14 @@ const ItemDetails = () => {
                     <div className="absolute -bottom-[40px] -left-[20px] w-[140px] h-[140px] rounded-full bg-white/5"></div>
 
                     <div className="w-[30px] h-[22px] bg-gradient-to-br from-[#f0d060] to-[#c89820] rounded mb-[0.8rem] relative z-10"></div>
-                    <div className="text-[14px] font-semibold text-white/90 tracking-[0.15em] mb-[0.7rem] font-mono relative z-10">•••• •••• •••• 4782</div>
+                    <div className="text-[14px] font-semibold text-white/90 tracking-[0.15em] mb-[0.7rem] font-mono relative z-10">
+                      •••• •••• •••• {item.accountNumber ? item.accountNumber.slice(-4) : '4782'}
+                    </div>
 
                     <div className="flex justify-between items-end relative z-10">
                       <div>
                         <div className="text-[11px] text-white/60 uppercase tracking-[0.06em]">Card holder</div>
-                        <div className="text-[13px] font-semibold text-white mt-[2px]">Arjun Karunarathna</div>
+                        <div className="text-[13px] font-semibold text-white mt-[2px]">{item.accountName || 'Student Name'}</div>
                       </div>
                       <div>
                         <div className="text-[10px] text-white/50 text-right">Expires</div>
@@ -307,18 +313,18 @@ const ItemDetails = () => {
                     <tbody>
                       <tr className="border-b border-[#e4d9f7]">
                         <td className="py-1.5 text-[12px] text-[#7c5aa6] w-[45%] align-middle">Bank name</td>
-                        <td className="py-1.5 text-[12.5px] font-medium text-[#1a0040] text-right align-middle">Commercial Bank of Ceylon</td>
+                        <td className="py-1.5 text-[12.5px] font-medium text-[#1a0040] text-right align-middle">{item.bankName || 'Commercial Bank'}</td>
                       </tr>
                       <tr className="border-b border-[#e4d9f7]">
                         <td className="py-1.5 text-[12px] text-[#7c5aa6] w-[45%] align-middle">Account name</td>
-                        <td className="py-1.5 text-[12.5px] font-medium text-[#1a0040] text-right align-middle">Arjun Karunarathna</td>
+                        <td className="py-1.5 text-[12.5px] font-medium text-[#1a0040] text-right align-middle">{item.accountName || 'Student Name'}</td>
                       </tr>
                       <tr className="border-b border-[#e4d9f7]">
                         <td className="py-1.5 text-[12px] text-[#7c5aa6] w-[45%] align-middle">Account no.</td>
                         <td className="py-1.5 text-[11.5px] font-medium text-[#1a0040] text-right font-mono align-middle">
-                          8801 2347 4782
+                          {item.accountNumber || '8801 2347 4782'}
                           <button
-                            onClick={() => handleCopy('880123474782', 'account')}
+                            onClick={() => handleCopy(item.accountNumber || '880123474782', 'account')}
                             className={`ml-2 px-2 py-0.5 text-[10px] font-['Sora',sans-serif] rounded-[5px] border cursor-pointer transition-all ${copiedAccount ? 'bg-[#dcfce7] text-[#166534] border-[#4ade80]' : 'bg-[#f5f3ff] border-[#e4d9f7] text-[#6d28d9] hover:bg-[#ede9fe] hover:border-[#a78bfa]'}`}
                           >
                             {copiedAccount ? 'Copied!' : 'Copy'}
@@ -328,9 +334,9 @@ const ItemDetails = () => {
                       <tr className="border-b border-[#e4d9f7]">
                         <td className="py-1.5 text-[12px] text-[#7c5aa6] w-[45%] align-middle">Branch den</td>
                         <td className="py-1.5 text-[11.5px] font-medium text-[#1a0040] text-right font-mono align-middle">
-                          010
+                          {item.branch || '010'}
                           <button
-                            onClick={() => handleCopy('010', 'branch')}
+                            onClick={() => handleCopy(item.branch || '010', 'branch')}
                             className={`ml-2 px-2 py-0.5 text-[10px] font-['Sora',sans-serif] rounded-[5px] border cursor-pointer transition-all ${copiedBranch ? 'bg-[#dcfce7] text-[#166534] border-[#4ade80]' : 'bg-[#f5f3ff] border-[#e4d9f7] text-[#6d28d9] hover:bg-[#ede9fe] hover:border-[#a78bfa]'}`}
                           >
                             {copiedBranch ? 'Copied!' : 'Copy'}
