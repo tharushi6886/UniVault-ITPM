@@ -7,6 +7,9 @@ import MyBids from "./Components/Bids/MyBids";
 import AdminBidList from "./Components/Bids/AdminBidList";
 import FeedbackForm from "./Components/Feedback/FeedbackForm";
 import AdminFeedbackList from "./Components/Feedback/AdminFeedbackList";
+import BidForm from "./Components/Bids/BidForm";
+import BidDone from "./Components/Bids/BidDone";
+import HelpFeedback from "./Components/Bids/Feedback";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -19,9 +22,12 @@ function App() {
         <Route path="/admin/bids" element={<AdminBidList />} />
         <Route path="/feedback" element={<FeedbackForm />} />
         <Route path="/admin/feedback" element={<AdminFeedbackList />} />
+        <Route path="/bidding" element={<BidForm />} />
+        <Route path="/bid-done" element={<BidDone />} />
+        <Route path="/help-feedback" element={<HelpFeedback />} />
       </Routes>
     </AuthProvider>
-    
+
   );
 }
 
