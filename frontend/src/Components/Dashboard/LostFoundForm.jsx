@@ -41,6 +41,25 @@ export default function LostFoundForm({ setAds }) {
     img: editData?.imageUrl || editData?.img || null
   });
 
+  useEffect(() => {
+    if (!editData) {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          setForm(prev => ({
+            ...prev,
+            name: user.name || prev.name,
+            sid: user.studentId || prev.sid,
+            phone: user.phone || prev.phone
+          }));
+        } catch (e) {
+          console.error("Failed to parse user from localStorage", e);
+        }
+      }
+    }
+  }, [editData]);
+
   const A = RF_ACCENT[rfMode];
   const setV = (k, v) => setForm(prev => ({...prev, [k]: v}));
 
@@ -49,6 +68,11 @@ export default function LostFoundForm({ setAds }) {
       if(!form.name.trim()) return 'Full name is required';
       if(!form.sid.trim()) return 'Student ID is required';
       if(!form.date) return 'Date is required';
+      
+      const selectedDate = new Date(form.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Ignore time for comparison
+      if (selectedDate > today) return 'Date of incident cannot be in the future';
     }
     if(rfStep===1){
       if(!form.title.trim()) return 'Item title is required';
@@ -58,6 +82,10 @@ export default function LostFoundForm({ setAds }) {
     }
     if(rfStep===2){
       if(!form.phone.trim()) return 'Contact number is required';
+      const phoneRegex = /^(?:\+94|0)?7[0-9]{8}$/;
+      if (!phoneRegex.test(form.phone.trim())) return 'Please enter a valid phone number (e.g. 0771234567)';
+      
+      if (!form.img) return 'Please upload an image of the item';
     }
     return null;
   };
@@ -243,7 +271,7 @@ export default function LostFoundForm({ setAds }) {
                 </div>
               </div>
               <div>
-                <div className="flex items-center gap-[8px] mb-[10px]"><strong className="text-[14px] font-bold text-[#1e1b4b]">🖼️ Item Image</strong><span className="text-[11px] text-[#9ca3af] font-medium">— Optional, helps identification</span></div>
+                <div className="flex items-center gap-[8px] mb-[10px]"><strong className="text-[14px] font-bold text-[#1e1b4b]">🖼️ Item Image</strong><span className="text-[#ef4444]">*</span><span className="text-[11px] text-[#9ca3af] font-medium">— Required, helps identification</span></div>
                 <div className="border-[2px] border-dashed rounded-[16px] min-h-[140px] flex flex-col items-center justify-center p-[28px] cursor-pointer text-center relative overflow-hidden transition-all duration-200" style={drag ? {borderColor:A.from, background:'rgba(99,102,241,0.06)'} : {borderColor:'rgba(165,180,252,0.45)', background:'rgba(255,255,255,0.8)'}} onClick={() => fileInputRef.current?.click()} onDragOver={e=>{e.preventDefault(); setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={e=>{e.preventDefault(); setDrag(false); handleFile(e.dataTransfer.files[0]);}}>
                   {!form.img && (
                     <div>
