@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React from "react";
-=======
 import React, { useState } from "react";
->>>>>>> 4a1e826808b2597ab95e99e27f27ff5963f1e979
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import { ToastContainer } from "react-toastify";
@@ -19,11 +15,6 @@ import PurchaseDone from "./features/marketplace/pages/PurchaseDone";
 import OrderPage from "./features/marketplace/pages/OrderPage";
 import Bid from "./features/marketplace/pages/Bid";
 import Massage from "./features/marketplace/pages/Massage";
-<<<<<<< HEAD
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-=======
->>>>>>> 4a1e826808b2597ab95e99e27f27ff5963f1e979
 
 import LoginPage from "./features/userManagement/pages/LoginPage";
 import RegisterPage from "./features/userManagement/pages/RegisterPage";

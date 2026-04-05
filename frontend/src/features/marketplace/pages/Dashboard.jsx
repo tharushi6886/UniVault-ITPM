@@ -63,7 +63,7 @@ const Dashboard = () => {
       {/* NAVBAR */}
       <nav className="bg-white border-b border-gray-200 px-8 flex items-center h-[66px] sticky top-0 z-50">
         {/* Menu Button */}
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(true)}
           className="mr-5 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-btn transition-all group"
           title="Open Menu"
@@ -426,9 +426,9 @@ const Dashboard = () => {
 
       {showItemForm && <ItemForm onClose={() => setShowItemForm(false)} onAddItem={handleAddItem} />}
       {/* Sidebar Navigation */}
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)} 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
         navLinks={navLinks}
         activeNav={activeNav}
         setActiveNav={setActiveNav}
