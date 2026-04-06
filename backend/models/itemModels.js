@@ -33,10 +33,30 @@ const itemSchema = new mongoose.Schema({
     type: String
   },
 
+  // legacy/internal field used previously
   item_type: {
     type: String,
-    enum: ["sell", "lost", "found"],
-    required: true
+    enum: ["sell", "lost", "found"]
+  },
+
+  // user-facing name for listing type (matches frontend's "listing_type")
+  listing_type: {
+    type: String,
+    enum: ["sell", "lost", "found"]
+  },
+
+  // store small/medium base64 or URL to uploaded image
+  item_image: {
+    type: String
+  },
+
+
+
+  payment_details: {
+    bank_name: { type: String },
+    branch: { type: String },
+    account_name: { type: String },
+    account_number: { type: String }
   },
 
   availability_status: {
@@ -57,8 +77,13 @@ const itemSchema = new mongoose.Schema({
 
   quantity: {
     type: Number
-  }
+  },
+    // associate item with a user (optional)
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
 
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Item", itemSchema);

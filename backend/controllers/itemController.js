@@ -28,25 +28,34 @@ const getAllItems = async (req, res, next) => {
 
 // ADD new item
 const addItems = async (req, res, next) => {
+  console.log("Start");
 
   const {
     item_id,
     item_name,
     description,
     category,
-    item_condition,
+    item_condition,    
     brand,
     colour,
     item_type,
+    listing_type,
+    item_image,
+    payment_details,
     availability_status,
     approval_status,
     price,
     quantity
   } = req.body;
 
+  // prefer authenticated user id (req.user) but fall back to body.userId if provided
+  const userIdToSave = (req.user && req.user._id) || req.body.userId || undefined;
+
   let item;
 
   try {
+
+    const resolvedType = item_type || listing_type || 'sell';
 
     item = new Item({
       item_id,
@@ -56,7 +65,13 @@ const addItems = async (req, res, next) => {
       item_condition,
       brand,
       colour,
-      item_type,
+      // normalize to stored field
+      item_type: resolvedType,
+      // also keep original listing_type if provided
+      listing_type: listing_type || undefined,
+      item_image: item_image || undefined,
+      userId: userIdToSave,
+      payment_details: payment_details || undefined,
       availability_status,
       approval_status,
       price,
@@ -82,3 +97,4 @@ const addItems = async (req, res, next) => {
 
 exports.getAllItems = getAllItems;
 exports.addItems = addItems;
+// exports are defined above

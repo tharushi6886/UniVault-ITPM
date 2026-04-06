@@ -15,10 +15,10 @@ const {
   deleteUser,
   unblockUser,
   getAdminDashboardStats,
-} = require("../Controllers/userController");
+} = require("../controllers/userController");
 
-const { protect } = require("../Middlewares/authMiddleware");
-const { authorizeRoles } = require("../Middlewares/roleMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
+const { authorizeRoles } = require("../middlewares/roleMiddleware");
 const {
   registerValidation,
   loginValidation,
