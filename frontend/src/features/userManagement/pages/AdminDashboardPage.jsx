@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../homepage/components/Navbar";
-import { getAdminDashboardStats, getUsers, blockUser, unblockUser, deleteUser } from "../../../api/userApi";
+import { getAdminDashboardStats, getUsers, blockUser, unblockUser, deleteUser, updateUserRole } from "../../../api/userApi";
 import { getAllItems, getAllLostItems, getAllFoundItems } from "../../../api/itemApi";
 import { toast } from "react-toastify";
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  PieChart, Pie, Cell, Legend
+} from "recharts";
 
 const StatCard = ({ title, value, icon, color, bg, onClick }) => {
   return (
@@ -122,6 +126,24 @@ const AdminDashboardPage = () => {
       setUsers((prev) => prev.filter((u) => u._id !== userId));
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete user");
+    }
+  };
+
+  const handleRoleChange = async (userId, currentRole) => {
+    const newRole = currentRole === "Admin" ? "Student" : "Admin";
+    const confirmMsg = newRole === "Admin" 
+      ? "Are you sure you want to promote this user to Admin?" 
+      : "Are you sure you want to revoke Admin privileges?";
+    
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await updateUserRole(token, userId, newRole);
+      toast.success(`User role updated to ${newRole}`);
+      setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, role: newRole } : u)));
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update role");
     }
   };
 
@@ -297,6 +319,62 @@ const AdminDashboardPage = () => {
                     <StatCard title="Student Users" value={stats?.studentUsers || 0} icon="🎓" color="text-violet-600" bg="bg-violet-100" onClick={() => handleStatClick("Student Users", stats?.studentUsers)} />
                   </div>
                 )}
+
+                {/* VISUAL ANALYTICS SECTION */}
+                {!loadingStats && stats && (
+                  <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up">
+                    <div className="bg-white rounded-3xl p-8 shadow-[0_10px_30px_rgba(79,70,229,0.08)] border border-[#e9e7ff]">
+                      <h3 className="text-xl font-bold text-[#1f1b5b] mb-6 flex items-center gap-2">
+                        📊 Module Content Distribution
+                      </h3>
+                      <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={[
+                            { name: 'Lost Items', count: stats.totalLostItems },
+                            { name: 'Found Items', count: stats.totalFoundItems },
+                            { name: 'Marketplace', count: stats.totalMarketplaceItems }
+                          ]}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
+                            <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
+                            <Tooltip 
+                              cursor={{fill: '#f8f9ff'}}
+                              contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'}}
+                            />
+                            <Bar dataKey="count" fill="#4f46e5" radius={[6, 6, 0, 0]} barSize={50} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-3xl p-8 shadow-[0_10px_30px_rgba(79,70,229,0.08)] border border-[#e9e7ff]">
+                      <h3 className="text-xl font-bold text-[#1f1b5b] mb-6 flex items-center gap-2">
+                        ⚖️ User Base Partition
+                      </h3>
+                      <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={[
+                                { name: 'Admins', value: stats.adminUsers },
+                                { name: 'Students', value: stats.studentUsers }
+                              ]}
+                              innerRadius={60}
+                              outerRadius={100}
+                              paddingAngle={8}
+                              dataKey="value"
+                            >
+                              <Cell fill="#4f46e5" />
+                              <Cell fill="#06b6d4" />
+                            </Pie>
+                            <Tooltip contentStyle={{borderRadius: '16px', border: 'none'}} />
+                            <Legend verticalAlign="bottom" height={36}/>
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -375,6 +453,15 @@ const AdminDashboardPage = () => {
                                 <button onClick={() => handleDelete(user._id)} className="bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100 transition shadow-sm">
                                   Delete
                                 </button>
+                                {user.role === "Admin" ? (
+                                  <button onClick={() => handleRoleChange(user._id, user.role)} className="bg-slate-50 text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-100 transition shadow-sm">
+                                    Revoke Admin
+                                  </button>
+                                ) : (
+                                  <button onClick={() => handleRoleChange(user._id, user.role)} className="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-100 transition shadow-sm">
+                                    Promote to Admin
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>

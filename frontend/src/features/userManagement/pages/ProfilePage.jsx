@@ -7,25 +7,25 @@ const ProfilePage = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
-        const res = await getProfile(token);
-        setUser(res.data);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      } finally {
+      if (!token) {
         setLoading(false);
+        return;
       }
-    };
 
+      const res = await getProfile(token);
+      setUser(res.data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUser();
   }, []);
 
@@ -85,7 +85,7 @@ const ProfilePage = () => {
             </p>
           </div>
 
-          <ProfileCard user={user} />
+          <ProfileCard user={user} refreshUser={fetchUser} />
         </div>
       </div>
     </>

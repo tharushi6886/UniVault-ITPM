@@ -383,6 +383,108 @@ const getAdminDashboardStats = async (req, res) => {
   }
 };
 
+// Forgot Password - Send OTP
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "No account found with this email" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "UniVault Password Reset OTP",
+      text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
+    });
+
+    res.json({ message: "Password reset OTP sent to your university email" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reset Password - Verify OTP & Update
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user || user.otp !== otp || !otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    user.password = newPassword;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+
+    res.json({ message: "Password reset successful. You can now login." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Update User Role (Admin Only)
+const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      user.role = role;
+      await user.save();
+      res.json({ message: `User role updated to ${role} successfully` });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.profileImage = `/uploads/avatars/${req.file.filename}`;
+      await user.save();
+      res.json({
+        message: "Profile picture updated",
+        profileImage: user.profileImage,
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyOtp,
@@ -396,4 +498,8 @@ module.exports = {
   deleteUser,
   unblockUser,
   getAdminDashboardStats,
+  forgotPassword,
+  resetPassword,
+  updateUserRole,
+  uploadAvatar,
 };

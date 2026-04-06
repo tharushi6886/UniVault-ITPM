@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { uploadAvatar } from "../../../api/userApi";
+import { toast } from "react-toastify";
 
 const InfoCard = ({ title, value, editable, onClick }) => {
   const CardWrapper = editable ? "button" : "div";
@@ -53,15 +54,36 @@ const MiniTrustCard = ({ title, value, valueClass = "text-[#1f1b5b]" }) => (
   </div>
 );
 
-const ProfileCard = ({ user }) => {
+const ProfileCard = ({ user, refreshUser }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
   const [drawerActivity, setDrawerActivity] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const tabs = ["Overview", "Activity", "Trust & Reputation", "Feedback"];
 
-  const handleActivityClick = (activity) => {
-    setDrawerActivity(activity);
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.match("image.*")) {
+      return toast.error("Please upload an image file");
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    setUploading(true);
+    try {
+      const token = localStorage.getItem("token");
+      await uploadAvatar(token, formData);
+      toast.success("Profile picture updated!");
+      if (refreshUser) refreshUser();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const closeDrawer = () => {
@@ -73,12 +95,20 @@ const ProfileCard = ({ user }) => {
       {/* Horizontal Profile Header */}
       <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] p-6 border border-[#e9e7ff] mb-6 flex flex-col md:flex-row items-center md:justify-between gap-6">
         <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-          <label className="relative group cursor-pointer w-24 h-24 rounded-full bg-gradient-to-br from-[#4f46e5] to-cyan-500 text-white flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden shrink-0">
-            {user.name?.charAt(0).toUpperCase()}
+          <label className={`relative group cursor-pointer w-24 h-24 rounded-full bg-gradient-to-br from-[#4f46e5] to-cyan-500 text-white flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden shrink-0 ${uploading ? "opacity-50" : ""}`}>
+            {user.profileImage ? (
+              <img 
+                src={`http://localhost:5000${user.profileImage}`} 
+                alt="Avatar" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+                user.name?.charAt(0).toUpperCase()
+            )}
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-2xl">📷</span>
+              <span className="text-2xl">{uploading ? "⌛" : "📷"}</span>
             </div>
-            <input type="file" accept="image/*" className="hidden" />
+            {!uploading && <input type="file" onChange={handleAvatarChange} accept="image/*" className="hidden" />}
           </label>
           <div>
             <h2 className="text-3xl font-bold text-[#1f1b5b]">{user.name}</h2>

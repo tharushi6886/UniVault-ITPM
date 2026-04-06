@@ -19,6 +19,8 @@ import Massage from "./features/marketplace/pages/Massage";
 import LoginPage from "./features/userManagement/pages/LoginPage";
 import RegisterPage from "./features/userManagement/pages/RegisterPage";
 import VerifyOtpPage from "./features/userManagement/pages/VerifyOtpPage";
+import ForgotPasswordPage from "./features/userManagement/pages/ForgotPasswordPage";
+import ResetPasswordPage from "./features/userManagement/pages/ResetPasswordPage";
 import ProfilePage from "./features/userManagement/pages/ProfilePage";
 import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
 import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
@@ -61,6 +63,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
           path="/profile"
