@@ -7,6 +7,11 @@ const itemSchema = new mongoose.Schema({
     required:true
   },
 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+
   item_name:{
     type:String,
     required:true

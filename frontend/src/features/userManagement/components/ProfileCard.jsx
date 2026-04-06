@@ -152,50 +152,50 @@ const ProfileCard = ({ user }) => {
               <ActivityCard
                 icon="🛒"
                 title="Buy & Sell History"
-                count="12"
+                count={user.stats?.buySellHistory ?? 0}
                 note="View total marketplace transactions"
                 color="border-[#dde3ff] bg-gradient-to-br from-[#eef2ff] to-white"
-                onClick={() => handleActivityClick({ title: "Buy & Sell History", type: "buysell" })}
+                onClick={() => navigate("/profile/buy-sell-history")}
               />
               <ActivityCard
                 icon="📦"
                 title="Items Posted"
-                count="8"
+                count={user.stats?.itemsPosted ?? 0}
                 note="View products and listings posted"
                 color="border-[#cffafe] bg-gradient-to-br from-[#ecfeff] to-white"
-                onClick={() => handleActivityClick({ title: "Items Posted", type: "posted" })}
+                onClick={() => navigate("/profile/items-posted")}
               />
               <ActivityCard
                 icon="💰"
                 title="Items Sold"
-                count="5"
+                count={user.stats?.itemsSold ?? 0}
                 note="View successful marketplace sales"
                 color="border-[#dcfce7] bg-gradient-to-br from-[#f0fdf4] to-white"
-                onClick={() => handleActivityClick({ title: "Items Sold", type: "sold" })}
+                onClick={() => navigate("/profile/items-sold")}
               />
               <ActivityCard
                 icon="🔁"
                 title="Found Items Returned"
-                count="3"
+                count={user.stats?.foundReturned ?? 0}
                 note="View recovered items returned"
                 color="border-[#ede9fe] bg-gradient-to-br from-[#f5f3ff] to-white"
-                onClick={() => handleActivityClick({ title: "Found Items Returned", type: "returned" })}
+                onClick={() => navigate("/profile/found-returned")}
               />
               <ActivityCard
                 icon="🔍"
                 title="My Lost Reports"
-                count="4"
+                count={user.stats?.lostReports ?? 0}
                 note="View your lost item reports"
                 color="border-[#fde68a] bg-gradient-to-br from-[#fff7ed] to-white"
-                onClick={() => handleActivityClick({ title: "My Lost Reports", type: "lost" })}
+                onClick={() => navigate("/profile/lost-reports")}
               />
               <ActivityCard
                 icon="🎯"
                 title="My Bids"
-                count="6"
+                count={user.stats?.myBids ?? 0}
                 note="View your bidding activity"
                 color="border-[#fecdd3] bg-gradient-to-br from-[#fff1f2] to-white"
-                onClick={() => handleActivityClick({ title: "My Bids", type: "bids" })}
+                onClick={() => navigate("/profile/my-bids")}
               />
             </div>
           </div>
@@ -206,10 +206,10 @@ const ProfileCard = ({ user }) => {
           <div className="bg-white rounded-3xl shadow-[0_10px_30px_rgba(79,70,229,0.12)] p-8 border border-[#e9e7ff] max-w-3xl">
             <h3 className="text-2xl font-bold text-[#1f1b5b] mb-6">Trust Metrics</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <MiniTrustCard title="Trust Level" value="Trusted Member" valueClass="text-green-600" />
-              <MiniTrustCard title="Rating Score" value="4.8 / 5.0" valueClass="text-[#4f46e5]" />
+              <MiniTrustCard title="Trust Level" value={user.trust?.level || "Unknown"} valueClass={user.trust?.levelClass || "text-[#1f1b5b]"} />
+              <MiniTrustCard title="Rating Score" value={user.trust?.rating || "N/A"} valueClass="text-[#4f46e5]" />
               <div className="md:col-span-2">
-                <MiniTrustCard title="Feedback Summary" value="Positive and reliable campus user" valueClass="text-gray-700" />
+                <MiniTrustCard title="Feedback Summary" value={user.trust?.feedbackSummary || "N/A"} valueClass="text-gray-700" />
               </div>
             </div>
           </div>
@@ -222,19 +222,19 @@ const ProfileCard = ({ user }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="rounded-2xl p-6 border border-[#ecebff] bg-[#f8f8ff]">
                 <p className="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">Buyer Feedback</p>
-                <p className="text-xl font-medium text-[#1f1b5b]">"Friendly communication and smooth transactions"</p>
+                <p className="text-xl font-medium text-[#1f1b5b]">"{user.trust?.buyerFeedback || "N/A"}"</p>
               </div>
               <div className="rounded-2xl p-6 border border-[#ecebff] bg-[#f8f8ff]">
                 <p className="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">Seller Feedback</p>
-                <p className="text-xl font-medium text-[#1f1b5b]">"Reliable and quick response during sales"</p>
+                <p className="text-xl font-medium text-[#1f1b5b]">"{user.trust?.sellerFeedback || "N/A"}"</p>
               </div>
               <div className="rounded-2xl p-6 border border-[#ecebff] bg-[#f8f8ff]">
                 <p className="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">Recovery Trust</p>
-                <p className="text-xl font-medium text-green-600">"Verified and community trusted"</p>
+                <p className={`text-xl font-medium ${user.trust?.levelClass || 'text-[#1f1b5b]'}`}>"{user.trust?.recoveryTrust || "N/A"}"</p>
               </div>
               <div className="rounded-2xl p-6 border border-[#ecebff] bg-[#f8f8ff]">
                 <p className="text-sm text-gray-500 uppercase tracking-wide font-bold mb-2">Overall Community Score</p>
-                <p className="text-xl font-medium text-[#1f1b5b]">"Excellent standing within UniVault"</p>
+                <p className="text-xl font-medium text-[#1f1b5b]">"{user.trust?.communityScore || "N/A"}"</p>
               </div>
             </div>
           </div>

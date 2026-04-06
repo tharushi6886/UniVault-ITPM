@@ -1,6 +1,10 @@
-const User = require("../Models/User");
+const User = require("../models/User");
+const LostItem = require("../models/LostItem");
+const FoundItem = require("../models/FoundItem");
 const generateToken = require("../utils/generateToken");
 const nodemailer = require("nodemailer");
+const Lost = require("../models/lost");
+const Item = require("../models/itemModels");
 
 // Register User
 const registerUser = async (req, res) => {
@@ -171,7 +175,39 @@ const getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id).select("-password -otp -otpExpires");
 
     if (user) {
-      res.json(user);
+      // Fetch dynamic stats from available models
+      const newLostCount = await LostItem.countDocuments({ studentId: user.studentId });
+      const oldLostCount = await Lost.countDocuments({ StudentId: user.studentId });
+      const lostReportsCount = newLostCount + oldLostCount;
+      const foundItemsCount = await FoundItem.countDocuments({ studentId: user.studentId, status: "resolved" });
+      const itemsPostedCount = await Item.countDocuments({ userId: user._id });
+      const itemsSoldCount = await Item.countDocuments({ userId: user._id, availability_status: "not_available" });
+
+      const stats = {
+        lostReports: lostReportsCount,
+        foundReturned: foundItemsCount,
+        itemsPosted: itemsPostedCount,
+        itemsSold: itemsSoldCount,
+        buySellHistory: 0,
+        myBids: 0
+      };
+
+      const trust = {
+        level: user.isVerified && user.status === "active" ? "Verified Campus User" : "Pending Verification",
+        levelClass: user.isVerified && user.status === "active" ? "text-green-600" : "text-yellow-600",
+        rating: "No ratings yet",
+        feedbackSummary: user.isVerified && user.status === "active" ? "Positive and reliable campus user" : "New to UniVault",
+        buyerFeedback: "No recent transactions",
+        sellerFeedback: "No recent transactions",
+        recoveryTrust: user.isVerified && user.status === "active" ? "Verified and community trusted" : "Verification required",
+        communityScore: user.isVerified && user.status === "active" ? "Excellent standing within UniVault" : "New member"
+      };
+
+      res.json({
+        ...user.toObject(),
+        stats,
+        trust
+      });
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -317,6 +353,13 @@ const getAdminDashboardStats = async (req, res) => {
     const adminUsers = await User.countDocuments({ role: "Admin" });
     const studentUsers = await User.countDocuments({ role: "Student" });
 
+    // Fetch system-wide module counts
+    const newLostCount = await LostItem.countDocuments();
+    const oldLostCount = await Lost.countDocuments();
+    const totalLostItems = newLostCount + oldLostCount;
+    const totalFoundItems = await FoundItem.countDocuments();
+    const totalMarketplaceItems = await Item.countDocuments();
+
     res.json({
       totalUsers,
       activeUsers,
@@ -325,10 +368,12 @@ const getAdminDashboardStats = async (req, res) => {
       adminUsers,
       studentUsers,
 
-      // placeholders for other modules for now
-      totalLostItems: 0,
-      totalFoundItems: 0,
-      totalMarketplaceItems: 0,
+      // Live modules
+      totalLostItems,
+      totalFoundItems,
+      totalMarketplaceItems,
+      
+      // Placeholders for future modules
       totalBids: 0,
       pendingClaims: 0,
     });

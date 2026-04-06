@@ -10,6 +10,15 @@ exports.createFoundItem = async (req, res) => {
   }
 };
 
+exports.getMyFoundItems = async (req, res) => {
+  try {
+    const items = await FoundItem.find({ studentId: req.user.studentId }).sort({ createdAt: -1 });
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user found items", error: err.message });
+  }
+};
+
 exports.getAllFoundItems = async (req, res) => {
   try {
     const items = await FoundItem.find().sort({ createdAt: -1 });

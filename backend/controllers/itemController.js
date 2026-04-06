@@ -24,6 +24,23 @@ const getAllItems = async (req,res,next) => {
   return res.status(200).json({ items });
 };
 
+// GET my items
+const getMyItems = async (req, res, next) => {
+  let items;
+  try {
+    items = await Item.find({ userId: req.user._id });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Error fetching user items" });
+  }
+
+  if (!items) {
+    items = [];
+  }
+
+  return res.status(200).json({ items });
+};
+
 
 
 // ADD new item
@@ -49,6 +66,7 @@ const addItems = async (req,res,next)=> {
   try{
 
     item = new Item({
+      userId: req.user ? req.user._id : null,
       item_id,
       item_name,
       description,
@@ -82,3 +100,4 @@ const addItems = async (req,res,next)=> {
 
 exports.getAllItems = getAllItems;
 exports.addItems = addItems;
+exports.getMyItems = getMyItems;
