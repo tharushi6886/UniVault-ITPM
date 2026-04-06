@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { addItem } from '../../../api/itemApi';
 
 const ItemForm = ({ onClose, onAddItem }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -71,7 +72,7 @@ const ItemForm = ({ onClose, onAddItem }) => {
     if (allValid) setCurrentStep(from + 1);
   };
 
-  const submitForm = () => {
+  const submitForm = async () => {
     const stepFields = ['bankName', 'accountName', 'branch', 'accountNumber'];
     let allValid = true;
     const newTouched = {};
@@ -86,44 +87,78 @@ const ItemForm = ({ onClose, onAddItem }) => {
     setErrors(prev => ({ ...prev, ...newErrors }));
 
     if (allValid) {
-      const categoryColorMap = {
-        'Textbooks': 'bg-teal-50',
-        'Electronics': 'bg-pink-50',
-        'Dorm Essentials': 'bg-orange-50',
-        'Lab Equipment': 'bg-gray-100',
-        'Note & Study': 'bg-blue-50',
-        'Services': 'bg-emerald-50',
-        'Other': 'bg-purple-50'
+      const payload = {
+        item_id: `item-${Date.now()}`,
+        item_name: formData.itemName,
+        description: formData.description || 'No description provided.',
+        category: formData.category || 'Other',
+        item_condition: formData.condition || '',
+        brand: formData.brand || '',
+        colour: formData.colorText || formData.colorPicker || '',
+        item_type: formData.listing || 'sell',
+        listing_type: formData.listing || 'sell',
+        item_image: imagePreview || '',
+        payment_details: {
+          bank_name: formData.bankName || '',
+          branch: formData.branch || '',
+          account_name: formData.accountName || '',
+          account_number: formData.accountNumber || ''
+        },
+        approval_status: 'pending',
+        availability_status: formData.availability || 'available',
+        price: formData.price ? parseFloat(formData.price) : 0,
+        quantity: formData.quantity ? parseInt(formData.quantity, 10) : 0
       };
 
-      const newItem = {
-        title: formData.itemName,
-        price: `$${parseFloat(formData.price).toFixed(2)}`,
-        old: '',
-        desc: formData.description || 'No description provided.',
-        cat: formData.category || 'Other',
-        catColor: categoryColorMap[formData.category] || 'bg-purple-50',
-        badge: formData.condition === 'new' ? 'NEW' : '',
-        badgeColor: formData.condition === 'new' ? 'bg-emerald-100 text-emerald-600' : '',
-        stars: 5,
-        image: imagePreview,
-        emoji: !imagePreview ? '📦' : null,
-        bankName: formData.bankName,
-        accountName: formData.accountName,
-        branch: formData.branch,
-        accountNumber: formData.accountNumber
-      };
+      try {
+        const res = await addItem(payload);
 
-      setSuccess(true);
+        const categoryColorMap = {
+          'Textbooks': 'bg-teal-50',
+          'Electronics': 'bg-pink-50',
+          'Dorm Essentials': 'bg-orange-50',
+          'Lab Equipment': 'bg-gray-100',
+          'Note & Study': 'bg-blue-50',
+          'Services': 'bg-emerald-50',
+          'Other': 'bg-purple-50'
+        };
 
-      setTimeout(() => {
-        if (onAddItem) onAddItem(newItem);
-        setSuccess(false);
-        setFormData({ itemName: '', description: '', category: '', brand: '', colorPicker: '#b5d4f4', colorText: '', condition: '', price: '', quantity: '', listing: '', availability: '', bankName: '', accountName: '', branch: '', accountNumber: '' });
-        setTouched({});
-        setImagePreview(null);
-        setCurrentStep(1);
-      }, onAddItem ? 1200 : 3500);
+        const saved = res && res.data && res.data.item ? res.data.item : null;
+
+        const newItem = {
+          title: saved?.item_name || formData.itemName,
+          price: `$${(saved && typeof saved.price === 'number') ? saved.price.toFixed(2) : parseFloat(formData.price).toFixed(2)}`,
+          old: '',
+          desc: saved?.description || formData.description || 'No description provided.',
+          cat: saved?.category || formData.category || 'Other',
+          catColor: categoryColorMap[saved?.category || formData.category] || 'bg-purple-50',
+          badge: formData.condition === 'new' ? 'NEW' : '',
+          badgeColor: formData.condition === 'new' ? 'bg-emerald-100 text-emerald-600' : '',
+          stars: 5,
+          image: imagePreview,
+          emoji: !imagePreview ? '📦' : null,
+          bankName: formData.bankName,
+          accountName: formData.accountName,
+          branch: formData.branch,
+          accountNumber: formData.accountNumber
+        };
+
+        setSuccess(true);
+
+        setTimeout(() => {
+          if (onAddItem) onAddItem(newItem);
+          setSuccess(false);
+          setFormData({ itemName: '', description: '', category: '', brand: '', colorPicker: '#b5d4f4', colorText: '', condition: '', price: '', quantity: '', listing: '', availability: '', bankName: '', accountName: '', branch: '', accountNumber: '' });
+          setTouched({});
+          setImagePreview(null);
+          setCurrentStep(1);
+        }, onAddItem ? 1200 : 3500);
+
+      } catch (err) {
+        console.error('Failed to add item', err);
+        setErrors(prev => ({ ...prev, submit: true }));
+        setTimeout(() => setErrors(prev => ({ ...prev, submit: false })), 3000);
+      }
     }
   };
 
@@ -177,13 +212,9 @@ const ItemForm = ({ onClose, onAddItem }) => {
               const isActive = num === currentStep;
               const isDone = num < currentStep;
               return (
-                <div key={num} className="flex flex-col relative" onClick={() => {
-                  if (isDone) setCurrentStep(num);
-                }}>
+                <div key={num} className="flex flex-col relative" onClick={() => { if (isDone) setCurrentStep(num); }}>
                   <div className={`flex items-start gap-3 py-2.5 relative cursor-pointer group`}>
-                    <div className={`w-[28px] h-[28px] flex-shrink-0 rounded-full border-[1.5px] flex items-center justify-center text-[10px] font-semibold transition-all relative z-10
-                      ${isActive ? 'bg-white border-white text-[#6d28d9]' : isDone ? 'bg-[#a78bfa]/30 border-[#a78bfa] text-white' : 'bg-white/10 border-white/25 text-white/60 group-hover:bg-white/20'}`}
-                    >
+                    <div className={`w-[28px] h-[28px] flex-shrink-0 rounded-full border-[1.5px] flex items-center justify-center text-[10px] font-semibold transition-all relative z-10 ${isActive ? 'bg-white border-white text-[#6d28d9]' : isDone ? 'bg-[#a78bfa]/30 border-[#a78bfa] text-white' : 'bg-white/10 border-white/25 text-white/60 group-hover:bg-white/20'}`}>
                       {num}
                     </div>
                     <div className="pt-[2px]">
@@ -195,11 +226,10 @@ const ItemForm = ({ onClose, onAddItem }) => {
                 </div>
               );
             })}
-          </div>
-
-          <div className="mt-auto pt-6 text-[10.5px] text-white/30 leading-[1.6] relative z-10">
-            Fields marked <span className="text-[#a78bfa]">*</span> are required.<br />
-            You can go back at any time to edit.
+            <div className="mt-auto pt-6 text-[10.5px] text-white/30 leading-[1.6] relative z-10">
+              Fields marked <span className="text-[#a78bfa]">*</span> are required.<br />
+              You can go back at any time to edit.
+            </div>
           </div>
         </div>
 

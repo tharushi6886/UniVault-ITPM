@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toppicImg from '../../../assets/toppic.jpg';
 import ItemForm from '../components/ItemForm';
 import Sidebar from '../components/Sidebar';
+import { getItems } from '../../../api/itemApi';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -33,6 +34,36 @@ const Dashboard = () => {
   useEffect(() => {
     localStorage.setItem('univault_items', JSON.stringify(items));
   }, [items]);
+
+  // Fetch items from backend API (override local examples if available)
+  useEffect(() => {
+    let mounted = true;
+    const fetchItems = async () => {
+      try {
+        const res = await getItems();
+        if (res && res.data && res.data.items && mounted) {
+          const mapped = res.data.items.map((it) => ({
+            emoji: it.emoji || '📦',
+            title: it.item_name || it.title || 'Untitled',
+            price: typeof it.price === 'number' ? `$${it.price}` : (it.price || ''),
+            old: it.old_price ? `$${it.old_price}` : '',
+            desc: it.description || '',
+            cat: it.category || 'Misc',
+            catColor: 'bg-white',
+            badge: '',
+            badgeColor: '',
+            stars: it.stars || 4,
+            image: it.image || it.image_url || undefined,
+          }));
+          setItems(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to load items from API', err);
+      }
+    };
+    fetchItems();
+    return () => { mounted = false; };
+  }, []);
 
   const handleAddItem = (newItem) => {
     setItems(prev => [newItem, ...prev]);
