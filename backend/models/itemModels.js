@@ -2,61 +2,61 @@ const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
 
-  item_id:{
-    type:String,
-    required:true
+  item_id: {
+    type: String,
+    required: true
   },
 
-  item_name:{
-    type:String,
-    required:true
+  item_name: {
+    type: String,
+    required: true
   },
 
-  description:{
-    type:String
+  description: {
+    type: String
   },
 
-  category:{
-    type:String
+  category: {
+    type: String
   },
 
-  item_condition:{
-    type:String,
-    enum:["new","used","damaged"]
+  item_condition: {
+    type: String,
+    enum: ["new", "used", "damaged"]
   },
 
-  brand:{
-    type:String
+  brand: {
+    type: String
   },
 
-  colour:{
-    type:String
+  colour: {
+    type: String
   },
 
-  item_type:{
-    type:String,
-    enum:["sell","lost","found"],
-    required:true
+  item_type: {
+    type: String,
+    enum: ["sell", "lost", "found"],
+    required: true
   },
 
-  availability_status:{
-    type:String,
-    enum:["available","not_available"],
-    default:"available"
+  availability_status: {
+    type: String,
+    enum: ["available", "not_available"],
+    default: "available"
   },
 
-  approval_status:{
-    type:String,
-    enum:["pending","approved","rejected"],
-    default:"pending"
+  approval_status: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending"
   },
 
-  price:{
-    type:Number
+  price: {
+    type: Number
   },
 
-  quantity:{
-    type:Number
+  quantity: {
+    type: Number
   }
 
 });

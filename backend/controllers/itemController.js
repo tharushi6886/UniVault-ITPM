@@ -2,22 +2,22 @@ const Item = require("../models/itemModels");
 
 
 // GET all items
-const getAllItems = async (req,res,next) => {
+const getAllItems = async (req, res, next) => {
 
   let items;
 
-  try{
+  try {
     items = await Item.find();
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return res.status(500).json({
-      message:"Error fetching items"
+      message: "Error fetching items"
     });
   }
 
-  if(!items || items.length === 0){
+  if (!items || items.length === 0) {
     return res.status(404).json({
-      message:"Items not found"
+      message: "Items not found"
     });
   }
 
@@ -27,7 +27,7 @@ const getAllItems = async (req,res,next) => {
 
 
 // ADD new item
-const addItems = async (req,res,next)=> {
+const addItems = async (req, res, next) => {
 
   const {
     item_id,
@@ -46,7 +46,7 @@ const addItems = async (req,res,next)=> {
 
   let item;
 
-  try{
+  try {
 
     item = new Item({
       item_id,
@@ -65,16 +65,16 @@ const addItems = async (req,res,next)=> {
 
     await item.save();
 
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return res.status(500).json({
-      message:"Unable to add item"
+      message: "Unable to add item"
     });
   }
 
   return res.status(201).json({
-    message:"Item added successfully",
-    item:item
+    message: "Item added successfully",
+    item: item
   });
 
 };

@@ -47,25 +47,50 @@ const registerUser = async (req, res) => {
     });
 
     try {
+      // Validate environment variables
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.error("Email environment variables not configured");
+        await User.findByIdAndDelete(user._id);
+        return res.status(500).json({
+          message: "Email service not configured. Please try again later.",
+        });
+      }
+
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.EMAIL_USER,
+          user: process.env.EMAIL_USER, 
           pass: process.env.EMAIL_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       });
 
-      await transporter.sendMail({
+      // Verify transporter connection
+      await transporter.verify();
+
+      const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
         subject: "UniVault OTP Verification",
-        text: `Your UniVault OTP is: ${otp}. It will expire in 10 minutes.`,
-      });
+        html: `
+          <h2>UniVault OTP Verification</h2>
+          <p>Your OTP code is: <strong>${otp}</strong></p>
+          <p>This code will expire in 10 minutes.</p>
+          <p>If you did not request this, please ignore this email.</p>
+        `,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(`OTP email sent successfully to ${email}`);
     } catch (mailError) {
+      console.error("Email sending error:", mailError.message);
       await User.findByIdAndDelete(user._id);
 
       return res.status(500).json({
-        message: "Failed to send OTP email. Please try again.",
+        message: "Failed to send OTP email. Please check your email address and try again.",
+        error: process.env.NODE_ENV === "development" ? mailError.message : undefined,
       });
     }
 
@@ -141,11 +166,7 @@ const loginUser = async (req, res) => {
         message: "Please verify your university email with OTP before login.",
       });
     }
-    if (!user.isVerified) {
-      return res.status(403).json({
-       message: "Please verify your email before logging in",
-      });
-}
+
 
     res.json({
       message: "Login successful",
