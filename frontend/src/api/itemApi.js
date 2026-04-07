@@ -4,6 +4,7 @@ const API = axios.create({
   baseURL: "http://localhost:5000/api",
 });
 
+// Get operations
 export const getMyMarketplaceItems = (token) =>
   API.get("/items/my-items", {
     headers: {
@@ -34,10 +35,48 @@ export const getLostItemById = (id) => API.get(`/lost-items/${id}`);
 export const getAllFoundItems = () => API.get("/found-items");
 export const getFoundItemById = (id) => API.get(`/found-items/${id}`);
 
-export const getItems = () => API.get("/");
-export const addItem = (data) => API.post("/", data);
+export const getItems = () => API.get("/items");
 
-export const notifyStudent = (id, type, message) => {
-  const endpoint = type === "Lost" ? `/lost-items/${id}/notify` : `/found-items/${id}/notify`;
-  return API.post(endpoint, { message });
+// Create operations
+export const addItem = (data, token) =>
+  API.post("/items", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// Update operations
+export const updateLostItem = (id, data, token) =>
+  API.put(`/lost-items/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const updateFoundItem = (id, data, token) =>
+  API.put(`/found-items/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const updateMarketplaceItem = (id, data, token) =>
+  API.put(`/items/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+// Notification operations
+export const notifyStudent = (itemId, itemType, message, token) => {
+  const authToken = token || (typeof window !== 'undefined' ? localStorage.getItem("token") : null);
+  return API.post("/notifications/notify", {
+    itemId,
+    itemType,
+    message,
+  }, {
+    headers: authToken ? {
+      Authorization: `Bearer ${authToken}`,
+    } : {},
+  });
 };

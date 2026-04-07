@@ -141,7 +141,22 @@ const getItemById = async (req, res, next) => {
   }
 };
 
+const updateItem = async (req, res, next) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    if (item.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    const updated = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ item: updated });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating item" });
+  }
+};
+
 exports.getAllItems = getAllItems;
 exports.getMyItems = getMyItems;
 exports.addItems = addItems;
 exports.getItemById = getItemById;
+exports.updateItem = updateItem;

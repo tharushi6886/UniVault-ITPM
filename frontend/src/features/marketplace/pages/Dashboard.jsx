@@ -328,7 +328,7 @@ const Dashboard = () => {
                 <div className="text-[14px] text-white/65 mb-5 max-w-[300px]">
                   Get everything you need for the new semester up to 40% off retail prices.
                 </div>
-                <button className="inline-flex items-center gap-2 bg-green-500 text-white py-3 px-6 rounded-xl border-none text-sm font-bold shadow-[0_4px_16px_rgba(34,197,94,0.4)] cursor-pointer transition hover:bg-green-600 hover:-translate-y-[1px]">
+                <button className="inline-flex items-center gap-2 bg-[#4f46e5] text-white py-3 px-6 rounded-xl border-none text-sm font-bold shadow-[0_4px_16px_rgba(79,70,229,0.4)] cursor-pointer transition hover:bg-[#4338ca] hover:-translate-y-[1px]">
                   Shop Deals Now
                 </button>
               </div>
@@ -411,12 +411,12 @@ const Dashboard = () => {
         {/* NOTIFY BANNER */}
         <div className="bg-gradient-to-br from-[#1E1B4B] via-[#3730A3] to-[#4338CA] rounded-2xl py-12 px-14 flex flex-col md:flex-row items-center justify-between gap-8 mb-16">
           <div className="text-center md:text-left">
-            <h2 className="font-syne text-[32px] font-extrabold text-white leading-[1.2] mb-2">Can't find <span className="text-green-500">it?</span></h2>
+            <h2 className="font-syne text-[32px] font-extrabold text-white leading-[1.2] mb-2">Can't find <span className="text-[#818cf8]">it?</span></h2>
             <p className="text-sm text-white/60">Set an alert and we'll notify you when someone posts a matching item.</p>
           </div>
           <div className="flex flex-shrink-0 w-full md:w-auto">
             <input type="text" placeholder="e.g. iPad Pro 11-inch" className="py-3 px-5 border-none rounded-l-xl text-sm text-gray-700 w-full md:w-[300px] outline-none bg-white/95 placeholder-gray-400" />
-            <button className="py-3 px-6 border-none bg-green-500 text-white rounded-r-xl text-sm font-bold cursor-pointer transition hover:bg-green-600 whitespace-nowrap">Create Alert</button>
+            <button className="py-3 px-6 border-none bg-[#4f46e5] text-white rounded-r-xl text-sm font-bold cursor-pointer transition hover:bg-[#4338ca] whitespace-nowrap">Create Alert</button>
           </div>
         </div>
       </div>

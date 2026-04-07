@@ -17,8 +17,8 @@ const StatCard = ({ title, value, icon, color, bg, onClick }) => {
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold text-gray-500 mb-2 group-hover:text-[#4f46e5] transition-colors">{title}</p>
-          <h3 className={`text-4xl font-bold ${color}`}>{value}</h3>
+          <p className="text-sm font-semibold text-[#6366f1] mb-2 group-hover:text-[#4f46e5] transition-colors">{title}</p>
+          <h3 className={`text-4xl font-black ${color}`}>{value}</h3>
         </div>
         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl ${bg}`}>
           {icon}
@@ -296,7 +296,7 @@ const AdminDashboardPage = () => {
           </div>
 
           {/* Tab Content Pane (Max 500px tall) */}
-          <div className="max-h-[500px] overflow-y-auto pr-2" style={{ scrollbarWidth: "thin", scrollbarColor: "#d1d5db transparent" }}>
+          <div className="min-h-[60rem] pb-12">
 
             {/* OVERVIEW TAB */}
             {activeTab === "Overview" && (
@@ -314,11 +314,11 @@ const AdminDashboardPage = () => {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     <StatCard title="Total Users" value={stats?.totalUsers || 0} icon="👥" color="text-[#4f46e5]" bg="bg-[#eef2ff]" onClick={() => handleStatClick("Total Users", stats?.totalUsers)} />
-                    <StatCard title="Active Users" value={stats?.activeUsers || 0} icon="✅" color="text-green-600" bg="bg-green-100" onClick={() => handleStatClick("Active Users", stats?.activeUsers)} />
-                    <StatCard title="Pending Users" value={stats?.pendingUsers || 0} icon="⏳" color="text-yellow-600" bg="bg-yellow-100" onClick={() => handleStatClick("Pending Users", stats?.pendingUsers)} />
-                    <StatCard title="Blocked Users" value={stats?.blockedUsers || 0} icon="🚫" color="text-red-600" bg="bg-red-100" onClick={() => handleStatClick("Blocked Users", stats?.blockedUsers)} />
-                    <StatCard title="Admin Users" value={stats?.adminUsers || 0} icon="🛡️" color="text-cyan-600" bg="bg-cyan-100" onClick={() => handleStatClick("Admin Users", stats?.adminUsers)} />
-                    <StatCard title="Student Users" value={stats?.studentUsers || 0} icon="🎓" color="text-violet-600" bg="bg-violet-100" onClick={() => handleStatClick("Student Users", stats?.studentUsers)} />
+                    <StatCard title="Active Users" value={stats?.activeUsers || 0} icon="✅" color="text-[#4f46e5]" bg="bg-indigo-50" onClick={() => handleStatClick("Active Users", stats?.activeUsers)} />
+                    <StatCard title="Pending Users" value={stats?.pendingUsers || 0} icon="⏳" color="text-[#6366f1]" bg="bg-[#f5f3ff]" onClick={() => handleStatClick("Pending Users", stats?.pendingUsers)} />
+                    <StatCard title="Blocked Users" value={stats?.blockedUsers || 0} icon="🚫" color="text-rose-600" bg="bg-rose-50" onClick={() => handleStatClick("Blocked Users", stats?.blockedUsers)} />
+                    <StatCard title="Admin Users" value={stats?.adminUsers || 0} icon="🛡️" color="text-indigo-700" bg="bg-indigo-100" onClick={() => handleStatClick("Admin Users", stats?.adminUsers)} />
+                    <StatCard title="Student Users" value={stats?.studentUsers || 0} icon="🎓" color="text-violet-600" bg="bg-violet-50" onClick={() => handleStatClick("Student Users", stats?.studentUsers)} />
                   </div>
                 )}
 
@@ -483,10 +483,10 @@ const AdminDashboardPage = () => {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     <StatCard title="Lost Items Tracked" value={stats?.totalLostItems || 0} icon="🧳" color="text-[#4f46e5]" bg="bg-[#eef2ff]" onClick={() => handleStatClick("Lost Items", stats?.totalLostItems)} />
-                    <StatCard title="Found Items Tracked" value={stats?.totalFoundItems || 0} icon="🔎" color="text-cyan-600" bg="bg-cyan-100" onClick={() => handleStatClick("Found Items", stats?.totalFoundItems)} />
-                    <StatCard title="Marketplace Listings" value={stats?.totalMarketplaceItems || 0} icon="🛒" color="text-green-600" bg="bg-green-100" onClick={() => handleStatClick("Marketplace Listings", stats?.totalMarketplaceItems)} />
-                    <StatCard title="Active Bids" value={stats?.totalBids || 0} icon="💰" color="text-yellow-600" bg="bg-yellow-100" onClick={() => handleStatClick("Active Bids", stats?.totalBids)} />
-                    <StatCard title="Pending Claims" value={stats?.pendingClaims || 0} icon="📌" color="text-red-600" bg="bg-red-100" onClick={() => handleStatClick("Pending Claims", stats?.pendingClaims)} />
+                    <StatCard title="Found Items Tracked" value={stats?.totalFoundItems || 0} icon="🔎" color="text-indigo-600" bg="bg-indigo-50" onClick={() => handleStatClick("Found Items", stats?.totalFoundItems)} />
+                    <StatCard title="Marketplace Listings" value={stats?.totalMarketplaceItems || 0} icon="🛒" color="text-violet-600" bg="bg-violet-50" onClick={() => handleStatClick("Marketplace Listings", stats?.totalMarketplaceItems)} />
+                    <StatCard title="Active Bids" value={stats?.totalBids || 0} icon="💰" color="text-indigo-400" bg="bg-slate-50" onClick={() => handleStatClick("Active Bids", stats?.totalBids)} />
+                    <StatCard title="Pending Claims" value={stats?.pendingClaims || 0} icon="📌" color="text-rose-500" bg="bg-rose-50" onClick={() => handleStatClick("Pending Claims", stats?.pendingClaims)} />
                   </div>
                 )}
               </div>
