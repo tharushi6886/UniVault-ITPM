@@ -70,11 +70,10 @@ export const updateMarketplaceItem = (id, data, token) =>
 // Notification operations
 export const notifyStudent = (itemId, itemType, message, token) => {
   const authToken = token || (typeof window !== 'undefined' ? localStorage.getItem("token") : null);
-  return API.post("/notifications/notify", {
-    itemId,
-    itemType,
-    message,
-  }, {
+  const isLost = itemType === "Lost" || itemType === "LOST";
+  const endpoint = isLost ? `/lost-items/${itemId}/notify` : `/found-items/${itemId}/notify`;
+
+  return API.post(endpoint, { message }, {
     headers: authToken ? {
       Authorization: `Bearer ${authToken}`,
     } : {},

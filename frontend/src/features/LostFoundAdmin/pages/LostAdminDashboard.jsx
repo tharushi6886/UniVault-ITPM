@@ -163,7 +163,9 @@ export default function AdminDashboard() {
             setNotifyOpen(false);
         } catch (err) {
             console.error("Notification error:", err);
-            toast.error(err.response?.data?.message || "Failed to send notification.");
+            const detailedError = err.response?.data?.message || err.message || "Network Error";
+            toast.error(detailedError);
+            alert("Backend Error Details:\n" + JSON.stringify(err.response?.data || err.message, null, 2));
         }
     };
 
