@@ -226,10 +226,9 @@ const ProfileCard = ({ user, refreshUser }) => {
     setIsSaving(true);
     try {
       const token = localStorage.getItem("token");
-      let res;
-      if (type === 'lost') res = await updateLostItem(item._id, { status: 'found' }, token);
-      else if (type === 'found') res = await updateFoundItem(item._id, { status: 'returned' }, token);
-      else if (type === 'market') res = await updateMarketplaceItem(item._id, { availability_status: 'not_available' }, token);
+      if (type === 'lost') await updateLostItem(item._id, { status: 'found' }, token);
+      else if (type === 'found') await updateFoundItem(item._id, { status: 'returned' }, token);
+      else if (type === 'market') await updateMarketplaceItem(item._id, { availability_status: 'not_available' }, token);
       
       toast.success("Record resolved and updated in Vault!");
       fetchActivityData();
