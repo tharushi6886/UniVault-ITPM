@@ -1,4 +1,6 @@
 const LostItem = require("../models/LostItem");
+const User = require("../models/User");
+const calculateTrustScore = require("../utils/trustScore");
 
 exports.createLostItem = async (req, res) => {
   try {
@@ -43,5 +45,32 @@ exports.deleteLostItem = async (req, res) => {
     res.status(200).json({ message: "Lost item deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting lost item", error: err.message });
+  }
+};
+
+exports.getLostItemById = async (req, res) => {
+  try {
+    const item = await LostItem.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ message: "Lost item not found" });
+    }
+
+    // Lookup owner by studentId
+    const owner = await User.findOne({ studentId: item.studentId });
+    let ownerTrust = null;
+    if (owner) {
+      ownerTrust = await calculateTrustScore(owner._id);
+    }
+
+    res.status(200).json({
+      item,
+      ownerTrust: ownerTrust ? {
+        score: ownerTrust.score,
+        level: ownerTrust.level,
+        levelClass: ownerTrust.levelClass
+      } : null
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching lost item details", error: err.message });
   }
 };

@@ -5,6 +5,7 @@ const generateToken = require("../utils/generateToken");
 const nodemailer = require("nodemailer");
 const Lost = require("../models/lost");
 const Item = require("../models/itemModels");
+const calculateTrustScore = require("../utils/trustScore");
 
 // Register User
 const registerUser = async (req, res) => {
@@ -175,37 +176,34 @@ const getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id).select("-password -otp -otpExpires");
 
     if (user) {
-      // Fetch dynamic stats from available models
-      const newLostCount = await LostItem.countDocuments({ studentId: user.studentId });
-      const oldLostCount = await Lost.countDocuments({ StudentId: user.studentId });
-      const lostReportsCount = newLostCount + oldLostCount;
-      const foundItemsCount = await FoundItem.countDocuments({ studentId: user.studentId, status: "resolved" });
-      const itemsPostedCount = await Item.countDocuments({ userId: user._id });
-      const itemsSoldCount = await Item.countDocuments({ userId: user._id, availability_status: "not_available" });
+      // Use the centralized utility for all trust calculations
+      const trustData = await calculateTrustScore(user._id);
 
-      const stats = {
-        lostReports: lostReportsCount,
-        foundReturned: foundItemsCount,
-        itemsPosted: itemsPostedCount,
-        itemsSold: itemsSoldCount,
-        buySellHistory: 0,
-        myBids: 0
-      };
+      if (!trustData) {
+        return res.status(500).json({ message: "Error calculating trust score" });
+      }
 
       const trust = {
-        level: user.isVerified && user.status === "active" ? "Verified Campus User" : "Pending Verification",
-        levelClass: user.isVerified && user.status === "active" ? "text-green-600" : "text-yellow-600",
-        rating: "No ratings yet",
-        feedbackSummary: user.isVerified && user.status === "active" ? "Positive and reliable campus user" : "New to UniVault",
-        buyerFeedback: "No recent transactions",
-        sellerFeedback: "No recent transactions",
-        recoveryTrust: user.isVerified && user.status === "active" ? "Verified and community trusted" : "Verification required",
-        communityScore: user.isVerified && user.status === "active" ? "Excellent standing within UniVault" : "New member"
+        level: trustData.level,
+        levelClass: trustData.levelClass,
+        rating: trustData.score + "/100",
+        feedbackSummary: trustData.score >= 80 ? "Highly reliable and trusted campus user" : trustData.score >= 40 ? "Regular and verified campus user" : "New or unverified member",
+        buyerFeedback: trustData.stats.itemsSold > 0 ? "Positive transaction history" : "No recent transactions",
+        sellerFeedback: trustData.stats.itemsSold > 0 ? "Reliable seller" : "No recent transactions",
+        recoveryTrust: trustData.stats.foundReturned > 0 ? "Proven helper in Lost & Found" : "No recoveries yet",
+        communityScore: trustData.score >= 60 ? "Active member with good standing" : "Building community trust"
       };
 
       res.json({
         ...user.toObject(),
-        stats,
+        stats: {
+          ...trustData.stats,
+          buySellHistory: 0,
+          myBids: 0,
+          trustScore: trustData.score,
+          trustLevel: trustData.level,
+          trustBreakdown: trustData.breakdown
+        },
         trust
       });
     } else {
@@ -346,19 +344,31 @@ const unblockUser = async (req, res) => {
 // Admin Dashboard Stats
 const getAdminDashboardStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({ status: "active" });
-    const pendingUsers = await User.countDocuments({ status: "pending" });
-    const blockedUsers = await User.countDocuments({ status: "blocked" });
-    const adminUsers = await User.countDocuments({ role: "Admin" });
-    const studentUsers = await User.countDocuments({ role: "Student" });
+    const [
+      totalUsers, 
+      activeUsers, 
+      pendingUsers, 
+      blockedUsers, 
+      adminUsers, 
+      studentUsers,
+      newLostCount,
+      oldLostCount,
+      totalFoundItems,
+      totalMarketplaceItems
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ status: "active" }),
+      User.countDocuments({ status: "pending" }),
+      User.countDocuments({ status: "blocked" }),
+      User.countDocuments({ role: "Admin" }),
+      User.countDocuments({ role: "Student" }),
+      LostItem.countDocuments(),
+      Lost.countDocuments(),
+      FoundItem.countDocuments(),
+      Item.countDocuments()
+    ]);
 
-    // Fetch system-wide module counts
-    const newLostCount = await LostItem.countDocuments();
-    const oldLostCount = await Lost.countDocuments();
     const totalLostItems = newLostCount + oldLostCount;
-    const totalFoundItems = await FoundItem.countDocuments();
-    const totalMarketplaceItems = await Item.countDocuments();
 
     res.json({
       totalUsers,
@@ -367,13 +377,9 @@ const getAdminDashboardStats = async (req, res) => {
       blockedUsers,
       adminUsers,
       studentUsers,
-
-      // Live modules
       totalLostItems,
       totalFoundItems,
       totalMarketplaceItems,
-      
-      // Placeholders for future modules
       totalBids: 0,
       pendingClaims: 0,
     });

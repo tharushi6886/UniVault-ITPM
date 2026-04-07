@@ -321,7 +321,7 @@ const AdminDashboardPage = () => {
                 )}
 
                 {/* VISUAL ANALYTICS SECTION */}
-                {!loadingStats && stats && (
+                {!loadingStats && stats && stats.totalUsers > 0 && (
                   <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up">
                     <div className="bg-white rounded-3xl p-8 shadow-[0_10px_30px_rgba(79,70,229,0.08)] border border-[#e9e7ff]">
                       <h3 className="text-xl font-bold text-[#1f1b5b] mb-6 flex items-center gap-2">
@@ -330,9 +330,9 @@ const AdminDashboardPage = () => {
                       <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={[
-                            { name: 'Lost Items', count: stats.totalLostItems },
-                            { name: 'Found Items', count: stats.totalFoundItems },
-                            { name: 'Marketplace', count: stats.totalMarketplaceItems }
+                            { name: 'Lost', count: stats.totalLostItems || 0 },
+                            { name: 'Found', count: stats.totalFoundItems || 0 },
+                            { name: 'Market', count: stats.totalMarketplaceItems || 0 }
                           ]}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />

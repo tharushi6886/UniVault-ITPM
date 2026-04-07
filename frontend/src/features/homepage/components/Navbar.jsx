@@ -126,44 +126,47 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div className="flex gap-2.5 items-center">
+      <div className="flex gap-4 items-center">
         {loggedUser ? (
-          <>
-            <span className="hidden lg:block text-sm font-medium text-gray-700">
-              Hi, {loggedUser.name}
-            </span>
+          <div className="flex items-center gap-3">
+            {/* Professional User Profile Area */}
+            <div 
+              onClick={handleProfile}
+              className="group flex items-center gap-3 cursor-pointer bg-white/40 hover:bg-white/90 border border-[#818cf8]/20 hover:border-[#4f46e5]/40 pl-1.5 pr-4 py-1.5 rounded-full transition-all duration-300"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4f46e5] to-indigo-600 flex items-center justify-center text-xs font-black text-white shadow-md ring-2 ring-white transition-transform group-hover:scale-105">
+                {loggedUser.name?.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="text-[13px] font-bold text-[#1f1b5b] tracking-tight">{loggedUser.name}</span>
+                <span className="text-[10px] font-medium text-[#4f46e5]/70">Verified User</span>
+              </div>
+            </div>
 
             {loggedUser.role === "Admin" && (
               <button
                 onClick={() => navigate("/admin/dashboard")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                   isActive("/admin/dashboard")
-                    ? "bg-blue-600 text-white"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-indigo-600 text-white shadow-lg"
+                    : "bg-indigo-100 text-indigo-700 hover:bg-indigo-600 hover:text-white"
                 }`}
               >
                 Admin Panel
               </button>
             )}
 
-            <button
-              onClick={handleProfile}
-              className={`border text-sm font-medium px-[18px] py-2 rounded-[9px] transition-all duration-200 ${
-                isActive("/profile")
-                  ? "bg-[#eef2ff] border-[#4f46e5] text-[#4f46e5]"
-                  : "bg-white/70 border border-[#818cf8]/30 text-gray-700 hover:border-[#4f46e5] hover:text-[#4f46e5] hover:bg-[#eef2ff]/90"
-              }`}
-            >
-              Profile
-            </button>
-
+            {/* Professional Logout Button */}
             <button
               onClick={handleLogout}
-              className="bg-gradient-to-br from-red-500 to-red-700 border-none text-white text-sm font-semibold px-[22px] py-[9px] rounded-lg shadow-[0_4px_14px_rgba(239,68,68,0.35)] transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(239,68,68,0.48)] cursor-pointer"
+              className="flex items-center gap-2 text-[#4f46e5] hover:text-rose-600 text-[13px] font-bold px-4 py-2 bg-transparent hover:bg-rose-50 rounded-xl transition-all duration-200"
             >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
               Logout
             </button>
-          </>
+          </div>
         ) : (
           <>
             <button

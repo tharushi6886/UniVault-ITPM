@@ -26,5 +26,10 @@ export const getMyFoundItems = (token) =>
   });
 
 export const getAllItems = () => API.get("/items");
+export const getItemById = (id) => API.get(`/items/${id}`);
+
 export const getAllLostItems = () => API.get("/lost-items");
+export const getLostItemById = (id) => API.get(`/lost-items/${id}`);
+
 export const getAllFoundItems = () => API.get("/found-items");
+export const getFoundItemById = (id) => API.get(`/found-items/${id}`);

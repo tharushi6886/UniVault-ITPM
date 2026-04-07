@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { getLostItemById, getFoundItemById } from '../../api/itemApi';
 
 
 export const Sidebar = () => {
@@ -413,8 +414,25 @@ export const AdPopupModal = ({ popupData, closePopup }) => (
         <div className="bg-[#f8fafc] rounded-[16px] py-[18px] px-[20px] mb-[20px] border border-[#e2e8f0]">
           <div className="text-[11px] font-extrabold tracking-[0.1em] uppercase text-[#94a3b8] mb-[14px]">Advertisement Details</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-[12px]">
-            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#eef2ff]">👤</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Student</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.student || popupData.studentId}</div></div></div>
-            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#f0fdf4]">📞</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Contact</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.phone || popupData.contactNumber}</div></div></div>
+            <div className="flex items-center gap-[10px]">
+              <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#eef2ff]">👤</div>
+              <div>
+                <div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Student</div>
+                <div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px] flex items-center gap-2">
+                  {popupData.student || popupData.studentId}
+                  {popupData.ownerTrust && (
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${
+                      popupData.ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      popupData.ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}>
+                      TRUST: {popupData.ownerTrust.level}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#f0fdf4]">📞</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Contact</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.phone || popupData.contactNumber || "N/A"}</div></div></div>
             <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#fffbeb]">📍</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Location</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.location}</div></div></div>
           </div>
         </div>
@@ -757,9 +775,29 @@ export default function LostFoundDashboard({ ads }) {
 
   const displayAds = allAds;
 
-  const openAdPopup = (id, source = 'feed') => {
-    setPopupData({ ...displayAds[id], uid: id, source });
+  const openAdPopup = async (id, source = 'feed') => {
+    // Set initial data for immediate response
+    const baseData = displayAds[id];
+    setPopupData({ ...baseData, uid: id, source, loadingTrust: true });
     document.body.style.overflow = 'hidden';
+
+    try {
+      // Fetch detailed data with owner trust
+      const isLost = baseData.type === 'LOST' || baseData.type === 'Lost';
+      const response = await (isLost ? getLostItemById(id) : getFoundItemById(id));
+      
+      if (response.data) {
+        setPopupData(prev => ({
+          ...prev,
+          ...response.data.item,
+          ownerTrust: response.data.ownerTrust,
+          loadingTrust: false
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching popup trust data:", err);
+      setPopupData(prev => ({ ...prev, loadingTrust: false }));
+    }
   };
 
   const closePopup = () => {

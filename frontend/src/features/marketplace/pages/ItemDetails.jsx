@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getItemById } from '../../../api/itemApi';
 
 const ItemDetails = () => {
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedBranch, setCopiedBranch] = useState(false);
+  const [item, setItem] = useState(null);
+  const [ownerTrust, setOwnerTrust] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const item = location.state?.item;
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        setLoading(true);
+        // Try to use location state initially for immediate UI, then fetch details for trust data
+        if (location.state?.item) {
+          setItem(location.state.item);
+        }
+
+        const response = await getItemById(id);
+        if (response.data) {
+          setItem(response.data.item);
+          setOwnerTrust(response.data.ownerTrust);
+        }
+      } catch (err) {
+        console.error("Error fetching item details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItem();
+  }, [id, location.state]);
 
   const handleCopy = (text, type) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -206,13 +233,28 @@ const ItemDetails = () => {
                   <div>
                     <div className="text-[14px] font-semibold text-[#1a0040]">Arjun Karunarathna</div>
                     <div className="text-[11px] text-[#b8a0d4] mt-[1px]">Private seller · Colombo, LK</div>
-                    <span className="inline-flex items-center gap-[3px] text-[10px] text-[#166534] bg-[#dcfce7] border border-[#4ade80] rounded-full px-[7px] py-[1px] mt-[3px]">
-                      <svg viewBox="0 0 9 9" fill="none" className="w-[9px] h-[9px]">
-                        <circle cx="4.5" cy="4.5" r="4" stroke="#166534" strokeWidth="1"/>
-                        <path d="M2.5 4.5l1.5 1.5 2.5-2.5" stroke="#166534" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      Verified seller
-                    </span>
+                    
+                    {/* Dynamic Trust Badge */}
+                    <div className="mt-2.5">
+                      {loading ? (
+                        <div className="h-5 w-24 bg-gray-100 animate-pulse rounded-full"></div>
+                      ) : ownerTrust ? (
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${
+                          ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}>
+                          <svg viewBox="0 0 12 12" fill="none" className="w-[11px] h-[11px]">
+                            <path d="M6 1L7.5 4H10.5L8 6.5L9 9.5L6 8L3 9.5L4 6.5L1.5 4H4.5L6 1Z" fill="currentColor"/>
+                          </svg>
+                          Trust: {ownerTrust.level} ({ownerTrust.score})
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-[3px] text-[10px] text-[#b8a0d4] bg-gray-50 border border-gray-200 rounded-full px-[7px] py-[1px]">
+                          Unranked
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
