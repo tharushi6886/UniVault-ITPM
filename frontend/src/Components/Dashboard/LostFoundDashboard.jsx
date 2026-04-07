@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -733,6 +733,7 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
 
 export default function LostFoundDashboard({ ads }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('feed');
   const [popupData, setPopupData] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
@@ -741,7 +742,17 @@ export default function LostFoundDashboard({ ads }) {
   const [refreshMatches, setRefreshMatches] = useState(0);
   const [allAds, setAllAds] = useState(ads || {});
   const [searchQuery, setSearchQuery] = useState('');
-  const [boardFilter, setBoardFilter] = useState('All');
+  
+  const getInitialFilter = () => {
+    if (location.pathname === '/lost-items') return 'Lost';
+    if (location.pathname === '/found-items') return 'Found';
+    return 'All';
+  };
+  const [boardFilter, setBoardFilter] = useState(getInitialFilter());
+
+  useEffect(() => {
+    setBoardFilter(getInitialFilter());
+  }, [location.pathname]);
 
   const lostCount = Object.values(allAds).filter(ad => ad.type === 'LOST').length;
   const foundCount = Object.values(allAds).filter(ad => ad.type === 'FOUND').length;

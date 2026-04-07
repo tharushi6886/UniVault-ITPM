@@ -59,8 +59,8 @@ const Navbar = () => {
 
     const navLinks = [
         { name: 'Home', path: '#home', isScroll: true },
-        { name: 'Lost Items', path: '#lost', isScroll: true },
-        { name: 'Found Items', path: '#found', isScroll: true },
+        { name: 'Lost Items', path: '/lost-items', isScroll: false },
+        { name: 'Found Items', path: '/found-items', isScroll: false },
         { name: 'Marketplace', path: '/marketplace', isScroll: false },
         { name: 'Bidding', path: '/bidding', isScroll: false },
         { name: 'About', path: '#about', isScroll: true }
@@ -87,9 +87,12 @@ const Navbar = () => {
                                 {l.name}
                             </a>
                         ) : (
-                            <Link to={l.path} className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue no-underline">
+                            <span 
+                                onClick={() => handleProtectedNavigation(l.path)}
+                                className="text-sm color-muted hover:text-i2 font-medium transition-colors font-epilogue no-underline cursor-pointer"
+                            >
                                 {l.name}
-                            </Link>
+                            </span>
                         )}
                     </li>
                 ))}
