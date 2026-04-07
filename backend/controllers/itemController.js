@@ -1,74 +1,59 @@
 const Item = require("../models/itemModels");
 const calculateTrustScore = require("../utils/trustScore");
 
-
 // GET all items
-const getAllItems = async (req,res,next) => {
+const getAllItems = async (req, res, next) => {
+  try {
+    const items = await Item.find();
 
-  let items;
+    if (!items || items.length === 0) {
+      return res.status(404).json({ message: "Items not found" });
+    }
 
-  try{
-    items = await Item.find();
-  }catch(err){
+    return res.status(200).json({ items });
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({
-      message:"Error fetching items"
-    });
+    return res.status(500).json({ message: "Error fetching items" });
   }
-
-  if(!items || items.length === 0){
-    return res.status(404).json({
-      message:"Items not found"
-    });
-  }
-
-  return res.status(200).json({ items });
 };
 
 // GET my items
 const getMyItems = async (req, res, next) => {
-  let items;
   try {
-    items = await Item.find({ userId: req.user._id });
+    const items = await Item.find({ userId: req.user._id });
+    return res.status(200).json({ items: items || [] });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Error fetching user items" });
   }
-
-  if (!items) {
-    items = [];
-  }
-
-  return res.status(200).json({ items });
 };
 
-
-
 // ADD new item
-const addItems = async (req,res,next)=> {
+const addItems = async (req, res, next) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Authentication required" });
     }
 
-    // 1. Calculate user's trust score to determine limit
+    // 🔥 TRUST CHECK
     const trustData = await calculateTrustScore(req.user._id);
     if (!trustData) {
       return res.status(500).json({ message: "Error validating user trust" });
     }
 
-    // 2. Count existing items by this user (only active ones)
-    const existingCount = await Item.countDocuments({ userId: req.user._id, availability_status: "available" });
+    const existingCount = await Item.countDocuments({
+      userId: req.user._id,
+      availability_status: "available"
+    });
 
-    // 3. Enforce limits
     let limit = 0;
     if (trustData.score < 40) limit = 3;
     else if (trustData.score < 80) limit = 10;
     else limit = Infinity;
 
     if (existingCount >= limit) {
-      return res.status(403).json({ 
-        message: `Your current Trust Level (${trustData.level}) limits you to ${limit} active items. Please resolve existing items or increase your Trust Score to list more.`,
+      return res.status(403).json({
+        message: `Your Trust Level (${trustData.level}) allows only ${limit} active items`,
         currentTrust: trustData.score,
         limit
       });
@@ -83,15 +68,18 @@ const addItems = async (req,res,next)=> {
       brand,
       colour,
       item_type,
+      listing_type,
+      item_image,
+      payment_details,
       availability_status,
       approval_status,
       price,
       quantity
     } = req.body;
 
-    let item;
+    const resolvedType = item_type || listing_type || "sell";
 
-    item = new Item({
+    const item = new Item({
       userId: req.user._id,
       item_id,
       item_name,
@@ -100,7 +88,10 @@ const addItems = async (req,res,next)=> {
       item_condition,
       brand,
       colour,
-      item_type,
+      item_type: resolvedType,
+      listing_type: listing_type || undefined,
+      item_image: item_image || undefined,
+      payment_details: payment_details || undefined,
       availability_status,
       approval_status,
       price,
@@ -110,11 +101,11 @@ const addItems = async (req,res,next)=> {
     await item.save();
 
     return res.status(201).json({
-      message:"Item added successfully",
-      item:item
+      message: "Item added successfully",
+      item: item
     });
 
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
       message: err.message || "Unable to add item"
@@ -122,34 +113,35 @@ const addItems = async (req,res,next)=> {
   }
 };
 
-
 // GET single item with owner trust
 const getItemById = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
-    
+
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Calculate owner trust data
     const ownerTrust = await calculateTrustScore(item.userId);
 
-    res.status(200).json({
+    return res.status(200).json({
       item,
-      ownerTrust: ownerTrust ? {
-        score: ownerTrust.score,
-        level: ownerTrust.level,
-        levelClass: ownerTrust.levelClass
-      } : null
+      ownerTrust: ownerTrust
+        ? {
+            score: ownerTrust.score,
+            level: ownerTrust.level,
+            levelClass: ownerTrust.levelClass
+          }
+        : null
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching item details" });
+    return res.status(500).json({ message: "Error fetching item details" });
   }
 };
 
 exports.getAllItems = getAllItems;
-exports.addItems = addItems;
 exports.getMyItems = getMyItems;
+exports.addItems = addItems;
 exports.getItemById = getItemById;
