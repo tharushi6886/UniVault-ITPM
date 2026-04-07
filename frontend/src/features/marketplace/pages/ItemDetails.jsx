@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getItemById } from '../../../api/itemApi';
 
 const ItemDetails = () => {
   useEffect(() => {
@@ -7,10 +8,36 @@ const ItemDetails = () => {
   }, []);
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedBranch, setCopiedBranch] = useState(false);
+  const [item, setItem] = useState(null);
+  const [ownerTrust, setOwnerTrust] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const item = location.state?.item;
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        setLoading(true);
+        // Try to use location state initially for immediate UI, then fetch details for trust data
+        if (location.state?.item) {
+          setItem(location.state.item);
+        }
+
+        const response = await getItemById(id);
+        if (response.data) {
+          setItem(response.data.item);
+          setOwnerTrust(response.data.ownerTrust);
+        }
+      } catch (err) {
+        console.error("Error fetching item details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItem();
+  }, [id, location.state]);
 
   const handleCopy = (text, type) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -159,6 +186,45 @@ const ItemDetails = () => {
               </div>
             </div>
 
+            {/* Owner Details Card */}
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07),0_1px_4px_rgba(46,0,96,0.04)] overflow-hidden mb-5">
+              <div className="px-[1.4rem] py-4 border-b border-[#e4d9f7] flex items-center justify-between">
+                <div className="flex items-center gap-[7px] text-[11px] font-semibold text-[#6d28d9] tracking-[0.08em] uppercase">
+                  <svg viewBox="0 0 13 13" fill="none" className="w-[13px] h-[13px]">
+                    <circle cx="6.5" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.3"/>
+                    <path d="M2 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                  </svg>
+                  Owner details
+                </div>
+              </div>
+              <div className="p-[1.4rem]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-[46px] h-[46px] rounded-full shrink-0 bg-gradient-to-br from-[#6d28d9] to-[#a78bfa] flex items-center justify-center text-[16px] font-bold text-white border-2 border-[#c4b5fd]">AK</div>
+                  <div>
+                    <div className="text-[14px] font-semibold text-[#1a0040]">Arjun Karunarathna</div>
+                    <div className="text-[11px] text-[#b8a0d4] mt-[1px]">Private seller · Colombo, LK</div>
+                    
+                    {/* Dynamic Trust Badge */}
+                    <div className="mt-2.5">
+                      {loading ? (
+                        <div className="h-5 w-24 bg-gray-100 animate-pulse rounded-full"></div>
+                      ) : ownerTrust ? (
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${
+                          ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}>
+                          <svg viewBox="0 0 12 12" fill="none" className="w-[11px] h-[11px]">
+                            <path d="M6 1L7.5 4H10.5L8 6.5L9 9.5L6 8L3 9.5L4 6.5L1.5 4H4.5L6 1Z" fill="currentColor"/>
+                          </svg>
+                          Trust: {ownerTrust.level} ({ownerTrust.score})
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-[3px] text-[10px] text-[#b8a0d4] bg-gray-50 border border-gray-200 rounded-full px-[7px] py-[1px]">
+                          Unranked
+                        </span>
+                      )}
+                    </div>
             {/* Right Column */}
             <div>
               {/* Bid Card */}
