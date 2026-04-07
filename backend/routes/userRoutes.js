@@ -23,8 +23,6 @@ const {
 
 const upload = require("../middlewares/uploadMiddleware");
 
-} = require("../controllers/userController");
-
 const { protect } = require("../middlewares/authMiddleware");
 const { authorizeRoles } = require("../middlewares/roleMiddleware");
 const {

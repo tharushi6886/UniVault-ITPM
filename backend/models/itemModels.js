@@ -12,9 +12,6 @@ const itemSchema = new mongoose.Schema({
     ref: "User"
   },
 
-  item_name:{
-    type:String,
-    required:true
   item_name: {
     type: String,
     required: true

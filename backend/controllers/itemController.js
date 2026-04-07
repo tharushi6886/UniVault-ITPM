@@ -14,13 +14,6 @@ const getAllItems = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Error fetching items" });
-  try {
-    items = await Item.find();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: "Error fetching items"
-    });
   }
 };
 
@@ -32,10 +25,6 @@ const getMyItems = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Error fetching user items" });
-  if (!items || items.length === 0) {
-    return res.status(404).json({
-      message: "Items not found"
-    });
   }
 };
 
@@ -71,38 +60,6 @@ const addItems = async (req, res, next) => {
     }
 
     const {
-// ADD new item
-const addItems = async (req, res, next) => {
-  console.log("Start");
-
-  const {
-    item_id,
-    item_name,
-    description,
-    category,
-    item_condition,    
-    brand,
-    colour,
-    item_type,
-    listing_type,
-    item_image,
-    payment_details,
-    availability_status,
-    approval_status,
-    price,
-    quantity
-  } = req.body;
-
-  // prefer authenticated user id (req.user) but fall back to body.userId if provided
-  const userIdToSave = (req.user && req.user._id) || req.body.userId || undefined;
-
-  let item;
-
-  try {
-
-    const resolvedType = item_type || listing_type || 'sell';
-
-    item = new Item({
       item_id,
       item_name,
       description,
@@ -134,12 +91,6 @@ const addItems = async (req, res, next) => {
       item_type: resolvedType,
       listing_type: listing_type || undefined,
       item_image: item_image || undefined,
-      // normalize to stored field
-      item_type: resolvedType,
-      // also keep original listing_type if provided
-      listing_type: listing_type || undefined,
-      item_image: item_image || undefined,
-      userId: userIdToSave,
       payment_details: payment_details || undefined,
       availability_status,
       approval_status,
@@ -158,10 +109,6 @@ const addItems = async (req, res, next) => {
     console.error(err);
     return res.status(500).json({
       message: err.message || "Unable to add item"
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: "Unable to add item"
     });
   }
 };
@@ -187,10 +134,6 @@ const getItemById = async (req, res, next) => {
           }
         : null
     });
-  return res.status(201).json({
-    message: "Item added successfully",
-    item: item
-  });
 
   } catch (err) {
     console.error(err);
@@ -202,5 +145,17 @@ exports.getAllItems = getAllItems;
 exports.getMyItems = getMyItems;
 exports.addItems = addItems;
 exports.getItemById = getItemById;
-exports.addItems = addItems;
-// exports are defined above
+
+exports.updateItem = async (req, res, next) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    if (item.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    const updated = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json({ item: updated });
+  } catch (err) {
+    res.status(500).json({ message: "Error updating" });
+  }
+};

@@ -33,8 +33,20 @@ export const getLostItemById = (id) => API.get(`/lost-items/${id}`);
 
 export const getAllFoundItems = () => API.get("/found-items");
 export const getFoundItemById = (id) => API.get(`/found-items/${id}`);
-  baseURL: "http://localhost:5000/api/items",
-});
 
-export const getItems = () => API.get("/");
-export const addItem = (data) => API.post("/", data);
+export const getItems = getAllItems;
+export const addItem = (data) => API.post("/items", data);
+export const updateMarketplaceItem = (id, data, token) =>
+  API.put(`/items/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+export const updateLostItem = (id, data, token) =>
+  API.put(`/lost-items/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+export const updateFoundItem = (id, data, token) =>
+  API.put(`/found-items/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });

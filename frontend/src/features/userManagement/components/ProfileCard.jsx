@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadAvatar } from "../../../api/userApi";
+import { getMyMarketplaceItems, getMyLostItems, getMyFoundItems, updateMarketplaceItem, updateLostItem, updateFoundItem } from "../../../api/itemApi";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 const InfoCard = ({ title, value, editable, onClick, icon }) => {
   const CardWrapper = editable ? "button" : "div";
@@ -64,12 +66,206 @@ const ActivityCard = ({ icon, title, count, note, bgColor, iconColor, onClick })
   </button>
 );
 
+const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResolve, userTrust }) => (
+  <div className="mb-14 last:mb-0 animate-fade-in">
+    <div className="flex items-center justify-between mb-6 px-3">
+      <div className="flex items-center gap-4">
+        <div className={`w-2 h-8 rounded-full shadow-lg ${badgeColor}`}></div>
+        <div>
+          <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none mb-1">{title}</h3>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Records: {items.length}</p>
+        </div>
+      </div>
+      <button 
+        onClick={onViewAll}
+        className="group flex items-center gap-2 text-xs font-black text-indigo-500 hover:text-indigo-700 transition-all uppercase tracking-widest"
+      >
+        View Inventory
+        <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </button>
+    </div>
+    
+    {items.length === 0 ? (
+      <div className="bg-slate-50/50 border border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center">
+        <div className="text-4xl mb-4 opacity-20 italic font-black text-slate-400">#EMPTY_SLOT</div>
+        <p className="text-sm text-slate-400 font-medium italic">No active ledger entries found for this category.</p>
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {items.slice(0, 3).map((item, idx) => (
+          <div key={item._id || idx} className="group relative bg-white border border-slate-100 rounded-[2.2rem] p-6 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
+            {/* Background Decorative Element */}
+            <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-[0.03] transition-transform duration-700 group-hover:scale-150 ${badgeColor}`}></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-5">
+                <div className={`p-4 rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner ${
+                   item.item_id ? "bg-indigo-50 text-indigo-600" : item.status === "active" ? "bg-amber-50 text-amber-600" : "bg-sky-50 text-sky-600"
+                }`}>
+                  {item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"}
+                </div>
+                
+                <div className="flex flex-col items-end gap-1.5">
+                   <div className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm border ${
+                     item.availability_status === "available" || item.status === "active" 
+                     ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
+                     : "bg-indigo-50 text-indigo-600 border-indigo-100"
+                   }`}>
+                     {item.availability_status || item.status}
+                   </div>
+                   {/* TRUST BADGE Integration as requested */}
+                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Trust:</span>
+                      <span className="text-[9px] font-black text-indigo-500 uppercase">{userTrust || "Standard"}</span>
+                   </div>
+                </div>
+              </div>
+
+              <h4 className="text-base font-black text-slate-800 mb-1 truncate leading-tight group-hover:text-indigo-600 transition-colors">
+                {item.title || item.itemName || item.item_name}
+              </h4>
+              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-4">{item.category}</p>
+              
+              <div className="flex items-center justify-between pt-4 border-t border-slate-50 mb-5">
+                <div className="flex flex-col">
+                  <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Valuation / Date</span>
+                  <span className="text-xs font-black text-indigo-600">
+                    {item.price ? `LKR ${item.price}` : new Date(item.date).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end">
+                   <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Origin</span>
+                   <span className="text-[10px] font-extrabold text-slate-500 truncate max-w-[80px]">
+                     {item.location || "Central Vault"}
+                   </span>
+                </div>
+              </div>
+
+              {/* Action Buttons for Management */}
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => onEdit(item)}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-indigo-600 text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                  Edit
+                </button>
+                <button 
+                  onClick={() => onResolve(item)}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all border border-indigo-100 flex items-center justify-center"
+                  title="Mark as Resolved"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
 const ProfileCard = ({ user, refreshUser }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Overview");
   const [uploading, setUploading] = useState(false);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+
+  // Activity Data States
+  const [lostItems, setLostItems] = useState([]);
+  const [foundItems, setFoundItems] = useState([]);
+  const [marketListings, setMarketListings] = useState([]);
+  const [soldItems, setSoldItems] = useState([]);
+  const [myBids] = useState([]); // Member not finished yet
+
+  // Edit Management
+  const [editingItem, setEditingItem] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const tabs = ["Overview", "Activity", "Trust & Reputation", "Feedback"];
+
+  useEffect(() => {
+    if (activeTab === "Activity") {
+      fetchActivityData();
+    }
+  }, [activeTab]);
+
+  const fetchActivityData = async () => {
+    setLoadingActivity(true);
+    try {
+      const token = localStorage.getItem("token");
+      
+      // Parallel Fetching demonstrating system integration
+      const [lostRes, foundRes, marketRes] = await Promise.all([
+        getMyLostItems(token).catch(() => ({ data: [] })),
+        getMyFoundItems(token).catch(() => ({ data: [] })),
+        getMyMarketplaceItems(token).catch(() => ({ data: [] }))
+      ]);
+
+      setLostItems(lostRes.data || []);
+      setFoundItems(foundRes.data || []);
+      
+      // Marketplace Filtering Logic
+      const allMarket = marketRes.data?.items || [];
+      setMarketListings(allMarket.filter(it => it.availability_status === "available"));
+      setSoldItems(allMarket.filter(it => it.availability_status === "not_available"));
+      
+    } catch (error) {
+      console.error("Failed to fetch activity dashboard", error);
+      toast.error("Dashboard synchronization incomplete");
+    } finally {
+      setLoadingActivity(false);
+    }
+  };
+
+  const handleResolve = async (item, type) => {
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem("token");
+      let res;
+      if (type === 'lost') res = await updateLostItem(item._id, { status: 'found' }, token);
+      else if (type === 'found') res = await updateFoundItem(item._id, { status: 'returned' }, token);
+      else if (type === 'market') res = await updateMarketplaceItem(item._id, { availability_status: 'not_available' }, token);
+      
+      toast.success("Record resolved and updated in Vault!");
+      fetchActivityData();
+    } catch (error) {
+      toast.error("Failed to update status");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem("token");
+      const { _id, type, title, itemName, item_name, description, category, price } = editingItem;
+      const data = { 
+        title: title || itemName || item_name, 
+        description, 
+        category, 
+        price 
+      };
+
+      if (type === 'lost') await updateLostItem(_id, data, token);
+      else if (type === 'found') await updateFoundItem(_id, data, token);
+      else if (type === 'market') await updateMarketplaceItem(_id, data, token);
+
+      toast.success("Vault record synchronized!");
+      setIsEditModalOpen(false);
+      fetchActivityData();
+    } catch (error) {
+      toast.error("Encryption update failed");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
@@ -221,15 +417,89 @@ const ProfileCard = ({ user, refreshUser }) => {
         {/* ACTIVITY TAB */}
         {activeTab === "Activity" && (
           <div className="pt-2 animate-fade-in-up">
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-8">Performance Metrics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <ActivityCard icon="🛒" title="Commerce Ledger" count={user.stats?.buySellHistory ?? 0} note="Successful trades & deals" bgColor="bg-indigo-50" iconColor="text-indigo-500" onClick={() => navigate("/profile/buy-sell-history")} />
-              <ActivityCard icon="📦" title="Active Postings" count={user.stats?.itemsPosted ?? 0} note="Items listed in marketplace" bgColor="bg-blue-50" iconColor="text-blue-500" onClick={() => navigate("/profile/items-posted")} />
-              <ActivityCard icon="💰" title="Sales Completed" count={user.stats?.itemsSold ?? 0} note="Successfully closed listings" bgColor="bg-violet-50" iconColor="text-violet-500" onClick={() => navigate("/profile/items-sold")} />
-              <ActivityCard icon="🤝" title="Returns Made" count={user.stats?.foundReturned ?? 0} note="Found items resolved" bgColor="bg-sky-50" iconColor="text-sky-500" onClick={() => navigate("/profile/found-returned")} />
-              <ActivityCard icon="🔍" title="Lost Reports" count={user.stats?.lostReports ?? 0} note="Personal missing items" bgColor="bg-amber-50" iconColor="text-amber-500" onClick={() => navigate("/profile/lost-reports")} />
-              <ActivityCard icon="🎯" title="Bid Activity" count={user.stats?.myBids ?? 0} note="Ongoing marketplace bids" bgColor="bg-rose-50" iconColor="text-rose-500" onClick={() => navigate("/profile/my-bids")} />
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Activity Dashboard</h2>
+                <p className="text-sm text-slate-400 font-medium">Synced real-time across all UniVault modules</p>
+              </div>
+              <button 
+                onClick={fetchActivityData}
+                disabled={loadingActivity}
+                className={`p-3 rounded-2xl bg-white border border-slate-100 shadow-sm transition-all hover:bg-slate-50 ${loadingActivity ? "animate-spin" : ""}`}
+                title="Refresh All Data"
+              >
+                <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
             </div>
+
+            {loadingActivity ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+                {[1, 2, 3].map(i => <div key={i} className="h-40 bg-slate-100 rounded-[2rem]"></div>)}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Statistics Overview Cards (Keep original visual style but functional) */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                   <ActivityCard icon="🔍" title="Lost Reports" count={lostItems.length} note="Missing item logs" bgColor="bg-amber-50" iconColor="text-amber-500" onClick={() => navigate("/profile/lost-reports")} />
+                   <ActivityCard icon="🤝" title="Found & Returned" count={foundItems.length} note="Successful resolutions" bgColor="bg-sky-50" iconColor="text-sky-500" onClick={() => navigate("/profile/found-returned")} />
+                   <ActivityCard icon="📦" title="Active Listings" count={marketListings.length} note="Listed in Marketplace" bgColor="bg-blue-50" iconColor="text-blue-500" onClick={() => navigate("/profile/items-posted")} />
+                </div>
+
+                <div className="bg-white/40 backdrop-blur-md rounded-[2.5rem] p-1 shadow-inner">
+                  <div className="bg-white rounded-[2.2rem] p-8 border border-white shadow-sm">
+                    <DashboardSection 
+                      title="My Lost Reports" 
+                      items={lostItems} 
+                      badgeColor="bg-amber-400 font-bold" 
+                      onViewAll={() => navigate("/profile/lost-reports")}
+                      onEdit={(item) => { setEditingItem({...item, type: 'lost'}); setIsEditModalOpen(true); }}
+                      onResolve={(item) => handleResolve(item, 'lost')}
+                      userTrust={user.stats?.trust?.level}
+                    />
+                    <hr className="my-10 border-slate-100" />
+                    <DashboardSection 
+                      title="My Found Reports" 
+                      items={foundItems} 
+                      badgeColor="bg-sky-400 font-bold" 
+                      onViewAll={() => navigate("/profile/found-returned")}
+                      onEdit={(item) => { setEditingItem({...item, type: 'found'}); setIsEditModalOpen(true); }}
+                      onResolve={(item) => handleResolve(item, 'found')}
+                      userTrust={user.stats?.trust?.level}
+                    />
+                    <hr className="my-10 border-slate-100" />
+                    <DashboardSection 
+                      title="Marketplace Items" 
+                      items={marketListings} 
+                      badgeColor="bg-blue-400 font-bold" 
+                      onViewAll={() => navigate("/profile/items-posted")}
+                      onEdit={(item) => { setEditingItem({...item, type: 'market'}); setIsEditModalOpen(true); }}
+                      onResolve={(item) => handleResolve(item, 'market')}
+                      userTrust={user.trust?.level}
+                    />
+                    <hr className="my-10 border-slate-100" />
+                    <DashboardSection 
+                      title="Sold Items" 
+                      items={soldItems} 
+                      badgeColor="bg-indigo-400 font-bold" 
+                      onViewAll={() => navigate("/profile/items-sold")}
+                      onEdit={(item) => { setEditingItem({...item, type: 'market'}); setIsEditModalOpen(true); }}
+                      onResolve={(item) => handleResolve(item, 'market')}
+                      userTrust={user.trust?.level}
+                    />
+                    <hr className="my-10 border-slate-100" />
+                    <DashboardSection 
+                      title="My Bids" 
+                      items={myBids} 
+                      badgeColor="bg-rose-400 font-bold" 
+                      onViewAll={() => navigate("/profile/my-bids")}
+                      userTrust={user.trust?.level}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -245,10 +515,10 @@ const ProfileCard = ({ user, refreshUser }) => {
                     <p className="text-sm font-medium text-slate-400 mt-1">Calculated based on community interaction</p>
                   </div>
                   <div className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl ${
-                    (user.stats?.trust?.score || 0) >= 80 ? "bg-indigo-500 text-white shadow-indigo-200" : 
-                    (user.stats?.trust?.score || 0) >= 40 ? "bg-amber-500 text-white shadow-amber-200" : "bg-rose-500 text-white shadow-rose-200"
+                    (user.stats?.trustScore || 0) >= 80 ? "bg-indigo-500 text-white shadow-indigo-200" : 
+                    (user.stats?.trustScore || 0) >= 40 ? "bg-amber-500 text-white shadow-amber-200" : "bg-rose-500 text-white shadow-rose-200"
                   }`}>
-                    {user.stats?.trust?.level || "Unranked"} Standing
+                    {user.trust?.level || "Unranked"} Standing
                   </div>
                </div>
 
@@ -256,7 +526,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                <div className="mb-14 relative z-10">
                   <div className="flex justify-between items-end mb-5">
                     <div className="flex items-baseline gap-2">
-                       <span className="text-6xl font-black text-indigo-600 tracking-tighter leading-none">{user.stats?.trust?.score || 0}</span>
+                       <span className="text-6xl font-black text-indigo-600 tracking-tighter leading-none">{user.stats?.trustScore || 0}</span>
                        <span className="text-xl font-bold text-slate-300 uppercase tracking-widest">Score</span>
                     </div>
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Target: 80+ FOR SUPREME STATUS</span>
@@ -265,11 +535,11 @@ const ProfileCard = ({ user, refreshUser }) => {
                   <div className="h-6 w-full bg-slate-50 rounded-full overflow-hidden p-1.5 shadow-inner">
                     <div 
                       className={`h-full rounded-full transition-all duration-[1.5s] ease-out relative group/bar ${
-                        (user.stats?.trust?.score || 0) >= 80 ? "bg-gradient-to-r from-indigo-400 to-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.5)]" : 
-                        (user.stats?.trust?.score || 0) >= 40 ? "bg-gradient-to-r from-amber-400 to-amber-600 shadow-[0_0_25px_rgba(245,158,11,0.5)]" : 
+                        (user.stats?.trustScore || 0) >= 80 ? "bg-gradient-to-r from-indigo-400 to-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.5)]" : 
+                        (user.stats?.trustScore || 0) >= 40 ? "bg-gradient-to-r from-amber-400 to-amber-600 shadow-[0_0_25px_rgba(245,158,11,0.5)]" : 
                         "bg-gradient-to-r from-rose-400 to-rose-600 shadow-[0_0_25px_rgba(244,63,94,0.5)]"
                       }`}
-                      style={{ width: `${user.stats?.trust?.score || 0}%` }}
+                      style={{ width: `${user.stats?.trustScore || 0}%` }}
                     >
                        <div className="absolute top-0 right-0 h-full w-4 bg-white/20 skew-x-[-20deg]"></div>
                     </div>
@@ -283,7 +553,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                     Detailed Breakdown
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(user.stats?.trust?.breakdown || []).map((item, idx) => (
+                    {(user.stats?.trustBreakdown || []).map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between p-6 rounded-3xl bg-slate-50 transition-all hover:bg-white hover:shadow-xl border border-transparent hover:border-slate-100 group">
                         <div className="flex flex-col">
                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{item.name}</span>
@@ -305,7 +575,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700"></div>
                   <h5 className="text-[10px] uppercase font-black tracking-[0.3em] mb-3 opacity-60">Insight Analysis</h5>
                   <p className="text-lg font-bold leading-relaxed italic pr-12">
-                     " {user.stats?.trust?.feedback || "Your data footprint is growing. Continue high-integrity participation to unlock supreme community privileges."} "
+                     " {user.trust?.feedbackSummary || "Your data footprint is growing. Continue high-integrity participation to unlock supreme community privileges."} "
                   </p>
                </div>
             </div>
@@ -339,6 +609,84 @@ const ProfileCard = ({ user, refreshUser }) => {
 
       </div>
 
+      {/* EDIT MODAL Overlay */}
+      {isEditModalOpen && editingItem && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fade-in">
+           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
+           
+           <div className="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-white overflow-hidden animate-fade-in-up">
+              <div className="bg-indigo-600 p-8 text-white relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <h3 className="text-2xl font-black tracking-tight">Modify Vault Record</h3>
+                <p className="text-indigo-100 text-sm font-bold uppercase tracking-widest mt-1">UUID: {editingItem._id?.slice(-8)}</p>
+                <button onClick={() => setIsEditModalOpen(false)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdate} className="p-10 space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Item Designation</label>
+                  <input 
+                    type="text" 
+                    value={editingItem.title || editingItem.itemName || editingItem.item_name || ""} 
+                    onChange={(e) => setEditingItem({...editingItem, title: e.target.value, item_name: e.target.value, itemName: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sector / Category</label>
+                    <input 
+                      type="text" 
+                      value={editingItem.category || ""} 
+                      onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valuation (LKR)</label>
+                    <input 
+                      type="number" 
+                      value={editingItem.price || ""} 
+                      onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Detailed Specification</label>
+                  <textarea 
+                    rows="4"
+                    value={editingItem.description || ""} 
+                    onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
+                  ></textarea>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="flex-1 py-4 rounded-2xl bg-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                    Abort Changes
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={isSaving}
+                    className={`flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all ${isSaving ? "opacity-50" : ""}`}
+                  >
+                    {isSaving ? "Synchronizing..." : "Update Vault Record →"}
+                  </button>
+                </div>
+              </form>
+           </div>
+        </div>
+      )}
+
       <style dangerouslySetInnerHTML={{ __html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -349,6 +697,11 @@ const ProfileCard = ({ user, refreshUser }) => {
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
       `}} />
     </div>
   );
