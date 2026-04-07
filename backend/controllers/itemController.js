@@ -12,15 +12,8 @@ const getAllItems = async (req, res, next) => {
 
     return res.status(200).json({ items });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ message: "Error fetching items" });
-  try {
-    items = await Item.find();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: "Error fetching items"
-    });
   }
 };
 
@@ -30,12 +23,8 @@ const getMyItems = async (req, res, next) => {
     const items = await Item.find({ userId: req.user._id });
     return res.status(200).json({ items: items || [] });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ message: "Error fetching user items" });
-  if (!items || items.length === 0) {
-    return res.status(404).json({
-      message: "Items not found"
-    });
   }
 };
 
@@ -71,38 +60,6 @@ const addItems = async (req, res, next) => {
     }
 
     const {
-// ADD new item
-const addItems = async (req, res, next) => {
-  console.log("Start");
-
-  const {
-    item_id,
-    item_name,
-    description,
-    category,
-    item_condition,    
-    brand,
-    colour,
-    item_type,
-    listing_type,
-    item_image,
-    payment_details,
-    availability_status,
-    approval_status,
-    price,
-    quantity
-  } = req.body;
-
-  // prefer authenticated user id (req.user) but fall back to body.userId if provided
-  const userIdToSave = (req.user && req.user._id) || req.body.userId || undefined;
-
-  let item;
-
-  try {
-
-    const resolvedType = item_type || listing_type || 'sell';
-
-    item = new Item({
       item_id,
       item_name,
       description,
@@ -121,9 +78,10 @@ const addItems = async (req, res, next) => {
     } = req.body;
 
     const resolvedType = item_type || listing_type || "sell";
+    const userIdToSave = req.user._id || req.body.userId;
 
     const item = new Item({
-      userId: req.user._id,
+      userId: userIdToSave,
       item_id,
       item_name,
       description,
@@ -134,15 +92,9 @@ const addItems = async (req, res, next) => {
       item_type: resolvedType,
       listing_type: listing_type || undefined,
       item_image: item_image || undefined,
-      // normalize to stored field
-      item_type: resolvedType,
-      // also keep original listing_type if provided
-      listing_type: listing_type || undefined,
-      item_image: item_image || undefined,
-      userId: userIdToSave,
       payment_details: payment_details || undefined,
-      availability_status,
-      approval_status,
+      availability_status: availability_status || "available",
+      approval_status: approval_status || "pending",
       price,
       quantity
     });
@@ -158,10 +110,6 @@ const addItems = async (req, res, next) => {
     console.error(err);
     return res.status(500).json({
       message: err.message || "Unable to add item"
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: "Unable to add item"
     });
   }
 };
@@ -187,11 +135,6 @@ const getItemById = async (req, res, next) => {
           }
         : null
     });
-  return res.status(201).json({
-    message: "Item added successfully",
-    item: item
-  });
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Error fetching item details" });
@@ -202,5 +145,3 @@ exports.getAllItems = getAllItems;
 exports.getMyItems = getMyItems;
 exports.addItems = addItems;
 exports.getItemById = getItemById;
-exports.addItems = addItems;
-// exports are defined above
