@@ -1,29 +1,51 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProfileSectionLayout from "../components/ProfileSectionLayout";
+import { getMyFoundItems } from "../../../api/itemApi";
 
-const ItemsSoldPage = () => {
-  const soldItems = [
-    { id: 1, item: "Laptop Bag", buyer: "Student User", soldDate: "2026-03-10", amount: "LKR 2,000" },
-    { id: 2, item: "Engineering Drawing Tools", buyer: "Campus Buyer", soldDate: "2026-02-28", amount: "LKR 1,200" },
-  ];
+const FoundReturnedPage = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await getMyFoundItems(token);
+        setItems(res.data);
+      } catch (err) {
+        console.error("Error fetching found items", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItems();
+  }, []);
 
   return (
     <ProfileSectionLayout
-      title="Items Sold"
-      description="Displays all items successfully sold through the marketplace."
+      title="Found Items Returned"
+      description="Displays all lost items you have found and reported/returned."
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {soldItems.map((item) => (
-          <div key={item.id} className="rounded-2xl border border-[#ecebff] bg-[#f8f8ff] p-5">
-            <h3 className="text-xl font-bold text-[#1f1b5b]">{item.item}</h3>
-            <p className="text-gray-500 mt-2">Buyer: {item.buyer}</p>
-            <p className="text-gray-500">Sold Date: {item.soldDate}</p>
-            <p className="text-gray-500">Amount: {item.amount}</p>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center p-8"><span className="text-gray-500">Loading...</span></div>
+      ) : items.length === 0 ? (
+        <div className="flex justify-center p-8 bg-gray-50 rounded-xl border border-gray-100"><p className="text-gray-500">No found items reported yet.</p></div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {items.map((item) => (
+            <div key={item._id} className="rounded-2xl border border-[#ecebff] bg-[#f8f8ff] p-5">
+              <h3 className="text-xl font-bold text-[#1f1b5b]">{item.title}</h3>
+              <p className="text-gray-500 mt-2">Category: {item.category}</p>
+              <p className="text-gray-500">Found Date: {new Date(item.date).toLocaleDateString()}</p>
+              <p className="mt-3 inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+                {item.status}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </ProfileSectionLayout>
   );
 };
 
-export default ItemsSoldPage;
+export default FoundReturnedPage;

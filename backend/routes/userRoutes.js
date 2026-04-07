@@ -15,6 +15,14 @@ const {
   deleteUser,
   unblockUser,
   getAdminDashboardStats,
+  forgotPassword,
+  resetPassword,
+  updateUserRole,
+  uploadAvatar,
+} = require("../controllers/userController");
+
+const upload = require("../middlewares/uploadMiddleware");
+
 } = require("../controllers/userController");
 
 const { protect } = require("../middlewares/authMiddleware");
@@ -40,11 +48,14 @@ const validate = (req, res, next) => {
 router.post("/register", registerValidation, validate, registerUser);
 router.post("/verify-otp", verifyOtp);
 router.post("/login", loginValidation, validate, loginUser);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 // User profile
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
+router.put("/profile/avatar", protect, upload.single("avatar"), uploadAvatar);
 
 // Admin
 router.get("/admin/dashboard-stats", protect, authorizeRoles("Admin"), getAdminDashboardStats);
@@ -53,5 +64,6 @@ router.get("/:id", protect, authorizeRoles("Admin"), getUserById);
 router.put("/:id/block", protect, authorizeRoles("Admin"), blockUser);
 router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
 router.put("/:id/unblock", protect, authorizeRoles("Admin"), unblockUser);
+router.put("/:id/role", protect, authorizeRoles("Admin"), updateUserRole);
 
 module.exports = router;

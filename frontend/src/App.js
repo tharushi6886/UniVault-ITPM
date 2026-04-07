@@ -19,6 +19,8 @@ import Massage from "./features/marketplace/pages/Massage";
 import LoginPage from "./features/userManagement/pages/LoginPage";
 import RegisterPage from "./features/userManagement/pages/RegisterPage";
 import VerifyOtpPage from "./features/userManagement/pages/VerifyOtpPage";
+import ForgotPasswordPage from "./features/userManagement/pages/ForgotPasswordPage";
+import ResetPasswordPage from "./features/userManagement/pages/ResetPasswordPage";
 import ProfilePage from "./features/userManagement/pages/ProfilePage";
 import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
 import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
@@ -35,11 +37,12 @@ import ProtectedRoute from "./features/userManagement/components/ProtectedRoute"
 import AdminRoute from "./features/userManagement/components/AdminRoute";
 import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
 import LostFoundForm from "./Components/Dashboard/LostFoundForm";
+import AdminDashboard from "./features/LostFoundAdmin/pages/LostAdminDashboard";
 
-import { initialAdData } from "./data/mockAds";
+
 
 function App() {
-  const [ads, setAds] = useState(initialAdData);
+  const [ads, setAds] = useState({});
 
   return (
     <>
@@ -61,6 +64,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
           path="/profile"
@@ -157,6 +162,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/lost-found"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
             </AdminRoute>
           }
         />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getItemById } from '../../../api/itemApi';
 
 const ItemDetails = () => {
   useEffect(() => {
@@ -7,10 +8,36 @@ const ItemDetails = () => {
   }, []);
   const [copiedAccount, setCopiedAccount] = useState(false);
   const [copiedBranch, setCopiedBranch] = useState(false);
+  const [item, setItem] = useState(null);
+  const [ownerTrust, setOwnerTrust] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const item = location.state?.item;
+
+  useEffect(() => {
+    const fetchItem = async () => {
+      try {
+        setLoading(true);
+        // Try to use location state initially for immediate UI, then fetch details for trust data
+        if (location.state?.item) {
+          setItem(location.state.item);
+        }
+
+        const response = await getItemById(id);
+        if (response.data) {
+          setItem(response.data.item);
+          setOwnerTrust(response.data.ownerTrust);
+        }
+      } catch (err) {
+        console.error("Error fetching item details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchItem();
+  }, [id, location.state]);
 
   const handleCopy = (text, type) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -159,6 +186,50 @@ const ItemDetails = () => {
               </div>
             </div>
 
+            {/* Owner Details Card */}
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07),0_1px_4px_rgba(46,0,96,0.04)] overflow-hidden mb-5">
+              <div className="px-[1.4rem] py-4 border-b border-[#e4d9f7] flex items-center justify-between">
+                <div className="flex items-center gap-[7px] text-[11px] font-semibold text-[#6d28d9] tracking-[0.08em] uppercase">
+                  <svg viewBox="0 0 13 13" fill="none" className="w-[13px] h-[13px]">
+                    <circle cx="6.5" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.3"/>
+                    <path d="M2 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                  </svg>
+                  Owner details
+                </div>
+              </div>
+              <div className="p-[1.4rem]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-[46px] h-[46px] rounded-full shrink-0 bg-gradient-to-br from-[#6d28d9] to-[#a78bfa] flex items-center justify-center text-[16px] font-bold text-white border-2 border-[#c4b5fd]">AK</div>
+                  <div>
+                    <div className="text-[14px] font-semibold text-[#1a0040]">Arjun Karunarathna</div>
+                    <div className="text-[11px] text-[#b8a0d4] mt-[1px]">Private seller · Colombo, LK</div>
+                    
+                    {/* Dynamic Trust Badge */}
+                    <div className="mt-2.5">
+                      {loading ? (
+                        <div className="h-5 w-24 bg-gray-100 animate-pulse rounded-full"></div>
+                      ) : ownerTrust ? (
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${
+                          ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-rose-50 text-rose-700 border-rose-200'
+                        }`}>
+                          <svg viewBox="0 0 12 12" fill="none" className="w-[11px] h-[11px]">
+                            <path d="M6 1L7.5 4H10.5L8 6.5L9 9.5L6 8L3 9.5L4 6.5L1.5 4H4.5L6 1Z" fill="currentColor"/>
+                          </svg>
+                          Trust: {ownerTrust.level} ({ownerTrust.score})
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-[3px] text-[10px] text-[#b8a0d4] bg-gray-50 border border-gray-200 rounded-full px-[7px] py-[1px]">
+                          Unranked
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Right Column */}
             <div>
               {/* Bid Card */}
@@ -192,74 +263,6 @@ const ItemDetails = () => {
                   <div className="text-[11px] text-[#b8a0d4] text-right">
                     <div>Total bids</div>
                     <div className="text-[14px] font-bold text-[#1a0040] mt-[2px]">18</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Owner Details Card */}
-              <div className="bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07),0_1px_4px_rgba(46,0,96,0.04)] overflow-hidden mb-5">
-                <div className="px-[1.4rem] py-4 border-b border-[#e4d9f7] flex items-center justify-between">
-                  <div className="flex items-center gap-[7px] text-[11px] font-semibold text-[#6d28d9] tracking-[0.08em] uppercase">
-                    <svg viewBox="0 0 13 13" fill="none" className="w-[13px] h-[13px]">
-                      <circle cx="6.5" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.3" />
-                      <path d="M2 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                    </svg>
-                    Owner details
-                  </div>
-                </div>
-                <div className="p-[1.4rem]">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-[46px] h-[46px] rounded-full shrink-0 bg-gradient-to-br from-[#6d28d9] to-[#a78bfa] flex items-center justify-center text-[16px] font-bold text-white border-2 border-[#c4b5fd]">AK</div>
-                    <div>
-                      <div className="text-[14px] font-semibold text-[#1a0040]">Arjun Karunarathna</div>
-                      <div className="text-[11px] text-[#b8a0d4] mt-[1px]">Private seller · Colombo, LK</div>
-                      <span className="inline-flex items-center gap-[3px] text-[10px] text-[#166534] bg-[#dcfce7] border border-[#4ade80] rounded-full px-[7px] py-[1px] mt-[3px]">
-                        <svg viewBox="0 0 9 9" fill="none" className="w-[9px] h-[9px]">
-                          <circle cx="4.5" cy="4.5" r="4" stroke="#166534" strokeWidth="1" />
-                          <path d="M2.5 4.5l1.5 1.5 2.5-2.5" stroke="#166534" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Verified seller
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 py-1.5 border-b border-[#e4d9f7]">
-                    <div className="w-7 h-7 rounded-[7px] bg-[#f5f3ff] border border-[#e4d9f7] flex items-center justify-center shrink-0">
-                      <svg viewBox="0 0 13 13" fill="none" className="text-[#6d28d9] w-[13px] h-[13px]">
-                        <rect x="1" y="3" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-                        <path d="M1 4l5.5 4L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-[10.5px] text-[#b8a0d4] mb-[1px]">Email</div>
-                      <div className="text-[12.5px] font-medium text-[#1a0040]"><a href="mailto:arjun@example.com" className="hover:underline">arjun@example.com</a></div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 py-1.5 border-b border-[#e4d9f7]">
-                    <div className="w-7 h-7 rounded-[7px] bg-[#f5f3ff] border border-[#e4d9f7] flex items-center justify-center shrink-0">
-                      <svg viewBox="0 0 13 13" fill="none" className="text-[#6d28d9] w-[13px] h-[13px]">
-                        <rect x="3" y="1" width="7" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
-                        <circle cx="6.5" cy="9.5" r=".8" fill="currentColor" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-[10.5px] text-[#b8a0d4] mb-[1px]">Phone</div>
-                      <div className="text-[12.5px] font-medium text-[#1a0040]">+94 77 234 5678</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 py-1.5">
-                    <div className="w-7 h-7 rounded-[7px] bg-[#f5f3ff] border border-[#e4d9f7] flex items-center justify-center shrink-0">
-                      <svg viewBox="0 0 13 13" fill="none" className="text-[#6d28d9] w-[13px] h-[13px]">
-                        <path d="M6.5 1C3.5 1 1 3.5 1 6.5c0 1 .3 2 .8 2.8L1 12l2.8-.8c.8.5 1.7.8 2.7.8C9.5 12 12 9.5 12 6.5S9.5 1 6.5 1Z" stroke="currentColor" strokeWidth="1.3" />
-                        <path d="M4.5 5s.2-.3.5-.3c.1 0 .2 0 .3.1l.5 1.2c0 .1 0 .2-.1.3l-.3.3c.3.6.8 1.1 1.4 1.4l.3-.3c.1-.1.2-.1.3-.1L8.5 8c.1.1.1.2.1.3 0 .3-.3.5-.3.5C7.5 9.3 5 8 4.5 5Z" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-[10.5px] text-[#b8a0d4] mb-[1px]">WhatsApp</div>
-                      <div className="text-[12.5px] font-medium text-[#1a0040]">+94 77 234 5678</div>
-                    </div>
                   </div>
                 </div>
               </div>
