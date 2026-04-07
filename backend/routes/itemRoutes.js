@@ -13,6 +13,9 @@ router.get("/", itemController.getAllItems);
 // GET single item
 router.get("/:id", itemController.getItemById);
 
+// UPDATE item
+router.put("/:id", protect, itemController.updateItem);
+
 // ADD item
 router.post("/", protect, itemController.addItems);
 
