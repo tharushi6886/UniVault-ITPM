@@ -6,20 +6,29 @@ import { toast } from 'react-toastify';
 import { getLostItemById, getFoundItemById } from '../../api/itemApi';
 
 
-export const Sidebar = () => {
+export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTabChange }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error("Failed to parse user from localStorage", e);
+      }
     }
   }, []);
 
-  // Display user details or fallback to default
   const userName = user?.name || "Jane Doe";
-  const userRole = user?.department ? `${user.department} · Year ${user.year || '3'}` : "Engineering · Year 3";
+  const userRole = user?.faculty ? `${user.faculty} student` : "Engineering · Year 3";
   const userInitials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+  const handleSidebarClick = (e, tab, filter) => {
+    e.preventDefault();
+    if (onTabChange) onTabChange(tab);
+    if (onFilterChange) onFilterChange(filter);
+  };
 
   return (
     <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
@@ -33,29 +42,30 @@ export const Sidebar = () => {
       <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
         <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
         
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold text-[#4f46e5] bg-[#4f46e5]/10 transition-colors no-underline">
+        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'All')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'All' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
           <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </span>
           Dashboard
         </a>
         
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'Lost')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'Lost' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
           <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </span>
           Lost Items
-          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">3</span>
+          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">{counts?.lost || 0}</span>
         </a>
         
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'Found')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'Found' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
           <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </span>
           Found Items
+          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-green-500">{counts?.found || 0}</span>
         </a>
         
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
+        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'All')} className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
           <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
           </span>
@@ -133,7 +143,7 @@ export const Sidebar = () => {
 };
 
 const bgImgCls = "absolute rounded-[18px] overflow-hidden shadow-[0_28px_60px_rgba(10,5,40,0.55),0_8px_24px_rgba(10,5,40,0.4)] border-2 border-white/20 pointer-events-auto cursor-pointer transition-transform hover:z-[6] hover:scale-105 hover:-translate-y-[10px] origin-center";
-export const Topbar = () => (
+export const Topbar = ({ searchQuery, onSearchChange }) => (
   <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[200px] lg:h-[310px] z-[200] overflow-hidden bg-gradient-to-br from-[#5b21b6] via-[#4338ca] via-[#4f46e5] via-[#2563eb] to-[#1d4ed8]">
     <div className="absolute inset-0 z-[1] pointer-events-none hidden lg:block">
       <div className={`${bgImgCls} w-[210px] h-[155px] top-[30px] left-[-20px] -rotate-[13deg] z-[3]`}><img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=360&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
@@ -166,7 +176,13 @@ export const Topbar = () => (
       <div className="text-[14px] text-white/75 leading-[1.6] max-w-[380px] mb-[20px]">Smart AI-powered campus hub to report, match and recover lost belongings.</div>
       <div className="flex items-center bg-white/20 backdrop-blur-[20px] border-[1.5px] border-white/40 rounded-[14px] p-[5px] pl-[16px] max-w-[420px] transition-all focus-within:bg-white/25 focus-within:border-white/65">
         <span className="text-white/65 text-[14px] shrink-0">🔍</span>
-        <input type="text" placeholder="Search for items, locations, brands…" className="flex-1 bg-transparent border-none outline-none text-[14px] text-white font-epilogue py-[7px] px-[8px] placeholder:text-white/55" />
+        <input 
+          type="text" 
+          placeholder="Search for items, locations, brands…" 
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="flex-1 bg-transparent border-none outline-none text-[14px] text-white font-epilogue py-[7px] px-[8px] placeholder:text-white/55" 
+        />
         <button className="bg-white text-[#4f46e5] border-none rounded-[10px] font-epilogue text-[13px] font-bold py-[10px] px-[20px] cursor-pointer shadow-[0_3px_14px_rgba(10,5,40,0.22)] transition-transform hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(10,5,40,0.32)]">Search</button>
       </div>
     </div>
@@ -183,14 +199,27 @@ export const Topbar = () => (
     </div>
   </header>
 );
-export const FeedPage = ({ openAdPopup, ads, selectedLostItemId, setSelectedLostItemId, setRefreshMatches }) => {
-  const [filter, setFilter] = useState('All');
+export const FeedPage = ({ openAdPopup, ads, selectedLostItemId, setSelectedLostItemId, setRefreshMatches, searchQuery, filter, setFilter }) => {
+  // Use the filter and searchQuery passed from props
 
   const filteredIds = Object.keys(ads).filter(key => {
     const ad = ads[key];
     if (!ad) return false;
-    if (filter === 'All') return true;
-    return ad.type === filter.toUpperCase();
+    
+    // Type filter
+    if (filter !== 'All' && ad.type !== filter.toUpperCase()) return false;
+    
+    // Search query filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      const matchTitle = ad.title?.toLowerCase().includes(q);
+      const matchDesc = (ad.desc || ad.description)?.toLowerCase().includes(q);
+      const matchLoc = ad.location?.toLowerCase().includes(q);
+      const matchStudent = (ad.student || ad.studentId)?.toLowerCase().includes(q);
+      if (!matchTitle && !matchDesc && !matchLoc && !matchStudent) return false;
+    }
+    
+    return true;
   });
 
   return (
@@ -729,6 +758,11 @@ export default function LostFoundDashboard({ ads }) {
   const [selectedLostItemId, setSelectedLostItemId] = useState(null); // For scanning
   const [refreshMatches, setRefreshMatches] = useState(0);
   const [allAds, setAllAds] = useState(ads || {});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [boardFilter, setBoardFilter] = useState('All');
+
+  const lostCount = Object.values(allAds).filter(ad => ad.type === 'LOST').length;
+  const foundCount = Object.values(allAds).filter(ad => ad.type === 'FOUND').length;
 
   useEffect(() => {
     const fetchRealItems = async () => {
@@ -829,11 +863,18 @@ export default function LostFoundDashboard({ ads }) {
 
   return (
     <div className="font-epilogue text-[#1e1b4b] bg-[radial-gradient(ellipse_80%_50%_at_10%_0%,rgba(196,181,253,0.55),transparent),radial-gradient(ellipse_70%_60%_at_90%_20%,rgba(147,197,253,0.45),transparent),radial-gradient(ellipse_60%_50%_at_50%_80%,rgba(167,139,250,0.3),transparent),radial-gradient(ellipse_50%_40%_at_80%_60%,rgba(191,219,254,0.35),transparent),radial-gradient(ellipse_40%_35%_at_20%_70%,rgba(216,180,254,0.25),transparent),linear-gradient(160deg,#f8f6ff_0%,#ede9fe_22%,#e8eeff_44%,#dbeafe_66%,#eff6ff_100%)] min-h-screen relative">
-      <Sidebar />
-      <Topbar />
+      <Sidebar 
+        counts={{ lost: lostCount, found: foundCount }} 
+        activeFilter={boardFilter} 
+        onFilterChange={setBoardFilter}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+      <Topbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <main className="ml-0 lg:ml-[260px] pt-[200px] lg:pt-[310px]">
         <div className="p-[16px] lg:px-[20px] lg:pb-[36px] max-w-[1200px] mx-auto">
           <AlertBanner />
+          {/* Removed redundant FeedPage/VaultPage rendering here */}
 
           {/* CTA ACTION CARDS — highlighted, prominent */}
           <div className="flex flex-col lg:flex-row gap-[14px] mb-[20px]">
@@ -923,7 +964,11 @@ export default function LostFoundDashboard({ ads }) {
               openAdPopup={openAdPopup} 
               ads={displayAds} 
               selectedLostItemId={selectedLostItemId} 
-              setRefreshMatches={setRefreshMatches} 
+              setSelectedLostItemId={setSelectedLostItemId}
+              setRefreshMatches={setRefreshMatches}
+              searchQuery={searchQuery}
+              filter={boardFilter}
+              setFilter={setBoardFilter}
             />
           ) : (
             <VaultPage 

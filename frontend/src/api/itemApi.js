@@ -33,3 +33,8 @@ export const getLostItemById = (id) => API.get(`/lost-items/${id}`);
 
 export const getAllFoundItems = () => API.get("/found-items");
 export const getFoundItemById = (id) => API.get(`/found-items/${id}`);
+  baseURL: "http://localhost:5000/api/items",
+});
+
+export const getItems = () => API.get("/");
+export const addItem = (data) => API.post("/", data);
