@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../homepage/components/Navbar";
 import { getAdminDashboardStats, getUsers, blockUser, unblockUser, deleteUser, updateUserRole } from "../../../api/userApi";
 import { getAllItems, getAllLostItems, getAllFoundItems } from "../../../api/itemApi";
@@ -51,6 +52,7 @@ const QuickCard = ({ title, desc, onClick, active = true }) => (
 );
 
 const AdminDashboardPage = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -507,7 +509,8 @@ const AdminDashboardPage = () => {
                   <QuickCard
                     title="Lost & Found Integrity"
                     desc="Run diagnostic checks on match algorithms."
-                    active={false}
+                    active={true}
+                    onClick={() => navigate("/admin/lost-found")}
                   />
                   <QuickCard
                     title="Marketplace Rules"

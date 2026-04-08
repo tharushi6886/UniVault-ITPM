@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Search, Bell, User, ShieldCheck, ArrowLeft } from "lucide-react";
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -142,63 +144,148 @@ export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTab
   );
 };
 
-const bgImgCls = "absolute rounded-[18px] overflow-hidden shadow-[0_28px_60px_rgba(10,5,40,0.55),0_8px_24px_rgba(10,5,40,0.4)] border-2 border-white/20 pointer-events-auto cursor-pointer transition-transform hover:z-[6] hover:scale-105 hover:-translate-y-[10px] origin-center";
-export const Topbar = ({ searchQuery, onSearchChange }) => (
-  <header className="fixed top-0 left-0 lg:left-[260px] right-0 h-[200px] lg:h-[310px] z-[200] overflow-hidden bg-gradient-to-br from-[#5b21b6] via-[#4338ca] via-[#4f46e5] via-[#2563eb] to-[#1d4ed8]">
-    <div className="absolute inset-0 z-[1] pointer-events-none hidden lg:block">
-      <div className={`${bgImgCls} w-[210px] h-[155px] top-[30px] left-[-20px] -rotate-[13deg] z-[3]`}><img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&h=360&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[82px] h-[152px] top-[-15px] left-[200px] rotate-[9deg] z-[4]`}><img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=360&h=320&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[130px] h-[120px] top-[10px] left-[calc(50%-65px)] -rotate-[7deg] z-[2]`}><img src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=360&h=320&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[78px] h-[144px] top-[-18px] right-[240px] rotate-[13deg] z-[4]`}><img src="https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=260&h=480&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[200px] h-[160px] top-[30px] right-[-15px] -rotate-[11deg] z-[3]`}><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=480&h=380&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[138px] h-[106px] bottom-[22px] left-[55px] rotate-[15deg] z-[4]`}><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=340&h=260&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[160px] h-[115px] bottom-[15px] left-[calc(50%-160px)] -rotate-[9deg] z-[3]`}><img src="https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=280&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[115px] h-[115px] bottom-[20px] left-[calc(50%+10px)] rotate-[11deg] z-[4]`}><img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=360&h=260&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[88px] h-[115px] top-[85px] left-[155px] -rotate-[18deg] z-[2]`}><img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=280&h=340&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[150px] h-[130px] bottom-[15px] right-[-10px] -rotate-[8deg] z-[3]`}><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=320&h=280&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[130px] h-[95px] top-[90px] right-[280px] rotate-[6deg] z-[2]`}><img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=320&h=240&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-      <div className={`${bgImgCls} w-[95px] h-[95px] top-[95px] left-[calc(50%-10px)] -rotate-[14deg] z-[2]`}><img src="https://images.unsplash.com/photo-1544365558-35aa4af41144?w=280&h=280&fit=crop" className="w-full h-full object-cover" /><div className="absolute inset-0 rounded-[16px] bg-gradient-to-br from-[#4f46e5]/25 to-[#2563eb]/15 mix-blend-multiply pointer-events-none" /></div>
-    </div>
-    <div className="absolute inset-0 z-[2] pointer-events-none bg-[radial-gradient(ellipse_58%_100%_at_0%_50%,rgba(67,38,200,0.82)_0%,rgba(67,38,200,0.55)_35%,transparent_68%),linear-gradient(90deg,rgba(55,30,180,0.7)_0%,rgba(55,30,180,0.45)_38%,rgba(55,30,180,0.1)_58%,transparent_75%)]" />
-    <div className="absolute top-[18px] right-[20px] flex items-center gap-[8px] z-[5]">
-      <div className="w-[36px] h-[36px] rounded-[10px] bg-white/20 border border-white/30 flex items-center justify-center cursor-pointer text-[15px] transition-all hover:bg-white/30 relative">🔔<span className="absolute top-[6px] right-[6px] w-[7px] h-[7px] rounded-full bg-[#ef4444] border-[1.5px] border-transparent" /></div>
-      <div className="w-[36px] h-[36px] rounded-[10px] bg-white/20 border border-white/30 flex items-center justify-center cursor-pointer text-[15px] transition-all hover:bg-white/30">⚙️</div>
-      <div className="w-[36px] h-[36px] rounded-full bg-white/30 border-2 border-white/50 flex items-center justify-center text-[12px] text-white font-bold cursor-pointer">JD</div>
-    </div>
-    <div className="absolute inset-0 z-[3] flex flex-col justify-center px-[20px] lg:px-[48px] max-w-[580px]">
-      <div className="flex items-center mb-[14px]">
-        <div className="flex items-center gap-[9px] font-clash text-[15px] font-bold text-white"><span className="w-[8px] h-[8px] rounded-full bg-[#22c55e] shadow-[0_0_10px_#22c55e] animate-pulse" />UniVault · Lost & Found</div>
+export const LostFoundBanner = ({ searchQuery, onSearchChange, onBack }) => {
+  return (
+    <section className="w-full overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0a2a] shadow-2xl mb-[20px]">
+      <div className="relative min-h-[260px] w-full bg-[radial-gradient(circle_at_55%_45%,rgba(116,88,255,0.35),transparent_25%),radial-gradient(circle_at_75%_70%,rgba(150,80,255,0.22),transparent_22%),linear-gradient(135deg,#120f4d_0%,#1c1672_45%,#110d45_100%)]">
+        
+        {/* background glow lines */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute left-[48%] top-[14%] h-[180px] w-[180px] rounded-full bg-violet-500/20 blur-[80px]" />
+          <div className="absolute bottom-[-20px] right-[18%] h-[160px] w-[160px] rounded-full bg-fuchsia-500/20 blur-[80px]" />
+          <div className="absolute bottom-10 right-24 h-px w-72 rotate-[-20deg] bg-gradient-to-r from-transparent via-violet-400/40 to-transparent" />
+          <div className="absolute bottom-20 right-40 h-px w-56 rotate-[-28deg] bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent" />
+        </div>
+
+        <div className="relative z-10 grid min-h-[260px] grid-cols-1 items-center gap-6 px-6 py-6 md:px-10 lg:grid-cols-[1.35fr_0.9fr] lg:px-10">
+          
+          {/* left */}
+          <div className="max-w-3xl">
+            <button onClick={onBack} className="mb-4 flex items-center gap-2 text-white/70 hover:text-white transition-colors text-[13px]">
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Homepage</span>
+            </button>
+
+            <div className="mb-3 flex items-center gap-3">
+              <span className="h-3 w-3 rounded-full bg-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.8)]" />
+              <p className="text-[13px] font-semibold uppercase tracking-[0.28em] text-violet-200/80">
+                Campus Lost &amp; Found Dashboard
+              </p>
+            </div>
+
+            <h1 className="max-w-2xl font-serif text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+              Track &amp; Recover
+              <span className="mt-1 block bg-gradient-to-r from-violet-300 via-fuchsia-300 to-purple-400 bg-clip-text text-transparent">
+                What Matters Most
+              </span>
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-[14px] leading-6 text-white/75 sm:text-[15px]">
+              AI-powered campus platform to report, match, and recover lost items
+              faster with smarter tracking, live status updates, and secure
+              recovery workflows.
+            </p>
+
+            {/* search */}
+            <div className="mt-6 flex max-w-[580px] overflow-hidden rounded-2xl border border-violet-300/20 bg-white/5 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] backdrop-blur-xl">
+              <div className="flex flex-1 items-center gap-3 px-4 py-3">
+                <Search className="h-4 w-4 text-white/60" />
+                <input
+                  type="text"
+                  placeholder="Search items, locations, brands..."
+                  className="w-full bg-transparent text-[14.5px] text-white placeholder:text-white/40 outline-none"
+                  value={searchQuery}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                />
+              </div>
+              <button className="bg-gradient-to-r from-[#5d52ff] to-[#7c5cff] px-6 text-[15px] font-semibold text-white transition hover:brightness-110">
+                Search
+              </button>
+            </div>
+
+            {/* stats */}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-[13px] text-white shadow-lg backdrop-blur-md">
+                <span className="mr-2 font-bold text-white">3</span>
+                <span className="text-white/90">Active Reports</span>
+              </div>
+
+              <div className="rounded-full border border-white/10 bg-white/5 px-5 py-2 text-[13px] text-white shadow-lg backdrop-blur-md">
+                <span className="mr-2 font-bold text-white">2</span>
+                <span className="text-white/90">AI Matches</span>
+              </div>
+
+              <div className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-2 text-[13px] text-cyan-200 shadow-lg backdrop-blur-md">
+                <span className="mr-2 font-bold text-cyan-300">7</span>
+                <span>Recovered</span>
+              </div>
+            </div>
+          </div>
+
+          {/* right card */}
+          <div className="flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-[340px] rounded-[24px] border border-violet-300/25 bg-white/5 p-4 shadow-[0_0_40px_rgba(98,82,255,0.35)] backdrop-blur-2xl">
+              
+              <div className="absolute inset-0 rounded-[24px] ring-1 ring-violet-300/15 pointer-events-none" />
+              <div className="pointer-events-none absolute -left-3 top-10 h-20 w-20 rounded-full bg-cyan-300/20 blur-2xl" />
+              <div className="pointer-events-none absolute bottom-8 right-0 h-20 w-20 rounded-full bg-fuchsia-400/20 blur-2xl" />
+
+              {/* top icons */}
+              <div className="mb-3 flex justify-end gap-3 relative z-10 hidden sm:flex">
+                <button className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-white/10 bg-[#231d76]/80 text-white/90 backdrop-blur-md">
+                  <Bell className="h-4 w-4" />
+                </button>
+                <button className="flex h-10 w-10 items-center justify-center rounded-[14px] border border-white/10 bg-[#6e5bff]/90 text-white shadow-lg">
+                  <User className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="rounded-[20px] border border-violet-300/20 bg-[linear-gradient(180deg,rgba(71,53,180,0.4),rgba(19,16,69,0.75))] p-5 shadow-[0_0_25px_rgba(123,97,255,0.35)] relative z-10">
+                <p className="text-[12px] text-white/80 leading-none mb-1">Smart Recovery</p>
+                <h3 className="text-[16px] font-semibold text-white sm:text-[18px]">
+                  Secure Match Status
+                </h3>
+
+                {/* circular shield */}
+                <div className="relative mx-auto mt-4 flex h-[140px] w-[140px] items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border border-cyan-300/20" />
+                  <div className="absolute inset-[10px] rounded-full border border-violet-300/20" />
+                  <div className="absolute inset-[24px] rounded-full border border-white/10" />
+
+                  <span className="absolute left-3 top-1/2 h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.8)]" />
+                  <span className="absolute right-3 top-[42%] h-2 w-2 rounded-full bg-fuchsia-400 shadow-[0_0_14px_rgba(232,121,249,0.8)]" />
+                  <span className="absolute bottom-4 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-violet-300 shadow-[0_0_14px_rgba(196,181,253,0.8)]" />
+
+                  <div className="flex h-16 w-16 items-center justify-center rounded-[20px] border border-white/10 bg-gradient-to-br from-[#9c72ff] via-[#7f5dff] to-[#5e49eb] shadow-[0_12px_40px_rgba(113,88,255,0.5)]">
+                    <ShieldCheck className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+
+                {/* bottom mini cards */}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <div className="rounded-[14px] border border-white/10 bg-white/5 p-3">
+                    <p className="text-[11px] text-white/70">Detection</p>
+                    <p className="mt-0.5 text-[15px] font-medium text-violet-100">
+                      AI Enabled
+                    </p>
+                  </div>
+
+                  <div className="rounded-[14px] border border-cyan-300/10 bg-cyan-400/5 p-3">
+                    <p className="text-[11px] text-white/70">Verification</p>
+                    <p className="mt-0.5 text-[15px] font-medium text-cyan-300">
+                      Protected
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-      <div className="text-[10.5px] font-bold tracking-[0.18em] uppercase text-white/60 mb-[8px] flex items-center gap-[7px]">
-        <span className="inline-block w-[20px] h-[2px] bg-white/50 rounded-[2px]" />CAMPUS LOST & FOUND DASHBOARD
-      </div>
-      <div className="font-clash text-[26px] lg:text-[42px] font-bold text-white leading-[1.05] tracking-[-0.03em] drop-shadow-[0_4px_32px_rgba(10,5,40,0.5)] mb-[10px]">Track & Recover<br /><em className="not-italic bg-gradient-to-r from-white via-[#bfdbfe] to-[#e9d5ff] bg-clip-text text-transparent">What Matters Most</em></div>
-      <div className="text-[14px] text-white/75 leading-[1.6] max-w-[380px] mb-[20px]">Smart AI-powered campus hub to report, match and recover lost belongings.</div>
-      <div className="flex items-center bg-white/20 backdrop-blur-[20px] border-[1.5px] border-white/40 rounded-[14px] p-[5px] pl-[16px] max-w-[420px] transition-all focus-within:bg-white/25 focus-within:border-white/65">
-        <span className="text-white/65 text-[14px] shrink-0">🔍</span>
-        <input 
-          type="text" 
-          placeholder="Search for items, locations, brands…" 
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="flex-1 bg-transparent border-none outline-none text-[14px] text-white font-epilogue py-[7px] px-[8px] placeholder:text-white/55" 
-        />
-        <button className="bg-white text-[#4f46e5] border-none rounded-[10px] font-epilogue text-[13px] font-bold py-[10px] px-[20px] cursor-pointer shadow-[0_3px_14px_rgba(10,5,40,0.22)] transition-transform hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(10,5,40,0.32)]">Search</button>
-      </div>
-    </div>
-    <div className="absolute bottom-[20px] right-[20px] flex gap-[9px] z-[5] overflow-x-auto">
-      <div className="flex items-center flex-shrink-0 gap-[7px] bg-white/95 backdrop-blur-[16px] border border-[#a5b4fc]/20 rounded-full py-[6px] px-[14px] pl-[6px] shadow-[0_4px_16px_rgba(10,5,40,0.18)]">
-        <span className="font-clash text-[14px] font-bold text-white bg-gradient-to-br from-[#6366f1] to-[#4338ca] w-[26px] h-[26px] rounded-full flex items-center justify-center shadow-[0_2px_8px_rgba(79,70,229,0.45)]">3</span><span className="text-[11px] font-bold text-[#1e1b4b] whitespace-nowrap">Active Reports</span>
-      </div>
-      <div className="flex items-center flex-shrink-0 gap-[7px] bg-white/95 backdrop-blur-[16px] border border-[#a5b4fc]/20 rounded-full py-[6px] px-[14px] pl-[6px] shadow-[0_4px_16px_rgba(10,5,40,0.18)]">
-        <span className="font-clash text-[14px] font-bold text-white bg-gradient-to-br from-[#6366f1] to-[#4338ca] w-[26px] h-[26px] rounded-full flex items-center justify-center shadow-[0_2px_8px_rgba(79,70,229,0.45)]">2</span><span className="text-[11px] font-bold text-[#1e1b4b] whitespace-nowrap">AI Matches</span>
-      </div>
-      <div className="flex items-center flex-shrink-0 gap-[7px] bg-white/95 backdrop-blur-[16px] border border-[#a5b4fc]/20 rounded-full py-[6px] px-[14px] pl-[6px] shadow-[0_4px_16px_rgba(10,5,40,0.18)]">
-        <span className="font-clash text-[14px] font-bold text-white bg-gradient-to-br from-[#6366f1] to-[#4338ca] w-[26px] h-[26px] rounded-full flex items-center justify-center shadow-[0_2px_8px_rgba(79,70,229,0.45)]">7</span><span className="text-[11px] font-bold text-[#1e1b4b] whitespace-nowrap">Recovered</span>
-      </div>
-    </div>
-  </header>
-);
+    </section>
+  );
+};
 export const FeedPage = ({ openAdPopup, ads, selectedLostItemId, setSelectedLostItemId, setRefreshMatches, searchQuery, filter, setFilter }) => {
   // Use the filter and searchQuery passed from props
 
@@ -766,6 +853,7 @@ const ReportItemModal = ({ isOpen, onClose, initialType }) => {
 
 export default function LostFoundDashboard({ ads }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('feed');
   const [popupData, setPopupData] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
@@ -774,7 +862,17 @@ export default function LostFoundDashboard({ ads }) {
   const [refreshMatches, setRefreshMatches] = useState(0);
   const [allAds, setAllAds] = useState(ads || {});
   const [searchQuery, setSearchQuery] = useState('');
-  const [boardFilter, setBoardFilter] = useState('All');
+  
+  const getInitialFilter = () => {
+    if (location.pathname === '/lost-items') return 'Lost';
+    if (location.pathname === '/found-items') return 'Found';
+    return 'All';
+  };
+  const [boardFilter, setBoardFilter] = useState(getInitialFilter());
+
+  useEffect(() => {
+    setBoardFilter(getInitialFilter());
+  }, [location.pathname]);
 
   const lostCount = Object.values(allAds).filter(ad => ad.type === 'LOST').length;
   const foundCount = Object.values(allAds).filter(ad => ad.type === 'FOUND').length;
@@ -886,9 +984,13 @@ export default function LostFoundDashboard({ ads }) {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-      <Topbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-      <main className="ml-0 lg:ml-[260px] pt-[200px] lg:pt-[310px]">
-        <div className="p-[16px] lg:px-[20px] lg:pb-[36px] max-w-[1200px] mx-auto">
+      <main className="ml-0 lg:ml-[260px] pt-[20px] pb-[40px]">
+        <div className="p-[16px] lg:px-[20px] lg:pb-[36px] max-w-[1240px] mx-auto">
+          <LostFoundBanner 
+            searchQuery={searchQuery} 
+            onSearchChange={setSearchQuery} 
+            onBack={() => navigate('/')} 
+          />
           <AlertBanner />
           {/* Removed redundant FeedPage/VaultPage rendering here */}
 

@@ -12,7 +12,7 @@ const getAllItems = async (req, res, next) => {
 
     return res.status(200).json({ items });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ message: "Error fetching items" });
   }
 };
@@ -23,7 +23,7 @@ const getMyItems = async (req, res, next) => {
     const items = await Item.find({ userId: req.user._id });
     return res.status(200).json({ items: items || [] });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ message: "Error fetching user items" });
   }
 };
@@ -78,9 +78,10 @@ const addItems = async (req, res, next) => {
     } = req.body;
 
     const resolvedType = item_type || listing_type || "sell";
+    const userIdToSave = req.user._id || req.body.userId;
 
     const item = new Item({
-      userId: req.user._id,
+      userId: userIdToSave,
       item_id,
       item_name,
       description,
@@ -92,8 +93,8 @@ const addItems = async (req, res, next) => {
       listing_type: listing_type || undefined,
       item_image: item_image || undefined,
       payment_details: payment_details || undefined,
-      availability_status,
-      approval_status,
+      availability_status: availability_status || "available",
+      approval_status: approval_status || "pending",
       price,
       quantity
     });
@@ -134,19 +135,13 @@ const getItemById = async (req, res, next) => {
           }
         : null
     });
-
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: "Error fetching item details" });
   }
 };
 
-exports.getAllItems = getAllItems;
-exports.getMyItems = getMyItems;
-exports.addItems = addItems;
-exports.getItemById = getItemById;
-
-exports.updateItem = async (req, res, next) => {
+const updateItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: "Item not found" });
@@ -156,6 +151,12 @@ exports.updateItem = async (req, res, next) => {
     const updated = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.status(200).json({ item: updated });
   } catch (err) {
-    res.status(500).json({ message: "Error updating" });
+    res.status(500).json({ message: "Error updating item" });
   }
 };
+
+exports.getAllItems = getAllItems;
+exports.getMyItems = getMyItems;
+exports.addItems = addItems;
+exports.getItemById = getItemById;
+exports.updateItem = updateItem;

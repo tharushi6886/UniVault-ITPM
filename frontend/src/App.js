@@ -38,11 +38,12 @@ import ProtectedRoute from "./features/userManagement/components/ProtectedRoute"
 import AdminRoute from "./features/userManagement/components/AdminRoute";
 import LostFoundDashboard from "./Components/Dashboard/LostFoundDashboard";
 import LostFoundForm from "./Components/Dashboard/LostFoundForm";
+import AdminDashboard from "./features/LostFoundAdmin/pages/LostAdminDashboard";
 
-import { initialAdData } from "./data/mockAds";
+
 
 function App() {
-  const [ads, setAds] = useState(initialAdData);
+  const [ads, setAds] = useState({});
 
   return (
     <>
@@ -165,6 +166,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminUsersPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/lost-found"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
             </AdminRoute>
           }
         />
