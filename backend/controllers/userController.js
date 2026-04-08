@@ -235,6 +235,38 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// Get Public Profile (For reviewing/viewing other users)
+const getPublicProfile = async (req, res) => {
+  try {
+    // Only select non-sensitive public info
+    const user = await User.findById(req.params.id).select("name profileImage faculty studentId role");
+    
+    if (user) {
+      const trustData = await calculateTrustScore(user._id);
+      
+      const trust = trustData ? {
+        level: trustData.level,
+        levelClass: trustData.levelClass,
+        rating: trustData.score + "/100"
+      } : null;
+
+      res.json({
+        ...user.toObject(),
+        stats: trustData ? {
+          trustScore: trustData.score,
+          trustLevel: trustData.level,
+          trustBreakdown: trustData.breakdown
+        } : null,
+        trust
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Update User Profile
 const updateUserProfile = async (req, res) => {
   try {
@@ -517,6 +549,7 @@ module.exports = {
   verifyOtp,
   loginUser,
   getUserProfile,
+  getPublicProfile,
   updateUserProfile,
   changePassword,
   getUsers,

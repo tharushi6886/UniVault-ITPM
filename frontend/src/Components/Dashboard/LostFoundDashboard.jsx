@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, Bell, User, ShieldCheck, ArrowLeft } from "lucide-react";
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
@@ -533,18 +534,33 @@ export const AdPopupModal = ({ popupData, closePopup }) => (
               <div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#eef2ff]">👤</div>
               <div>
                 <div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Student</div>
-                <div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px] flex items-center gap-2">
-                  {popupData.student || popupData.studentId}
-                  {popupData.ownerTrust && (
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${
-                      popupData.ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                      popupData.ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                      'bg-rose-50 text-rose-700 border-rose-200'
-                    }`}>
-                      TRUST: {popupData.ownerTrust.level}
-                    </span>
-                  )}
-                </div>
+                {popupData.ownerId ? (
+                  <Link to={`/user/${popupData.ownerId}`} onClick={closePopup} className="text-[13px] font-bold text-[#1e1b4b] mt-[1px] flex items-center gap-2 hover:text-[#4f46e5] transition-colors cursor-pointer block">
+                    {popupData.student || popupData.studentId}
+                    {popupData.ownerTrust && (
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full border inline-block ${
+                        popupData.ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        popupData.ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                        'bg-rose-50 text-rose-700 border-rose-200'
+                      }`}>
+                        TRUST: {popupData.ownerTrust.level}
+                      </span>
+                    )}
+                  </Link>
+                ) : (
+                  <div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px] flex items-center gap-2">
+                    {popupData.student || popupData.studentId}
+                    {popupData.ownerTrust && (
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${
+                        popupData.ownerTrust.levelClass === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        popupData.ownerTrust.levelClass === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                        'bg-rose-50 text-rose-700 border-rose-200'
+                      }`}>
+                        TRUST: {popupData.ownerTrust.level}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-[10px]"><div className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[15px] shrink-0 bg-[#f0fdf4]">📞</div><div><div className="text-[10px] text-[#94a3b8] font-semibold uppercase tracking-[0.05em]">Contact</div><div className="text-[13px] font-bold text-[#1e1b4b] mt-[1px]">{popupData.phone || popupData.contactNumber || "N/A"}</div></div></div>
@@ -922,6 +938,7 @@ export default function LostFoundDashboard({ ads }) {
           ...prev,
           ...response.data.item,
           ownerTrust: response.data.ownerTrust,
+          ownerId: response.data.ownerId,
           loadingTrust: false
         }));
       }

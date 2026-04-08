@@ -117,13 +117,13 @@ const addItems = async (req, res, next) => {
 // GET single item with owner trust
 const getItemById = async (req, res, next) => {
   try {
-    const item = await Item.findById(req.params.id);
+    const item = await Item.findById(req.params.id).populate("userId", "name profileImage");
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    const ownerTrust = await calculateTrustScore(item.userId);
+    const ownerTrust = await calculateTrustScore(item.userId?._id || item.userId);
 
     return res.status(200).json({
       item,

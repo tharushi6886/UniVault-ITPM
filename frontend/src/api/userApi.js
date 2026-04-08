@@ -17,6 +17,8 @@ export const getProfile = (token) =>
     },
   });
 
+export const getPublicProfile = (userId) => API.get(`/public/${userId}`);
+
 export const updateProfile = (token, data) =>
   API.put("/profile", data, {
     headers: {

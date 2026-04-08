@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Navbar = () => {
@@ -8,20 +8,31 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
-
-  useEffect(() => {
+  const loadUser = () => {
     const user = localStorage.getItem("user");
     if (user) {
       setLoggedUser(JSON.parse(user));
     } else {
       setLoggedUser(null);
     }
+  };
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  // Reload user on route change AND on custom "profile-updated" event
+  useEffect(() => {
+    loadUser();
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleProfileUpdate = () => loadUser();
+    window.addEventListener("profile-updated", handleProfileUpdate);
+    return () => window.removeEventListener("profile-updated", handleProfileUpdate);
+  }, []);
 
   const handleLogin = () => navigate("/login");
   const handleRegister = () => navigate("/register");
@@ -53,6 +64,12 @@ const Navbar = () => {
         : "text-gray-700 hover:text-[#4f46e5]"
     }`;
 
+  const profileImageSrc = loggedUser?.profileImage
+    ? loggedUser.profileImage.startsWith("http")
+      ? loggedUser.profileImage
+      : `http://localhost:5000${loggedUser.profileImage}`
+    : null;
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-4 transition-all duration-300 ${
@@ -79,48 +96,28 @@ const Navbar = () => {
             Home
           </button>
         </li>
-
         <li>
-          <button
-            onClick={() => handleProtectedNavigation("/lost-items")}
-            className={navClass("/lost-items")}
-          >
+          <button onClick={() => handleProtectedNavigation("/lost-items")} className={navClass("/lost-items")}>
             Lost Items
           </button>
         </li>
-
         <li>
-          <button
-            onClick={() => handleProtectedNavigation("/found-items")}
-            className={navClass("/found-items")}
-          >
+          <button onClick={() => handleProtectedNavigation("/found-items")} className={navClass("/found-items")}>
             Found Items
           </button>
         </li>
-
         <li>
-          <button
-            onClick={() => handleProtectedNavigation("/marketplace")}
-            className={navClass("/marketplace")}
-          >
+          <button onClick={() => handleProtectedNavigation("/marketplace")} className={navClass("/marketplace")}>
             Marketplace
           </button>
         </li>
-
         <li>
-          <button
-            onClick={() => handleProtectedNavigation("/bidding")}
-            className={navClass("/bidding")}
-          >
+          <button onClick={() => handleProtectedNavigation("/bidding")} className={navClass("/bidding")}>
             Bidding
           </button>
         </li>
-
         <li>
-          <button
-            onClick={() => navigate("/about")}
-            className={navClass("/about")}
-          >
+          <button onClick={() => navigate("/about")} className={navClass("/about")}>
             About
           </button>
         </li>
@@ -129,13 +126,26 @@ const Navbar = () => {
       <div className="flex gap-4 items-center">
         {loggedUser ? (
           <div className="flex items-center gap-3">
-            {/* Professional User Profile Area */}
-            <div 
+            {/* Profile area with real image support */}
+            <div
               onClick={handleProfile}
               className="group flex items-center gap-3 cursor-pointer bg-white/40 hover:bg-white/90 border border-[#818cf8]/20 hover:border-[#4f46e5]/40 pl-1.5 pr-4 py-1.5 rounded-full transition-all duration-300"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4f46e5] to-indigo-600 flex items-center justify-center text-xs font-black text-white shadow-md ring-2 ring-white transition-transform group-hover:scale-105">
-                {loggedUser.name?.charAt(0).toUpperCase()}
+              <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-white shadow-md transition-transform group-hover:scale-105 shrink-0">
+                {profileImageSrc ? (
+                  <img
+                    src={profileImageSrc}
+                    alt={loggedUser.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                  />
+                ) : null}
+                <div
+                  className="w-full h-full bg-gradient-to-br from-[#4f46e5] to-indigo-600 flex items-center justify-center text-xs font-black text-white"
+                  style={{ display: profileImageSrc ? 'none' : 'flex' }}
+                >
+                  {loggedUser.name?.charAt(0).toUpperCase()}
+                </div>
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-[13px] font-bold text-[#1f1b5b] tracking-tight">{loggedUser.name}</span>
@@ -156,7 +166,6 @@ const Navbar = () => {
               </button>
             )}
 
-            {/* Professional Logout Button */}
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-[#4f46e5] hover:text-rose-600 text-[13px] font-bold px-4 py-2 bg-transparent hover:bg-rose-50 rounded-xl transition-all duration-200"
