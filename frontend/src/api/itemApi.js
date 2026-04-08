@@ -8,21 +8,21 @@ const API = axios.create({
 export const getMyMarketplaceItems = (token) =>
   API.get("/items/my-items", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
 export const getMyLostItems = (token) =>
   API.get("/lost-items/my-items", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
 export const getMyFoundItems = (token) =>
   API.get("/found-items/my-items", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
@@ -41,7 +41,7 @@ export const getItems = () => API.get("/items");
 export const addItem = (data, token) =>
   API.post("/items", data, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
@@ -49,21 +49,21 @@ export const addItem = (data, token) =>
 export const updateLostItem = (id, data, token) =>
   API.put(`/lost-items/${id}`, data, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
 export const updateFoundItem = (id, data, token) =>
   API.put(`/found-items/${id}`, data, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 
 export const updateMarketplaceItem = (id, data, token) =>
   API.put(`/items/${id}`, data, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
     },
   });
 

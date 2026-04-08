@@ -216,7 +216,7 @@ const ItemDetails = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <button className="w-full py-3.5 rounded-xl font-bold transition-all bg-[#4f46e5] text-white hover:bg-[#3f37c9] shadow-lg shadow-indigo-200">
+                    <button onClick={() => navigate('/delivery', { state: { item } })} className="w-full py-3.5 rounded-xl font-bold transition-all bg-[#4f46e5] text-white hover:bg-[#3f37c9] shadow-lg shadow-indigo-200">
                       I'm Interested
                     </button>
                     <button className="w-full py-3.5 rounded-xl font-bold transition-all border-2 border-[#e0ddff] text-[#4f46e5] hover:bg-[#f0efff]">

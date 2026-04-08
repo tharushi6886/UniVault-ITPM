@@ -62,12 +62,17 @@ const PublicProfilePage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#f5f7fc] pt-28 pb-16 font-epilogue">
-        <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="min-h-screen bg-slate-50 pt-28 pb-16 relative overflow-hidden font-epilogue">
+        {/* Ambient Premium Background Shapes */}
+        <div className="absolute top-[10%] left-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[800px] h-[800px] bg-blue-100/40 rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10 w-full">
           
           {/* Left: Identity Card */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-[2rem] p-8 shadow-sm text-center">
+            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-[0_8px_30px_rgba(79,70,229,0.06)] border border-white text-center">
               <div className="w-24 h-24 mx-auto rounded-3xl overflow-hidden bg-indigo-100 shadow-xl mb-4 relative">
                 {avatarSrc ? (
                   <img src={avatarSrc} alt={profileData.name} className="w-full h-full object-cover" />
@@ -118,7 +123,7 @@ const PublicProfilePage = () => {
 
           {/* Right: Feedback / Reviews */}
           <div className="lg:col-span-2">
-             <div className="bg-white rounded-[2rem] p-8 shadow-sm">
+             <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-[0_8px_30px_rgba(79,70,229,0.06)] border border-white">
                 <ReviewSection profileUserId={profileData._id} currentUser={currentUser} />
              </div>
           </div>

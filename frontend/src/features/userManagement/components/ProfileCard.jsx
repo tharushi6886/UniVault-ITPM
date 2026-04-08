@@ -292,13 +292,13 @@ const ProfileCard = ({ user, refreshUser }) => {
   };
 
   return (
-    <div className="animate-fade-in font-epilogue max-w-[1250px] mx-auto px-4 md:px-0">
+    <div className="animate-fade-in font-epilogue w-full mx-auto px-4 md:px-0">
       
       {/* Premium Header Card */}
       <div className="relative group bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(79,70,229,0.08)] p-8 border border-white/50 backdrop-blur-xl mb-12 flex flex-col lg:flex-row items-center justify-between gap-8 transition-all hover:shadow-[0_30px_70px_rgba(79,70,229,0.12)]">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent rounded-[2.5rem] pointer-events-none"></div>
         
-        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left flex-1">
           {/* Avatar Area */}
           <label className={`relative group/avatar cursor-pointer w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-2xl overflow-hidden ring-8 ring-indigo-50 transition-all duration-500 hover:rotate-6 hover:scale-105 ${uploading ? "opacity-50" : ""}`}>
             {user.profileImage ? (
@@ -335,12 +335,28 @@ const ProfileCard = ({ user, refreshUser }) => {
                 System ROLE: {user.role}
               </span>
               <span className={`px-5 py-2 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] border shadow-sm ${
-                user.status === "active" ? "bg-indigo-50 text-indigo-600 border-indigo-100" : "bg-rose-50 text-rose-600 border-rose-100"
+                user.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
               }`}>
                 {user.status} account
               </span>
             </div>
           </div>
+        </div>
+
+        {/* MIDDLE STATS AREA - Fills whitespace on wide screens */}
+        <div className="hidden xl:flex items-center gap-6 px-10 py-5 bg-slate-50/50 rounded-[2rem] border border-slate-100 shadow-inner">
+           <div className="text-center group cursor-default">
+              <p className="text-3xl font-black text-indigo-600 leading-none group-hover:scale-110 transition-transform">{user.stats?.trustScore || 0}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 group-hover:text-indigo-400 transition-colors">Trust Score</p>
+           </div>
+           <div className="w-[1px] h-12 bg-slate-200"></div>
+           <div className="text-center group cursor-default">
+              <p className="text-3xl font-black text-slate-700 leading-none group-hover:scale-110 transition-transform flex items-end justify-center gap-1">
+                 {user.stats?.trustBreakdown ? user.stats.trustBreakdown.reduce((sum, item) => sum + (Number(item.earned) || 0), 0) : 0}
+                 <span className="text-sm text-slate-300">XP</span>
+              </p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 group-hover:text-slate-600 transition-colors">Activity Pts</p>
+           </div>
         </div>
 
         {/* Action Controls */}
@@ -375,47 +391,93 @@ const ProfileCard = ({ user, refreshUser }) => {
         
         {/* OVERVIEW TAB */}
         {activeTab === "Overview" && (
-          <div className="pt-2 animate-fade-in-up">
-            <div className="flex items-center gap-4 mb-8">
-               <div className="h-10 w-2 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
-               <h2 className="text-2xl font-black text-slate-800 tracking-tight">Main account Overview</h2>
+          <div className="pt-2 animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="flex items-center gap-4 mb-8">
+                 <div className="h-10 w-2 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
+                 <h2 className="text-2xl font-black text-slate-800 tracking-tight">Main account Overview</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <InfoCard 
+                  title="Legal Identity" 
+                  value={user.name} 
+                  editable 
+                  onClick={() => navigate("/profile/edit")}
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
+                />
+                <InfoCard 
+                  title="Primary Contact" 
+                  value={user.email} 
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v10a2 2 0 002 2z" /></svg>}
+                />
+                <InfoCard 
+                  title="Enrollment ID" 
+                  value={user.studentId} 
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" /></svg>}
+                />
+                <InfoCard 
+                  title="Mobile Link" 
+                  value={user.phone || "Not Linked"} 
+                  editable 
+                  onClick={() => navigate("/profile/edit")}
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>}
+                />
+                <InfoCard 
+                  title="Campus Faculty" 
+                  value={user.faculty || "N/A"} 
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>}
+                />
+                <InfoCard 
+                  title="Availability Status" 
+                  value={user.status} 
+                  icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                />
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <InfoCard 
-                title="Legal Identity" 
-                value={user.name} 
-                editable 
-                onClick={() => navigate("/profile/edit")}
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>}
-              />
-              <InfoCard 
-                title="Primary Contact" 
-                value={user.email} 
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v10a2 2 0 002 2z" /></svg>}
-              />
-              <InfoCard 
-                title="Enrollment ID" 
-                value={user.studentId} 
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" /></svg>}
-              />
-              <InfoCard 
-                title="Mobile Link" 
-                value={user.phone || "Not Linked"} 
-                editable 
-                onClick={() => navigate("/profile/edit")}
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>}
-              />
-              <InfoCard 
-                title="Campus Faculty" 
-                value={user.faculty || "N/A"} 
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>}
-              />
-              <InfoCard 
-                title="Availability Status" 
-                value={user.status} 
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-              />
+
+            {/* SECONDARY COLUMN - System Verification & Setup */}
+            <div className="lg:col-span-1">
+               <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-slate-100 h-full flex flex-col">
+                  <div className="flex items-center gap-3 mb-6">
+                     <span className="p-2.5 rounded-xl bg-slate-50 text-slate-500 font-bold border border-slate-100 text-lg">🛡️</span>
+                     <h3 className="text-lg font-black tracking-tight text-slate-800">Security & Setup</h3>
+                  </div>
+
+                  <div className="flex-1 space-y-6">
+                     {/* Meter */}
+                     <div>
+                       <div className="flex justify-between items-end mb-2">
+                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profile Completion</span>
+                         <span className="text-sm font-black text-indigo-600">85%</span>
+                       </div>
+                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                         <div className="h-full bg-gradient-to-r from-indigo-400 to-indigo-600 w-[85%] rounded-full"></div>
+                       </div>
+                     </div>
+
+                     <ul className="space-y-4">
+                        <li className="flex items-center gap-3">
+                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs border border-emerald-200 shadow-sm shrink-0">✓</div>
+                           <span className="text-sm font-bold text-slate-600">Email Verified</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs border border-emerald-200 shadow-sm shrink-0">✓</div>
+                           <span className="text-sm font-bold text-slate-600">Student ID Linked</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                           <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs border border-slate-200 shrink-0">!</div>
+                           <span className="text-sm font-bold text-slate-500">2FA Authentication Disabled</span>
+                        </li>
+                     </ul>
+
+                     <div className="pt-6 border-t border-slate-100 mt-auto">
+                        <button className="w-full py-4 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-[10px] uppercase tracking-widest hover:bg-indigo-100 transition-colors">
+                          Manage Security Settings
+                        </button>
+                     </div>
+                  </div>
+               </div>
             </div>
           </div>
         )}
@@ -511,16 +573,16 @@ const ProfileCard = ({ user, refreshUser }) => {
 
         {/* TRUST & REPUTATION TAB */}
         {activeTab === "Trust & Reputation" && (
-          <div className="pt-2 animate-fade-in-up max-w-4xl">
-            <div className="bg-white rounded-[2.5rem] shadow-2xl p-10 border border-slate-50 relative overflow-hidden">
+          <div className="pt-2 animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl p-8 md:p-12 border border-slate-50 relative overflow-hidden">
                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
                
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 relative z-10">
+               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
                   <div>
                     <h3 className="text-3xl font-black text-slate-800 tracking-tight">Trust Magnitude</h3>
                     <p className="text-sm font-medium text-slate-400 mt-1">Calculated based on community interaction</p>
                   </div>
-                  <div className={`px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl ${
+                  <div className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg ${
                     (user.stats?.trustScore || 0) >= 80 ? "bg-indigo-500 text-white shadow-indigo-200" : 
                     (user.stats?.trustScore || 0) >= 40 ? "bg-amber-500 text-white shadow-amber-200" : "bg-rose-500 text-white shadow-rose-200"
                   }`}>
@@ -528,52 +590,71 @@ const ProfileCard = ({ user, refreshUser }) => {
                   </div>
                </div>
 
-               {/* PROGRESS Visual */}
-               <div className="mb-14 relative z-10">
-                  <div className="flex justify-between items-end mb-5">
-                    <div className="flex items-baseline gap-2">
-                       <span className="text-6xl font-black text-indigo-600 tracking-tighter leading-none">{user.stats?.trustScore || 0}</span>
-                       <span className="text-xl font-bold text-slate-300 uppercase tracking-widest">Score</span>
+               {/* PROGRESS Visual - Radial Dial */}
+               <div className="mb-14 relative z-10 bg-slate-50/50 p-6 md:p-8 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row items-center gap-8 md:gap-12 hover:bg-slate-50 transition-colors">
+                  <div className="relative w-40 h-40 shrink-0 flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90 drop-shadow-lg" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
+                      <circle 
+                        cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" 
+                        strokeDasharray="251.2" 
+                        strokeDashoffset={251.2 - (251.2 * (user.stats?.trustScore || 0)) / 100}
+                        strokeLinecap="round"
+                        className={`transition-all duration-1000 ease-out ${
+                          (user.stats?.trustScore || 0) >= 80 ? "text-indigo-500" : 
+                          (user.stats?.trustScore || 0) >= 40 ? "text-amber-500" : "text-rose-500"
+                        }`} 
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center justify-center">
+                      <span className="text-5xl font-black text-slate-800 tracking-tighter leading-none">{user.stats?.trustScore || 0}</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Score</span>
                     </div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Target: 80+ FOR SUPREME STATUS</span>
                   </div>
                   
-                  <div className="h-6 w-full bg-slate-50 rounded-full overflow-hidden p-1.5 shadow-inner">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-[1.5s] ease-out relative group/bar ${
-                        (user.stats?.trustScore || 0) >= 80 ? "bg-gradient-to-r from-indigo-400 to-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.5)]" : 
-                        (user.stats?.trustScore || 0) >= 40 ? "bg-gradient-to-r from-amber-400 to-amber-600 shadow-[0_0_25px_rgba(245,158,11,0.5)]" : 
-                        "bg-gradient-to-r from-rose-400 to-rose-600 shadow-[0_0_25px_rgba(244,63,94,0.5)]"
-                      }`}
-                      style={{ width: `${user.stats?.trustScore || 0}%` }}
-                    >
-                       <div className="absolute top-0 right-0 h-full w-4 bg-white/20 skew-x-[-20deg]"></div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h4 className="text-xl font-black text-slate-800 mb-2">Platform Reliability</h4>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                      This metric defines your reliability across marketplace interactions, reporting honesty, and general community behavior. Higher scores unlock increased marketplace visibility.
+                    </p>
+                    <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
+                      <span className="px-4 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-[0.15em] border border-indigo-100">
+                        Target: 80+ FOR SUPREME STATUS
+                      </span>
                     </div>
                   </div>
                </div>
 
                {/* BREAKDOWN SCALES */}
                <div className="relative z-10">
-                  <h4 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
+                  <h4 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
                     <span className="w-8 h-[2px] bg-indigo-500/30"></span>
                     Detailed Breakdown
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {(user.stats?.trustBreakdown || []).map((item, idx) => {
                       const pct = item.max > 0 ? Math.round((item.earned / item.max) * 100) : 0;
                       const labelMap = {
-                        "Marketplace Items": "Portfolio Mag.",
-                        "Found & Returned": "Resolve Mag.",
-                        "Items Sold": "Marketplace Mag.",
-                        "Lost Reports": "Discovery Mag.",
-                        "Verified Account": "Identity Mag.",
+                        "Marketplace Items": { title: "Portfolio Mag.", icon: "📦" },
+                        "Found & Returned": { title: "Resolve Mag.", icon: "🤝" },
+                        "Items Sold": { title: "Marketplace Mag.", icon: "🛍️" },
+                        "Lost Reports": { title: "Discovery Mag.", icon: "🔍" },
+                        "Verified Account": { title: "Identity Mag.", icon: "🛡️" },
                       };
-                      const label = labelMap[item.name] || item.name;
+                      const data = labelMap[item.name] || { title: item.name, icon: "📊" };
+                      
                       return (
-                        <div key={idx} className="flex items-center justify-between p-6 rounded-3xl bg-slate-50 transition-all hover:bg-white hover:shadow-2xl border border-transparent hover:border-indigo-100 group cursor-default">
-                          <div className="flex flex-col gap-2 flex-1 mr-6">
-                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.name}</span>
-                             <span className="text-base font-black text-slate-700 tracking-tight group-hover:text-indigo-600 transition-colors">{label}</span>
+                        <div key={idx} className="flex items-center p-5 rounded-[1.5rem] bg-slate-50 transition-all hover:bg-white border border-slate-100 hover:border-indigo-200 hover:shadow-xl group cursor-default">
+                          <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-lg mr-4 shrink-0 group-hover:scale-110 group-hover:bg-indigo-50 transition-transform">
+                             {data.icon}
+                          </div>
+                          
+                          <div className="flex flex-col gap-2 flex-1 mr-4">
+                             <div className="flex justify-between items-baseline mb-0.5">
+                               <span className="text-sm font-black text-slate-700 tracking-tight group-hover:text-indigo-600 transition-colors">{data.title}</span>
+                               <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{item.earned} / {item.max}</span>
+                             </div>
+                             
                              <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                                <div
                                  className={`h-full rounded-full transition-all duration-700 ${
@@ -583,12 +664,6 @@ const ProfileCard = ({ user, refreshUser }) => {
                                />
                              </div>
                           </div>
-                          <div className="flex flex-col items-end shrink-0">
-                             <span className={`text-2xl font-black ${item.earned > 0 ? "text-indigo-600" : "text-slate-300"}`}>
-                               +{item.earned}
-                             </span>
-                             <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">/ {item.max}</span>
-                          </div>
                         </div>
                       );
                     })}
@@ -596,12 +671,64 @@ const ProfileCard = ({ user, refreshUser }) => {
                </div>
 
                {/* AI Feedback Summary */}
-               <div className="mt-12 p-8 rounded-[2rem] bg-indigo-600 text-white relative overflow-hidden group">
+               <div className="mt-10 p-8 rounded-[2rem] bg-gradient-to-r from-indigo-600 to-indigo-700 text-white relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700"></div>
-                  <h5 className="text-[10px] uppercase font-black tracking-[0.3em] mb-3 opacity-60">Insight Analysis</h5>
-                  <p className="text-lg font-bold leading-relaxed italic pr-12">
+                  <h5 className="text-[10px] uppercase font-black tracking-[0.3em] mb-3 opacity-70 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    Insight Analysis
+                  </h5>
+                  <p className="text-[15px] font-bold leading-relaxed italic pr-12 text-indigo-50">
                      " {user.trust?.feedbackSummary || "Your data footprint is growing. Continue high-integrity participation to unlock supreme community privileges."} "
                   </p>
+               </div>
+            </div>
+
+            {/* SECONDARY COLUMN - Trust Tips */}
+            <div className="lg:col-span-1 space-y-6">
+               <div className="bg-gradient-to-b from-[#1a1c29] to-[#0f111a] rounded-[2.5rem] shadow-2xl p-8 text-white relative overflow-hidden border border-slate-800">
+                  <div className="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/20 rounded-full blur-[40px] pointer-events-none"></div>
+                  
+                  <div className="flex items-center gap-3 mb-8 relative z-10">
+                     <span className="p-2.5 rounded-xl bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)] text-lg">💡</span>
+                     <h3 className="text-xl font-black tracking-tight">Trust Boosters</h3>
+                  </div>
+
+                  <ul className="space-y-5 relative z-10">
+                     <li className="flex gap-4 group">
+                       <span className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-white transition-colors">✓</span>
+                       <div>
+                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-emerald-400 transition-colors">Return Items Swiftly</h5>
+                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Resolving found items within 48 hours grants bonus reputation.</p>
+                       </div>
+                     </li>
+                     <li className="flex gap-4 group">
+                       <span className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30 group-hover:bg-blue-500 group-hover:text-white transition-colors">⭐</span>
+                       <div>
+                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-blue-400 transition-colors">Earn 5-Star Reviews</h5>
+                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Marketplace feedback directly heavily impacts your standing.</p>
+                       </div>
+                     </li>
+                     <li className="flex gap-4 group">
+                       <span className="w-7 h-7 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30 group-hover:bg-purple-500 group-hover:text-white transition-colors">🛡️</span>
+                       <div>
+                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-purple-400 transition-colors">Verify Your ID</h5>
+                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Linking your student ID grants a permanent trust multiplier.</p>
+                       </div>
+                     </li>
+                  </ul>
+
+                  <div className="mt-8 pt-6 border-t border-slate-800">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                      Monitored by UniVault AI
+                    </p>
+                  </div>
+               </div>
+
+               {/* Top Badges Card Placeholder (Optional future feature) */}
+               <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-slate-100 flex flex-col items-center text-center justify-center h-[200px] hover:shadow-2xl transition-shadow">
+                 <span className="text-4xl mb-3 opacity-40">🏆</span>
+                 <h4 className="text-sm font-black text-slate-800 title-font uppercase tracking-widest">Community Badges</h4>
+                 <p className="text-xs text-slate-400 font-medium mt-2">Participate in more activities to unlock achievement badges.</p>
                </div>
             </div>
           </div>

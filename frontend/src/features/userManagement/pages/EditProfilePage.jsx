@@ -147,14 +147,14 @@ const EditProfilePage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-[#f3f0ff] via-[#f8f9ff] to-[#eef6ff] pt-28 pb-16 px-4">
+      <div className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue">
         
-        {/* Background decorations */}
-        <div className="fixed inset-0 pointer-events-none z-0" style={{
-          background: "radial-gradient(ellipse 600px 400px at 10% 10%, rgba(79,70,229,0.06) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 90% 90%, rgba(99,102,241,0.06) 0%, transparent 60%)"
-        }} />
+        {/* Ambient Premium Background Shapes */}
+        <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[800px] h-[800px] bg-blue-100/40 rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="relative z-10 max-w-2xl mx-auto">
+        <div className="relative z-10 max-w-2xl mx-auto w-full">
 
           {/* Header */}
           <div className="mb-8 flex items-center gap-4">
@@ -173,7 +173,7 @@ const EditProfilePage = () => {
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(79,70,229,0.1)] border border-white/80 overflow-hidden">
+          <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_60px_rgba(79,70,229,0.08)] border border-white overflow-hidden">
             
             {/* Card Header Banner */}
             <div className="relative bg-gradient-to-br from-indigo-500 to-indigo-700 p-10 overflow-hidden">

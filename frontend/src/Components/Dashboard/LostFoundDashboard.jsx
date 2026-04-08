@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Search, Bell, User, ShieldCheck, ArrowLeft } from "lucide-react";
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';

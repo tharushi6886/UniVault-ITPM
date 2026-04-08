@@ -87,16 +87,16 @@ const Hero = () => {
                     TRUSTED BY 50+ UNIVERSITIES
                 </div>
                 <h1 className="text-[clamp(40px,5.5vw,72px)] leading-[1.05] tracking-[-0.04em] font-bold text-text mb-[18px] font-clash">
-                    Find What <em className="not-italic bg-gradient-to-r from-[#4f46e5] via-[#a78bfa] to-[#06b6d4] text-transparent bg-clip-text">Matters</em> Most
+                    Find What <em className="not-italic bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-400 text-transparent bg-clip-text drop-shadow-[0_0_20px_rgba(99,102,241,0.25)]">Matters</em> Most
                 </h1>
                 <p className="font-epilogue text-[17px] text-muted leading-[1.75] max-w-[500px] mx-auto mb-[34px]">
                     The ultimate campus platform for item recovery and student marketplace. Secure, verified, and community-driven.
                 </p>
                 <div className="flex gap-3 justify-center flex-wrap">
-                    <Link to="/report-item" className="flex items-center gap-2 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white border-none font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_6px_24px_rgba(79,70,229,0.4)] transition-all duration-250 hover:-translate-y-0.5 hover:shadow-[0_10px_36px_rgba(79,70,229,0.52)] no-underline">
+                    <Link to="/report-item" className="flex items-center gap-2 bg-gradient-to-br from-[#4f46e5] to-[#3730a3] text-white border-none font-epilogue text-[16px] font-bold py-[15px] px-9 rounded-xl shadow-[0_6px_24px_rgba(79,70,229,0.4)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(79,70,229,0.52)] no-underline">
                         🔍 Report Lost Item
                     </Link>
-                    <Link to="/marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[15px] font-semibold py-[13px] px-7 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-0.5 no-underline">
+                    <Link to="/marketplace" className="flex items-center gap-2 bg-white/85 backdrop-blur-md border-[1.5px] border-[#a5b4fc]/40 text-text font-epilogue text-[16px] font-bold py-[15px] px-9 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.08)] transition-all duration-250 hover:border-i4 hover:text-i2 hover:-translate-y-1 no-underline">
                         🛍️ Explore Marketplace
                     </Link>
                 </div>
@@ -105,7 +105,7 @@ const Hero = () => {
             <div className="relative w-full h-[300px] mt-[60px] shrink-0" ref={stageRef}>
                 <canvas className="absolute inset-0 w-full h-full" ref={canvasRef} />
                 {NODE_DATA.map(nd => (
-                    <div className="absolute flex items-center gap-3 bg-white/90 backdrop-blur-md border border-white/95 rounded-2xl py-[11px] px-[18px] shadow-[0_8px_32px_rgba(79,70,229,0.14)] whitespace-nowrap pointer-events-none animate-node-float" id={nd.id} key={nd.id}>
+                    <div className="absolute flex items-center gap-3 bg-white/60 backdrop-blur-2xl border border-white/50 rounded-2xl py-[11px] px-[18px] shadow-[0_8px_32px_rgba(79,70,229,0.18)] whitespace-nowrap pointer-events-none animate-node-float" id={nd.id} key={nd.id}>
                         <div className={`w-[38px] h-[38px] rounded-lg flex items-center justify-center text-[17px] shrink-0 ${nd.iconClass}`}>
                             {nd.icon}
                         </div>
@@ -120,7 +120,7 @@ const Hero = () => {
                 ))}
             </div>
 
-            <div className="flex relative z-10 bg-white/85 backdrop-blur-md border border-[#a5b4fc]/30 rounded-[20px] py-[26px] px-10 shadow-[0_4px_28px_rgba(79,70,229,0.1)] mt-10 mx-auto w-fit">
+            <div className="flex relative z-10 bg-white/50 backdrop-blur-xl border border-white/60 rounded-[20px] py-[26px] px-10 shadow-[0_8px_40px_rgba(79,70,229,0.08)] mt-10 mx-auto w-fit">
                 {STATS.map((s, idx) => (
                     <div className={`px-9 text-center ${idx !== STATS.length - 1 ? 'border-r border-[#a5b4fc]/30' : ''}`} key={s.label}>
                         <div className="text-[28px] font-bold text-text leading-none font-clash">{s.num}<span className="text-i2">{s.suffix}</span></div>

@@ -58,10 +58,10 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const navClass = (path) =>
-    `text-sm font-medium transition-all duration-200 font-epilogue cursor-pointer ${
+    `text-[13px] font-bold transition-all duration-300 font-epilogue cursor-pointer px-4 py-2 rounded-full ${
       isActive(path)
-        ? "text-[#4f46e5] border-b-2 border-[#4f46e5] pb-1"
-        : "text-gray-700 hover:text-[#4f46e5]"
+        ? "bg-indigo-50 text-indigo-700 shadow-sm border border-indigo-100/50"
+        : "text-slate-500 hover:text-indigo-600 hover:bg-slate-50"
     }`;
 
   const profileImageSrc = loggedUser?.profileImage
@@ -72,10 +72,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-4 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-4 transition-all duration-500 ${
         scrolled
-          ? "bg-[#f0eeff]/95 shadow-[0_4px_32px_rgba(79,70,229,0.14)] py-3"
-          : "bg-[#f0eeff]/80 backdrop-blur-xl border-b border-[#818cf8]/20 shadow-[0_2px_24px_rgba(79,70,229,0.08)]"
+          ? "bg-white/85 backdrop-blur-2xl shadow-[0_10px_40px_rgba(79,70,229,0.08)] py-3 border-b border-indigo-50/50"
+          : "bg-white/40 backdrop-blur-xl border-b border-white/40 shadow-[0_4px_30px_rgba(79,70,229,0.03)]"
       }`}
     >
       <div
@@ -141,7 +141,7 @@ const Navbar = () => {
                   />
                 ) : null}
                 <div
-                  className="w-full h-full bg-gradient-to-br from-[#4f46e5] to-indigo-600 flex items-center justify-center text-xs font-black text-white"
+                  className="w-full h-full bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-inner flex items-center justify-center text-xs font-black text-white"
                   style={{ display: profileImageSrc ? 'none' : 'flex' }}
                 >
                   {loggedUser.name?.charAt(0).toUpperCase()}
@@ -180,10 +180,10 @@ const Navbar = () => {
           <>
             <button
               onClick={handleLogin}
-              className={`border text-sm font-medium px-[18px] py-2 rounded-[9px] transition-all duration-200 ${
+              className={`text-[13px] font-bold px-[20px] py-[8px] rounded-xl transition-all duration-300 ${
                 isActive("/login")
-                  ? "bg-[#eef2ff] border-[#4f46e5] text-[#4f46e5]"
-                  : "bg-white/70 border border-[#818cf8]/30 text-gray-700 hover:border-[#4f46e5] hover:text-[#4f46e5] hover:bg-[#eef2ff]/90"
+                  ? "bg-indigo-50 border border-indigo-200 text-indigo-700 shadow-sm"
+                  : "bg-white/80 backdrop-blur-md border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md"
               }`}
             >
               Login
@@ -191,10 +191,10 @@ const Navbar = () => {
 
             <button
               onClick={handleRegister}
-              className={`text-white text-sm font-semibold px-[22px] py-[9px] rounded-lg transition-all duration-200 cursor-pointer ${
+              className={`text-white text-[13px] font-black px-[24px] py-[9px] rounded-xl transition-all duration-300 cursor-pointer border-t border-white/20 shadow-[0_8px_20px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 hover:shadow-[0_12px_25px_rgba(79,70,229,0.45)] ${
                 isActive("/register")
-                  ? "bg-gradient-to-br from-[#4338ca] to-[#312e81] shadow-[0_6px_22px_rgba(79,70,229,0.48)]"
-                  : "bg-gradient-to-br from-[#4f46e5] to-[#3730a3] shadow-[0_4px_14px_rgba(79,70,229,0.35)] hover:-translate-y-[1px] hover:shadow-[0_6px_22px_rgba(79,70,229,0.48)]"
+                  ? "bg-gradient-to-br from-indigo-700 to-indigo-900 shadow-indigo-900/30"
+                  : "bg-gradient-to-br from-indigo-500 to-indigo-700"
               }`}
             >
               Sign Up
