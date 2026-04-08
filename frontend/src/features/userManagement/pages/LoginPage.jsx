@@ -1,53 +1,64 @@
 import React from "react";
 import LoginForm from "../components/LoginForm";
 
+const features = [
+  { icon: "🔍", text: "Report & recover lost campus items" },
+  { icon: "🏪", text: "Trade safely with verified students" },
+  { icon: "🔐", text: "OTP-verified university identity" },
+];
+
 const LoginPage = () => {
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#f8fafc]">
-      <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-[#4f46e5] via-[#4338ca] to-indigo-900 text-white shadow-2xl">
-        <div className="absolute inset-0 opacity-10">
-          <div className="w-full h-full bg-[radial-gradient(circle,white_1px,transparent_1px)] [background-size:28px_28px]" />
+    <div className="min-h-screen flex font-epilogue">
+      {/* ── LEFT PANEL ──────────────────────────────────────────── */}
+      <div className="hidden lg:flex flex-col justify-between w-[45%] xl:w-[42%] shrink-0 relative overflow-hidden bg-[#1e2a78] px-14 py-12">
+        {/* Decorative blobs */}
+        <div className="absolute top-[-120px] right-[-80px] w-[340px] h-[340px] bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-[-100px] left-[-60px] w-[280px] h-[280px] bg-blue-700/30 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-[38%] left-[-40px] w-[180px] h-[180px] bg-indigo-400/20 rounded-full blur-2xl pointer-events-none" />
+
+        {/* Logo */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-xl">
+            🔎
+          </div>
+          <div>
+            <p className="text-white font-black text-xl leading-none">UniVault</p>
+            <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-widest">Campus Ecosystem</p>
+          </div>
         </div>
 
-        <div className="absolute top-[-80px] right-[-60px] w-[320px] h-[320px] bg-white/20 blur-3xl rounded-full"></div>
-        <div className="absolute bottom-[-80px] left-[-60px] w-[280px] h-[280px] bg-indigo-300/20 blur-3xl rounded-full"></div>
-
-        <div className="relative z-10 flex flex-col justify-between w-full px-12 py-10">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl shadow-lg">
-              🔎
-            </div>
-            <h1 className="text-3xl font-black italic tracking-tighter">UniVault</h1>
+        {/* Hero text */}
+        <div className="relative z-10 max-w-sm">
+          <div className="inline-block mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+            <span className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Secure Student Platform</span>
           </div>
 
-          <div className="max-w-lg">
-            <h2 className="text-4xl xl:text-6xl font-black leading-[1.1] tracking-tight">
-              Your campus,
-              <br />
-              <span className="text-indigo-300 italic">secured & connected</span>
-            </h2>
+          <h2 className="text-4xl xl:text-5xl font-black text-white leading-[1.1] tracking-tight mb-5">
+            Welcome back to your campus hub
+          </h2>
+          <p className="text-[#a5b4fc] text-base font-medium leading-relaxed mb-10">
+            Sign in to access lost &amp; found, marketplace listings, and your personal UniVault dashboard.
+          </p>
 
-            <p className="mt-6 text-lg text-white/90 leading-relaxed font-medium">
-              Recover lost items, trade safely, and connect with your university
-              community seamlessly.
-            </p>
-
-            <div className="mt-10 flex flex-wrap gap-4">
-              <div className="px-6 py-4 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl">
-                <p className="text-sm font-black uppercase tracking-widest">12K+ Items Recovered</p>
-              </div>
-
-              <div className="px-6 py-4 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-xl shadow-2xl">
-                <p className="text-sm font-black uppercase tracking-widest">50+ Universities</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-sm font-bold opacity-60">© 2026 UniVault Secure Systems</div>
+          <ul className="space-y-4">
+            {features.map((f, i) => (
+              <li key={i} className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-base shrink-0">
+                  {f.icon}
+                </div>
+                <span className="text-white/80 text-sm font-medium">{f.text}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        {/* Footer */}
+        <p className="relative z-10 text-white/30 text-xs font-medium">© 2026 UniVault Secure Systems</p>
       </div>
 
-      <div className="flex items-center justify-center px-6 py-8">
+      {/* ── RIGHT PANEL ─────────────────────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center bg-[#f0f2f9] px-6 py-12">
         <LoginForm />
       </div>
     </div>

@@ -22,6 +22,7 @@ import VerifyOtpPage from "./features/userManagement/pages/VerifyOtpPage";
 import ForgotPasswordPage from "./features/userManagement/pages/ForgotPasswordPage";
 import ResetPasswordPage from "./features/userManagement/pages/ResetPasswordPage";
 import ProfilePage from "./features/userManagement/pages/ProfilePage";
+import PublicProfilePage from "./features/userManagement/pages/PublicProfilePage";
 import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
 import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
 import AdminDashboardPage from "./features/userManagement/pages/AdminDashboardPage";
@@ -74,6 +75,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Public Profile View */}
+        <Route path="/user/:id" element={<PublicProfilePage />} />
 
         <Route
           path="/profile/edit"

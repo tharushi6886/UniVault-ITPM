@@ -68,7 +68,8 @@ exports.getLostItemById = async (req, res) => {
         score: ownerTrust.score,
         level: ownerTrust.level,
         levelClass: ownerTrust.levelClass
-      } : null
+      } : null,
+      ownerId: owner ? owner._id : null
     });
   } catch (err) {
     res.status(500).json({ message: "Error fetching lost item details", error: err.message });

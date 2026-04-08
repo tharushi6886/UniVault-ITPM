@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { getItemById } from '../../../api/itemApi';
 import { toast } from 'react-toastify';
 
@@ -52,7 +52,13 @@ const ItemDetails = () => {
     });
   };
 
-  const nameInitial = item?.user?.name?.charAt(0).toUpperCase() || 'U';
+  // Adjust based on the populated structure { _id, name, profileImage }
+  const owner = item?.userId;
+  const ownerName = owner?.name || 'University Member';
+  const nameInitial = ownerName.charAt(0).toUpperCase();
+  const ownerAvatar = owner?.profileImage 
+    ? (owner.profileImage.startsWith('http') ? owner.profileImage : `http://localhost:5000${owner.profileImage}`)
+    : null;
 
   return (
     <div className="font-['Sora',sans-serif] bg-[#f0ebff] min-h-screen p-4 md:p-8 pb-12 relative z-0 pt-24">
@@ -182,32 +188,36 @@ const ItemDetails = () => {
               </div>
 
               {/* Owner Trust Card */}
-              <div className="bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07)] p-6">
-                <div className="flex items-center gap-4 mb-5">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#8b5cf6] flex items-center justify-center text-lg font-black text-white">
-                    {nameInitial}
+              {owner && (
+                <Link to={`/user/${owner._id}`} className="block bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07)] p-6 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(46,0,96,0.12)] transition-all cursor-pointer group">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-[#4f46e5] to-[#8b5cf6] flex items-center justify-center text-lg font-black text-white shrink-0">
+                        {ownerAvatar ? <img src={ownerAvatar} alt={ownerName} className="w-full h-full object-cover" /> : nameInitial}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#1f1b5b] group-hover:text-[#4f46e5] transition-colors">{ownerName}</h4>
+                        <p className="text-[11px] text-gray-400">View Public Profile →</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-[#1f1b5b]">University Member</h4>
-                    <p className="text-[11px] text-gray-400">SLIIT Student · Verified</p>
-                  </div>
-                </div>
 
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-[#f0f9ff] border border-[#bae6fd]">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold text-sky-700 uppercase">Trust Level</span>
-                      <span className="text-sm font-black text-sky-800">{ownerTrust?.score || 0}%</span>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-xl bg-[#f0f9ff] border border-[#bae6fd]">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-[10px] font-bold text-sky-700 uppercase">Trust Level</span>
+                        <span className="text-sm font-black text-sky-800">{ownerTrust?.score || 0}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-sky-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-sky-500" style={{ width: `${ownerTrust?.score || 0}%` }}></div>
+                      </div>
+                      <p className="text-[10px] text-sky-600 mt-2 font-medium">
+                        Status: <strong>{ownerTrust?.level || 'New'}</strong>
+                      </p>
                     </div>
-                    <div className="w-full h-1.5 bg-sky-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-sky-500" style={{ width: `${ownerTrust?.score || 0}%` }}></div>
-                    </div>
-                    <p className="text-[10px] text-sky-600 mt-2 font-medium">
-                      Status: <strong>{ownerTrust?.level || 'New'}</strong>
-                    </p>
                   </div>
-                </div>
-              </div>
+                </Link>
+              )}
 
               {/* Payment Info */}
               {item.payment_details && (

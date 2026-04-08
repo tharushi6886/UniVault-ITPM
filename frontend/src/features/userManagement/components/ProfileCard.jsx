@@ -4,6 +4,7 @@ import { uploadAvatar } from "../../../api/userApi";
 import { getMyMarketplaceItems, getMyLostItems, getMyFoundItems, updateMarketplaceItem, updateLostItem, updateFoundItem } from "../../../api/itemApi";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import ReviewSection from "./ReviewSection";
 
 const InfoCard = ({ title, value, editable, onClick, icon }) => {
   const CardWrapper = editable ? "button" : "div";
@@ -275,11 +276,17 @@ const ProfileCard = ({ user, refreshUser }) => {
     setUploading(true);
     try {
       const token = localStorage.getItem("token");
-      await uploadAvatar(token, formData);
+      const res = await uploadAvatar(token, formData);
+      // Sync new image to localStorage so Navbar updates immediately
+      const existingUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const updatedUser = { ...existingUser, profileImage: res.data.profileImage };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      // Dispatch custom event so Navbar listener picks it up
+      window.dispatchEvent(new Event("profile-updated"));
       toast.success("Profile picture updated!");
       if (refreshUser) refreshUser();
     } catch (error) {
-      toast.error("Failed to upload info");
+      toast.error("Failed to upload image");
     } finally {
       setUploading(false);
     }
@@ -456,7 +463,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                       onViewAll={() => navigate("/profile/lost-reports")}
                       onEdit={(item) => { setEditingItem({...item, type: 'lost'}); setIsEditModalOpen(true); }}
                       onResolve={(item) => handleResolve(item, 'lost')}
-                      userTrust={user.stats?.trust?.level}
+                      userTrust={user.trust?.level}
                     />
                     <hr className="my-10 border-slate-100" />
                     <DashboardSection 
@@ -466,7 +473,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                       onViewAll={() => navigate("/profile/found-returned")}
                       onEdit={(item) => { setEditingItem({...item, type: 'found'}); setIsEditModalOpen(true); }}
                       onResolve={(item) => handleResolve(item, 'found')}
-                      userTrust={user.stats?.trust?.level}
+                      userTrust={user.trust?.level}
                     />
                     <hr className="my-10 border-slate-100" />
                     <DashboardSection 
@@ -553,20 +560,39 @@ const ProfileCard = ({ user, refreshUser }) => {
                     Detailed Breakdown
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(user.stats?.trustBreakdown || []).map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-6 rounded-3xl bg-slate-50 transition-all hover:bg-white hover:shadow-xl border border-transparent hover:border-slate-100 group">
-                        <div className="flex flex-col">
-                           <span className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{item.name}</span>
-                           <span className="text-lg font-black text-slate-700 tracking-tight">Magnification</span>
+                    {(user.stats?.trustBreakdown || []).map((item, idx) => {
+                      const pct = item.max > 0 ? Math.round((item.earned / item.max) * 100) : 0;
+                      const labelMap = {
+                        "Marketplace Items": "Portfolio Mag.",
+                        "Found & Returned": "Resolve Mag.",
+                        "Items Sold": "Marketplace Mag.",
+                        "Lost Reports": "Discovery Mag.",
+                        "Verified Account": "Identity Mag.",
+                      };
+                      const label = labelMap[item.name] || item.name;
+                      return (
+                        <div key={idx} className="flex items-center justify-between p-6 rounded-3xl bg-slate-50 transition-all hover:bg-white hover:shadow-2xl border border-transparent hover:border-indigo-100 group cursor-default">
+                          <div className="flex flex-col gap-2 flex-1 mr-6">
+                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.name}</span>
+                             <span className="text-base font-black text-slate-700 tracking-tight group-hover:text-indigo-600 transition-colors">{label}</span>
+                             <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                               <div
+                                 className={`h-full rounded-full transition-all duration-700 ${
+                                   pct >= 80 ? "bg-indigo-500" : pct >= 40 ? "bg-amber-400" : "bg-rose-400"
+                                 }`}
+                                 style={{ width: `${pct}%` }}
+                               />
+                             </div>
+                          </div>
+                          <div className="flex flex-col items-end shrink-0">
+                             <span className={`text-2xl font-black ${item.earned > 0 ? "text-indigo-600" : "text-slate-300"}`}>
+                               +{item.earned}
+                             </span>
+                             <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">/ {item.max}</span>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-end">
-                           <span className={`text-xl font-black ${item.earned > 0 ? "text-indigo-600" : "text-slate-300"}`}>
-                             +{item.earned}
-                           </span>
-                           <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">OUT OF {item.max}</span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                </div>
 
@@ -584,27 +610,10 @@ const ProfileCard = ({ user, refreshUser }) => {
 
         {/* FEEDBACK TAB */}
         {activeTab === "Feedback" && (
-          <div className="pt-2 animate-fade-in-up">
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight mb-8">Community Testimonials</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                { label: "Acquisition Feedback", val: user.trust?.buyerFeedback, icon: "👤" },
-                { label: "Vendor Reputation", val: user.trust?.sellerFeedback, icon: "🏷️" },
-                { label: "Recovery Integrity", val: user.trust?.recoveryTrust, icon: "🤝" },
-                { label: "Global Presence", val: user.trust?.communityScore, icon: "💎" }
-              ].map((fb, i) => (
-                <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                   <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">{fb.icon}</div>
-                      <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">{fb.label}</span>
-                   </div>
-                   <p className="text-xl font-bold text-slate-700 leading-tight italic">
-                     "{fb.val || "No data yet"}"
-                   </p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ReviewSection
+            profileUserId={user._id}
+            currentUser={user}
+          />
         )}
 
       </div>

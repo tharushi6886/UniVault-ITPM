@@ -7,6 +7,7 @@ const {
   verifyOtp,
   loginUser,
   getUserProfile,
+  getPublicProfile,
   updateUserProfile,
   changePassword,
   getUsers,
@@ -51,6 +52,7 @@ router.post("/reset-password", resetPassword);
 
 // User profile
 router.get("/profile", protect, getUserProfile);
+router.get("/public/:id", getPublicProfile);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
 router.put("/profile/avatar", protect, upload.single("avatar"), uploadAvatar);
