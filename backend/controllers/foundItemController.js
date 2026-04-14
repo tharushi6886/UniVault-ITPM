@@ -1,11 +1,17 @@
 const FoundItem = require("../models/FoundItem");
 const User = require("../models/User");
 const calculateTrustScore = require("../utils/trustScore");
+const syncUserTrust = require("../utils/reputationSync");
 
 exports.createFoundItem = async (req, res) => {
   try {
     const foundItem = new FoundItem(req.body);
     await foundItem.save();
+
+    // Trigger real-time sync for the item owner
+    const user = await User.findOne({ studentId: foundItem.studentId });
+    if (user) await syncUserTrust(user._id);
+
     res.status(201).json(foundItem);
   } catch (err) {
     res.status(500).json({ message: "Error creating found item", error: err.message });
@@ -33,6 +39,11 @@ exports.getAllFoundItems = async (req, res) => {
 exports.updateFoundItem = async (req, res) => {
   try {
     const updated = await FoundItem.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    
+    // Sync trust if status or ownership could have changed
+    const user = await User.findOne({ studentId: updated.studentId });
+    if (user) await syncUserTrust(user._id);
+
     res.status(200).json(updated);
   } catch (err) {
     res.status(500).json({ message: "Error updating found item", error: err.message });
@@ -41,7 +52,12 @@ exports.updateFoundItem = async (req, res) => {
 
 exports.deleteFoundItem = async (req, res) => {
   try {
-    await FoundItem.findByIdAndDelete(req.params.id);
+    const item = await FoundItem.findById(req.params.id);
+    if (item) {
+      const user = await User.findOne({ studentId: item.studentId });
+      await FoundItem.findByIdAndDelete(req.params.id);
+      if (user) await syncUserTrust(user._id);
+    }
     res.status(200).json({ message: "Found item deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting found item", error: err.message });

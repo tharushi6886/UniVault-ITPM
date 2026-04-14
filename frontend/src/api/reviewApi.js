@@ -18,6 +18,10 @@ export const getReviewsForUser = (userId) =>
 export const getMyGivenReviews = (token) =>
   axios.get(`${API}/my-given`, authHeader(token));
 
+// Get interactions waiting for feedback
+export const getPendingReviews = (token) =>
+  axios.get(`${API}/pending`, authHeader(token));
+
 // Delete own review
 export const deleteReview = (token, reviewId) =>
   axios.delete(`${API}/${reviewId}`, authHeader(token));

@@ -12,21 +12,21 @@ const InfoCard = ({ title, value, editable, onClick, icon }) => {
     <CardWrapper
       type={editable ? "button" : undefined}
       onClick={editable ? onClick : undefined}
-      className={`group relative flex items-center gap-4 bg-white rounded-3xl p-5 border border-slate-100 shadow-sm transition-all duration-300 w-full text-left font-epilogue ${
-        editable ? "cursor-pointer hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1 active:scale-95" : ""
+      className={`group relative flex items-center gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all duration-300 w-full text-left font-inter ${
+        editable ? "cursor-pointer hover:border-indigo-200 hover:shadow-md hover:-translate-y-1 active:scale-95" : ""
       }`}
     >
-      <div className={`flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 transition-colors ${editable ? "group-hover:bg-indigo-500 group-hover:text-white" : ""}`}>
+      <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-slate-50 text-slate-400 border border-slate-100 transition-colors ${editable ? "group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100" : ""}`}>
         {icon || "📄"}
       </div>
-      <div className="flex-1">
-        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{title}</p>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{title}</p>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-bold text-slate-700 truncate">{value || "N/A"}</p>
+          <p className="text-sm font-bold text-slate-800 truncate">{value || "Not Set"}</p>
           {editable && (
-            <span className="text-indigo-400 opacity-40 group-hover:opacity-100 transition-opacity">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            <span className="text-indigo-400 opacity-20 group-hover:opacity-100 transition-opacity">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
             </span>
           )}
@@ -36,52 +36,150 @@ const InfoCard = ({ title, value, editable, onClick, icon }) => {
   );
 };
 
+const TrustGauge = ({ score, status, onInfoClick }) => {
+  const radius = 36;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  
+  const getColor = (s) => {
+    if (s >= 80) return "#EAB308"; // Elite (Gold)
+    if (s >= 65) return "#3B82F6"; // Trusted (Blue)
+    if (s >= 40) return "#F59E0B"; // Standard (Amber)
+    return "#F43F5E"; // Improving (Red)
+  };
+
+  const getTierIcon = (s) => {
+    if (s >= 80) return "⚜️";
+    if (s >= 65) return "🛡️";
+    if (s >= 40) return "🔰";
+    return "🌱";
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className={`relative flex items-center justify-center w-28 h-28 ${score >= 80 ? 'animate-pulse-glow rounded-full' : ''}`}>
+        <svg className="w-full h-full -rotate-90 drop-shadow-sm" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="transparent" stroke="#F1F5F9" strokeWidth="8" />
+          <circle
+            cx="50" cy="50" r="42" fill="transparent"
+            stroke={getColor(score)}
+            strokeWidth="8"
+            strokeDasharray="264"
+            strokeDashoffset={264 - (264 * score) / 100}
+            strokeLinecap="round"
+            className="transition-all duration-1000 ease-out fill-none dash-glow"
+            style={{ filter: `drop-shadow(0 0 4px ${getColor(score)}80)` }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center">
+            <span className="text-2xl font-black text-slate-800 leading-none font-epilogue">{score}</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mt-1">{status}</span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center">
+        <button 
+          onClick={onInfoClick}
+          className="group/info flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
+        >
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover/info:text-indigo-600">Protocol Status</span>
+          <svg className="w-3.5 h-3.5 text-slate-300 group-hover/info:text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MilestoneIndicator = ({ score }) => {
+  const milestones = [
+    { label: "Improving", min: 0, icon: "🌱" },
+    { label: "Standard", min: 40, icon: "🔰" },
+    { label: "Trusted", min: 65, icon: "🛡️" },
+    { label: "Elite", min: 80, icon: "⚜️" }
+  ];
+
+  return (
+    <div className="w-full py-8">
+      <div className="relative h-2 bg-slate-100 rounded-full mb-6">
+        {/* Progress Fill */}
+        <div 
+          className="absolute h-full bg-gradient-to-r from-rose-500 via-amber-500 via-blue-500 to-yellow-500 rounded-full transition-all duration-1000 shadow-sm"
+          style={{ width: `${score}%` }}
+        />
+        
+        {/* Indicators */}
+        {milestones.map((m, i) => (
+          <div 
+            key={i} 
+            className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center"
+            style={{ left: `${m.min}%` }}
+          >
+             <div className={`w-3 h-3 rounded-full border-2 ${score >= m.min ? 'bg-white border-slate-900' : 'bg-slate-200 border-white'} ring-2 ring-white z-10`} />
+             <div className="mt-4 flex flex-col items-center gap-1">
+                <span className="text-[14px]">{m.icon}</span>
+                <span className={`text-[10px] font-black uppercase tracking-widest ${score >= m.min ? 'text-slate-900' : 'text-slate-300'}`}>
+                  {m.label}
+                </span>
+                <span className="text-[9px] font-bold text-slate-400">{m.min}+</span>
+             </div>
+          </div>
+        ))}
+
+        {/* User Pointer */}
+        <div 
+          className="absolute -top-3 transition-all duration-1000"
+          style={{ left: `${score}%` }}
+        >
+           <div className="px-2 py-1 bg-slate-900 text-white text-[9px] font-black rounded-lg -translate-x-1/2 shadow-xl whitespace-nowrap mb-6 flex flex-col items-center relative animate-bounce-subtle">
+              YOU ARE HERE
+              <div className="w-2 h-2 bg-slate-900 rotate-45 absolute -bottom-1 left-1/2 -translate-x-1/2" />
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ActivityCard = ({ icon, title, count, note, bgColor, iconColor, onClick }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`group relative flex flex-col justify-between overflow-hidden rounded-[2rem] p-6 bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 text-left w-full h-[180px] font-epilogue`}
+    className="group relative flex items-center gap-6 bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-sm hover:shadow-[0_15px_40px_rgba(30,58,138,0.06)] hover:border-indigo-100 hover:-translate-y-1 transition-all duration-300 text-left w-full font-inter"
   >
-    <div className={`absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 rounded-full opacity-5 transition-transform duration-700 group-hover:scale-150 ${bgColor}`}></div>
-    
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-inner transition-transform group-hover:scale-110 duration-500 ${bgColor} ${iconColor}`}>
-          {icon}
-        </div>
-        <div className="flex flex-col items-end">
-          <span className="text-3xl font-black text-slate-800 tracking-tighter leading-none">{count}</span>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</span>
-        </div>
-      </div>
-      <h3 className="text-lg font-extrabold text-slate-700 leading-tight mb-1">{title}</h3>
-      <p className="text-sm text-slate-400 font-medium">{note}</p>
+    <div className={`w-14 h-14 flex items-center justify-center rounded-[1.2rem] text-2xl shrink-0 ${bgColor} ${iconColor} border border-white/50 shadow-inner group-hover:scale-110 transition-transform`}>
+      {icon}
     </div>
-
-    <div className="flex items-center gap-2 mt-4 text-xs font-bold text-indigo-500 group-hover:gap-3 transition-all">
-      Open Details
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-      </svg>
+    <div className="flex-1 min-w-0">
+      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Total {title}</span>
+      <div className="flex items-baseline gap-2">
+        <span className="text-2xl font-black text-slate-900 leading-none">{count}</span>
+        <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">+ Records</span>
+      </div>
+    </div>
+    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
     </div>
   </button>
 );
 
 const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResolve, userTrust }) => (
-  <div className="mb-14 last:mb-0 animate-fade-in">
-    <div className="flex items-center justify-between mb-6 px-3">
+  <div className="mb-14 last:mb-0 animate-fade-in font-inter">
+    <div className="flex items-center justify-between mb-8 px-2">
       <div className="flex items-center gap-4">
-        <div className={`w-2 h-8 rounded-full shadow-lg ${badgeColor}`}></div>
+        <div className={`w-1.5 h-8 rounded-full ${badgeColor}`}></div>
         <div>
-          <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none mb-1">{title}</h3>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Records: {items.length}</p>
+          <h3 className="text-xl font-black text-slate-800 tracking-tight leading-none mb-1 font-epilogue">{title}</h3>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Inventory: {items.length}</p>
         </div>
       </div>
       <button 
         onClick={onViewAll}
-        className="group flex items-center gap-2 text-xs font-black text-indigo-500 hover:text-indigo-700 transition-all uppercase tracking-widest"
+        className="group flex items-center gap-2 text-[11px] font-black text-indigo-600 hover:text-slate-900 transition-all uppercase tracking-widest"
       >
-        View Inventory
+        View Complete Vault
         <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
@@ -89,26 +187,24 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
     </div>
     
     {items.length === 0 ? (
-      <div className="bg-slate-50/50 border border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center">
-        <div className="text-4xl mb-4 opacity-20 italic font-black text-slate-400">#EMPTY_SLOT</div>
-        <p className="text-sm text-slate-400 font-medium italic">No active ledger entries found for this category.</p>
+      <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] p-16 text-center">
+        <div className="text-5xl mb-4 opacity-10 font-black text-slate-900 uppercase italic">#EMPTY</div>
+        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">No active decentralized records found.</p>
       </div>
     ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.slice(0, 3).map((item, idx) => (
-          <div key={item._id || idx} className="group relative bg-white border border-slate-100 rounded-[2.2rem] p-6 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-            {/* Background Decorative Element */}
-            <div className={`absolute top-0 right-0 w-24 h-24 -mr-12 -mt-12 rounded-full opacity-[0.03] transition-transform duration-700 group-hover:scale-150 ${badgeColor}`}></div>
+          <div key={item._id || idx} className="group relative bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-[0_20px_50px_rgba(30,58,138,0.08)] hover:border-indigo-100 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
             
             <div className="relative z-10">
-              <div className="flex items-start justify-between mb-5">
-                <div className={`p-4 rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner ${
-                   item.item_id ? "bg-indigo-50 text-indigo-600" : item.status === "active" ? "bg-amber-50 text-amber-600" : "bg-sky-50 text-sky-600"
+              <div className="flex items-start justify-between mb-6">
+                <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner border border-white/50 ${
+                   item.item_id ? "bg-indigo-50 text-indigo-500" : item.status === "active" ? "bg-amber-50 text-amber-500" : "bg-sky-50 text-sky-500"
                 }`}>
                   {item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"}
                 </div>
                 
-                <div className="flex flex-col items-end gap-1.5">
+                <div className="flex flex-col items-end gap-2">
                    <div className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm border ${
                      item.availability_status === "available" || item.status === "active" 
                      ? "bg-emerald-50 text-emerald-600 border-emerald-100" 
@@ -116,46 +212,44 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
                    }`}>
                      {item.availability_status || item.status}
                    </div>
-                   {/* TRUST BADGE Integration as requested */}
-                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-100">
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Trust:</span>
-                      <span className="text-[9px] font-black text-indigo-500 uppercase">{userTrust || "Standard"}</span>
+                   <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-50 border border-slate-100">
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Visibility:</span>
+                      <span className="text-[8px] font-black text-indigo-600 uppercase">Public</span>
                    </div>
                 </div>
               </div>
 
-              <h4 className="text-base font-black text-slate-800 mb-1 truncate leading-tight group-hover:text-indigo-600 transition-colors">
+              <h4 className="text-base font-black text-slate-800 mb-1 truncate leading-tight group-hover:text-indigo-600 transition-colors font-epilogue">
                 {item.title || item.itemName || item.item_name}
               </h4>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-4">{item.category}</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">{item.category}</p>
               
-              <div className="flex items-center justify-between pt-4 border-t border-slate-50 mb-5">
+              <div className="flex items-center justify-between pt-5 border-t border-slate-50 mb-6">
                 <div className="flex flex-col">
-                  <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Valuation / Date</span>
-                  <span className="text-xs font-black text-indigo-600">
+                  <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Valuation / Date</span>
+                  <span className="text-[13px] font-black text-slate-700">
                     {item.price ? `LKR ${item.price}` : new Date(item.date).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex flex-col items-end">
-                   <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Origin</span>
-                   <span className="text-[10px] font-extrabold text-slate-500 truncate max-w-[80px]">
-                     {item.location || "Central Vault"}
+                   <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-0.5">Location</span>
+                   <span className="text-[11px] font-bold text-slate-500 truncate max-w-[100px]">
+                     {item.location || "Main Campus"}
                    </span>
                 </div>
               </div>
 
-              {/* Action Buttons for Management */}
+              {/* Action Buttons */}
               <div className="flex gap-2">
                 <button 
                   onClick={() => onEdit(item)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-indigo-600 text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100 flex items-center justify-center gap-2 shadow-sm"
                 >
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                  Edit
+                  Edit Entry
                 </button>
                 <button 
                   onClick={() => onResolve(item)}
-                  className="px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all border border-indigo-100 flex items-center justify-center"
+                  className="px-4 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_8px_15px_rgba(79,70,229,0.2)] flex items-center justify-center"
                   title="Mark as Resolved"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -186,8 +280,17 @@ const ProfileCard = ({ user, refreshUser }) => {
   const [editingItem, setEditingItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [isTrustInfoOpen, setIsTrustInfoOpen] = useState(false);
 
   const tabs = ["Overview", "Activity", "Trust & Reputation", "Feedback"];
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+    window.location.reload();
+  };
 
   useEffect(() => {
     if (activeTab === "Activity") {
@@ -292,15 +395,15 @@ const ProfileCard = ({ user, refreshUser }) => {
   };
 
   return (
-    <div className="animate-fade-in font-epilogue w-full mx-auto px-4 md:px-0">
+    <div className="animate-fade-in font-inter w-full mx-auto">
       
-      {/* Premium Header Card */}
-      <div className="relative group bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(79,70,229,0.08)] p-8 border border-white/50 backdrop-blur-xl mb-12 flex flex-col lg:flex-row items-center justify-between gap-8 transition-all hover:shadow-[0_30px_70px_rgba(79,70,229,0.12)]">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent rounded-[2.5rem] pointer-events-none"></div>
+      {/* Production-Level Header Card */}
+      <div className="bg-white rounded-[2rem] shadow-[0_32px_80px_rgba(30,58,138,0.1)] p-8 md:p-10 border border-white mb-10 flex flex-col xl:flex-row items-center justify-between gap-10 transition-all duration-500 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/40 rounded-full blur-3xl -mr-32 -mt-32"></div>
         
-        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left flex-1">
-          {/* Avatar Area */}
-          <label className={`relative group/avatar cursor-pointer w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-2xl overflow-hidden ring-8 ring-indigo-50 transition-all duration-500 hover:rotate-6 hover:scale-105 ${uploading ? "opacity-50" : ""}`}>
+        <div className="relative z-10 flex flex-col md:flex-row shadow-sm md:shadow-none bg-slate-50/50 md:bg-transparent p-6 md:p-0 rounded-3xl md:rounded-none items-center gap-8 text-center md:text-left flex-1 border md:border-none border-indigo-100">
+          {/* Avatar Area with refined styles */}
+          <label className={`relative group/avatar cursor-pointer w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-[0_20px_40px_rgba(79,70,229,0.2)] overflow-hidden ring-8 ring-white transition-all duration-500 hover:rotate-2 hover:scale-105 ${uploading ? "opacity-50" : ""}`}>
             {user.profileImage ? (
               <img 
                 src={user.profileImage.startsWith('http') ? user.profileImage : `http://localhost:5000${user.profileImage}`} 
@@ -308,77 +411,95 @@ const ProfileCard = ({ user, refreshUser }) => {
                 className="w-full h-full object-cover transition-transform group-hover/avatar:scale-110"
               />
             ) : (
-              <span className="w-full h-full flex items-center justify-center text-5xl font-black text-white italic drop-shadow-md">
+              <span className="w-full h-full flex items-center justify-center text-5xl font-black text-white italic drop-shadow-sm font-epilogue">
                 {user.name?.charAt(0).toUpperCase()}
               </span>
             )}
             <div className="absolute inset-0 bg-indigo-900/40 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-300">
-               <svg className={`w-8 h-8 text-white ${uploading ? "animate-spin" : "animate-bounce"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <svg className={`w-8 h-8 text-white ${uploading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {uploading ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />}
                </svg>
             </div>
             {!uploading && <input type="file" onChange={handleAvatarChange} accept="image/*" className="hidden" />}
           </label>
 
-          {/* User Meta */}
-          <div className="flex flex-col gap-3">
-            <div>
-               <h1 className="text-4xl font-black text-slate-800 tracking-tight">{user.name}</h1>
-               <div className="flex items-center gap-2 justify-center md:justify-start text-indigo-600 mt-1 font-bold">
-                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L8 14v1c0 1.1.9 2 2 2v2.93zM18 17c-1.1 0-2-.9-2-2v-1l-5-5V7c0-1.1.9-2 2-2h1V3.07c3.95.49 7 3.85 7 7.93 0 .62-.08 1.21-.21 1.79L18 17z"/></svg>
-                 <span className="text-sm tracking-wide">{user.email}</span>
-               </div>
+          {/* User Meta - Structured Grid Alignment */}
+          <div className="flex flex-col gap-4">
+            <div className="space-y-1">
+               <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight font-epilogue">{user.name}</h1>
+               <p className="text-sm font-bold text-slate-400 flex items-center justify-center md:justify-start gap-2">
+                 <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                 {user.email}
+               </p>
             </div>
             
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              <span className="px-5 py-2 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm">
-                System ROLE: {user.role}
-              </span>
-              <span className={`px-5 py-2 rounded-2xl text-[10px] uppercase font-black tracking-[0.2em] border shadow-sm ${
-                user.status === "active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
-              }`}>
-                {user.status} account
-              </span>
+            <div className="flex flex-wrap gap-2.5 justify-center md:justify-start">
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID:</span>
+                <span className="text-[11px] font-bold text-slate-700 uppercase">{user.studentId || "N/A"}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100 shadow-sm">
+                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Role:</span>
+                <span className="text-[11px] font-black text-indigo-600 uppercase tracking-tight">{user.role}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* MIDDLE STATS AREA - Fills whitespace on wide screens */}
-        <div className="hidden xl:flex items-center gap-6 px-10 py-5 bg-slate-50/50 rounded-[2rem] border border-slate-100 shadow-inner">
-           <div className="text-center group cursor-default">
-              <p className="text-3xl font-black text-indigo-600 leading-none group-hover:scale-110 transition-transform">{user.stats?.trustScore || 0}</p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 group-hover:text-indigo-400 transition-colors">Trust Score</p>
-           </div>
-           <div className="w-[1px] h-12 bg-slate-200"></div>
-           <div className="text-center group cursor-default">
-              <p className="text-3xl font-black text-slate-700 leading-none group-hover:scale-110 transition-transform flex items-end justify-center gap-1">
-                 {user.stats?.trustBreakdown ? user.stats.trustBreakdown.reduce((sum, item) => sum + (Number(item.earned) || 0), 0) : 0}
-                 <span className="text-sm text-slate-300">XP</span>
-              </p>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 group-hover:text-slate-600 transition-colors">Activity Pts</p>
+        {/* Stats Section with Circular Gauge */}
+        <div className="flex items-center gap-10 md:gap-14 bg-slate-50/60 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+           <TrustGauge 
+             score={user.stats?.totalScore || user.stats?.trustScore || 0} 
+             status={user.stats?.status || "Unranked"}
+             onInfoClick={() => setIsTrustInfoOpen(true)} 
+           />
+           
+           <div className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-[1.2rem] bg-white shadow-md border border-slate-100 flex items-center justify-center transition-transform hover:scale-110 cursor-default">
+                 <div className="flex flex-col items-center">
+                    <span className="text-xl font-black text-indigo-600 leading-none">
+                      {user.stats?.pillars ? 
+                        Object.values(user.stats.pillars).reduce((sum, p) => sum + (p.earned || 0), 0) : 
+                        (user.stats?.trustBreakdown?.reduce((sum, item) => sum + (Number(item.earned) || 0), 0) || 0)}
+                    </span>
+                 </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total Pts</span>
+                <span className="text-xs font-bold text-slate-600">{user.stats?.status || "Bronze"}</span>
+              </div>
            </div>
         </div>
 
-        {/* Action Controls */}
-        <button
-          onClick={() => navigate("/profile/edit")}
-          className="relative z-10 group bg-indigo-600 text-white px-10 py-4 rounded-3xl font-black text-sm uppercase tracking-widest shadow-[0_15px_30px_rgba(79,70,229,0.25)] hover:bg-indigo-700 hover:-translate-y-1.5 active:translate-y-0 transition-all duration-300 w-full lg:w-auto overflow-hidden"
-        >
-          <span className="relative z-10">Edit My Profile →</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </button>
+        {/* Improved Button Hierarchy */}
+        <div className="flex flex-col sm:flex-row xl:flex-col gap-3 w-full xl:w-64">
+          <button
+            onClick={() => navigate("/profile/edit")}
+            className="flex-1 w-full bg-gradient-to-r from-[#4A8EF0] to-[#8B5CF6] text-white px-8 py-4 rounded-2xl font-black text-[13px] uppercase tracking-[0.15em] shadow-[0_12px_25px_rgba(74,134,240,0.3)] hover:shadow-[0_15px_30px_rgba(74,134,240,0.4)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 font-epilogue"
+          >
+            Edit Profile →
+          </button>
+          
+          <button
+            onClick={() => setIsLogoutConfirmOpen(true)}
+            className="flex-1 w-full flex items-center justify-center gap-2 text-slate-400 hover:text-rose-500 bg-transparent px-8 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all duration-300 group"
+          >
+            <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            Sign Out
+          </button>
+        </div>
       </div>
 
-      {/* Modern Navigation Tabs */}
-      <div className="flex bg-slate-100/50 p-2 rounded-[2rem] gap-2 mb-12 overflow-x-auto scrollbar-hide">
+      {/* Modern Navigation Tabs - Pill Style */}
+      <div className="flex bg-white shadow-[0_8px_30px_rgba(30,58,138,0.06)] border border-white p-1.5 rounded-[1.8rem] gap-1 mb-10 overflow-x-auto scrollbar-hide sticky top-24 z-30 font-epilogue">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`whitespace-nowrap px-8 py-4 rounded-[1.5rem] text-sm font-black uppercase tracking-widest transition-all duration-300 ${
+            className={`whitespace-nowrap flex-1 px-10 py-3.5 rounded-[1.4rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
               activeTab === tab
-                ? "bg-white text-indigo-600 shadow-lg scale-100"
-                : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+                ? "bg-slate-900 text-white shadow-xl scale-100"
+                : "text-slate-400 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
             {tab}
@@ -386,19 +507,22 @@ const ProfileCard = ({ user, refreshUser }) => {
         ))}
       </div>
 
-      {/* Content Section with Limit Viewport */}
-      <div className="max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
+      {/* Content Section - Remove excessive scroll limit for clarity */}
+      <div className="pb-10 font-inter">
         
         {/* OVERVIEW TAB */}
         {activeTab === "Overview" && (
-          <div className="pt-2 animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="flex items-center gap-4 mb-8">
-                 <div className="h-10 w-2 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)]"></div>
-                 <h2 className="text-2xl font-black text-slate-800 tracking-tight">Main account Overview</h2>
+              <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                 <div className="flex items-center gap-4">
+                    <div className="h-8 w-1.5 bg-indigo-600 rounded-full"></div>
+                    <h2 className="text-2xl font-black text-slate-800 tracking-tight font-epilogue">Master Credentials</h2>
+                 </div>
+                 <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Global Identity Record</p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <InfoCard 
                   title="Legal Identity" 
                   value={user.name} 
@@ -438,41 +562,41 @@ const ProfileCard = ({ user, refreshUser }) => {
 
             {/* SECONDARY COLUMN - System Verification & Setup */}
             <div className="lg:col-span-1">
-               <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-slate-100 h-full flex flex-col">
-                  <div className="flex items-center gap-3 mb-6">
-                     <span className="p-2.5 rounded-xl bg-slate-50 text-slate-500 font-bold border border-slate-100 text-lg">🛡️</span>
-                     <h3 className="text-lg font-black tracking-tight text-slate-800">Security & Setup</h3>
+               <div className="bg-white rounded-[2.5rem] shadow-[0_32px_80px_rgba(30,58,138,0.06)] p-8 border border-white h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-8">
+                     <span className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center border border-indigo-100 text-lg">🛡️</span>
+                     <h3 className="text-xl font-black tracking-tight text-slate-800 font-epilogue">Security & Setup</h3>
                   </div>
 
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-8">
                      {/* Meter */}
                      <div>
-                       <div className="flex justify-between items-end mb-2">
+                       <div className="flex justify-between items-end mb-3">
                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profile Completion</span>
                          <span className="text-sm font-black text-indigo-600">85%</span>
                        </div>
-                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                         <div className="h-full bg-gradient-to-r from-indigo-400 to-indigo-600 w-[85%] rounded-full"></div>
+                       <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                         <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 w-[85%] rounded-full shadow-[0_0_12px_rgba(79,70,229,0.3)]"></div>
                        </div>
                      </div>
 
-                     <ul className="space-y-4">
-                        <li className="flex items-center gap-3">
-                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs border border-emerald-200 shadow-sm shrink-0">✓</div>
-                           <span className="text-sm font-bold text-slate-600">Email Verified</span>
+                     <ul className="space-y-5">
+                        <li className="flex items-center gap-4">
+                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] font-black border border-emerald-200 shadow-sm shrink-0">✓</div>
+                           <span className="text-[13px] font-bold text-slate-700">Email Identity Verified</span>
                         </li>
-                        <li className="flex items-center gap-3">
-                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs border border-emerald-200 shadow-sm shrink-0">✓</div>
-                           <span className="text-sm font-bold text-slate-600">Student ID Linked</span>
+                        <li className="flex items-center gap-4">
+                           <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] font-black border border-emerald-200 shadow-sm shrink-0">✓</div>
+                           <span className="text-[13px] font-bold text-slate-700">Student ID Records Linked</span>
                         </li>
-                        <li className="flex items-center gap-3">
-                           <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs border border-slate-200 shrink-0">!</div>
-                           <span className="text-sm font-bold text-slate-500">2FA Authentication Disabled</span>
+                        <li className="flex items-center gap-4">
+                           <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-[10px] font-black border border-slate-200 shrink-0">!</div>
+                           <span className="text-[13px] font-bold text-slate-400">2FA Security Authentication Disabled</span>
                         </li>
                      </ul>
 
-                     <div className="pt-6 border-t border-slate-100 mt-auto">
-                        <button className="w-full py-4 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-[10px] uppercase tracking-widest hover:bg-indigo-100 transition-colors">
+                     <div className="pt-8 border-t border-slate-50 mt-auto">
+                        <button className="w-full py-4 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-[0_10px_25px_rgba(15,10,46,0.15)] hover:shadow-indigo-200">
                           Manage Security Settings
                         </button>
                      </div>
@@ -485,15 +609,15 @@ const ProfileCard = ({ user, refreshUser }) => {
         {/* ACTIVITY TAB */}
         {activeTab === "Activity" && (
           <div className="pt-2 animate-fade-in-up">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Activity Dashboard</h2>
-                <p className="text-sm text-slate-400 font-medium">Synced real-time across all UniVault modules</p>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight font-epilogue uppercase tracking-tight">Activity Dashboard</h2>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Real-time system synchronization</p>
               </div>
               <button 
                 onClick={fetchActivityData}
                 disabled={loadingActivity}
-                className={`p-3 rounded-2xl bg-white border border-slate-100 shadow-sm transition-all hover:bg-slate-50 ${loadingActivity ? "animate-spin" : ""}`}
+                className={`p-4 rounded-2xl bg-white border border-slate-100 shadow-sm transition-all hover:border-indigo-500 hover:text-indigo-600 ${loadingActivity ? "animate-spin" : ""}`}
                 title="Refresh All Data"
               >
                 <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -508,19 +632,19 @@ const ProfileCard = ({ user, refreshUser }) => {
               </div>
             ) : (
               <div className="space-y-4">
-                {/* Statistics Overview Cards (Keep original visual style but functional) */}
+                {/* Statistics Overview Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                    <ActivityCard icon="🔍" title="Lost Reports" count={lostItems.length} note="Missing item logs" bgColor="bg-amber-50" iconColor="text-amber-500" onClick={() => navigate("/profile/lost-reports")} />
                    <ActivityCard icon="🤝" title="Found & Returned" count={foundItems.length} note="Successful resolutions" bgColor="bg-sky-50" iconColor="text-sky-500" onClick={() => navigate("/profile/found-returned")} />
                    <ActivityCard icon="📦" title="Active Listings" count={marketListings.length} note="Listed in Marketplace" bgColor="bg-blue-50" iconColor="text-blue-500" onClick={() => navigate("/profile/items-posted")} />
                 </div>
 
-                <div className="bg-white/40 backdrop-blur-md rounded-[2.5rem] p-1 shadow-inner">
-                  <div className="bg-white rounded-[2.2rem] p-8 border border-white shadow-sm">
+                <div className="bg-white rounded-[2.5rem] p-1.5 shadow-sm border border-white">
+                  <div className="bg-slate-50/50 rounded-[2.2rem] p-8 border border-white">
                     <DashboardSection 
                       title="My Lost Reports" 
                       items={lostItems} 
-                      badgeColor="bg-amber-400 font-bold" 
+                      badgeColor="bg-amber-500 font-bold" 
                       onViewAll={() => navigate("/profile/lost-reports")}
                       onEdit={(item) => { setEditingItem({...item, type: 'lost'}); setIsEditModalOpen(true); }}
                       onResolve={(item) => handleResolve(item, 'lost')}
@@ -530,7 +654,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                     <DashboardSection 
                       title="My Found Reports" 
                       items={foundItems} 
-                      badgeColor="bg-sky-400 font-bold" 
+                      badgeColor="bg-sky-500 font-bold" 
                       onViewAll={() => navigate("/profile/found-returned")}
                       onEdit={(item) => { setEditingItem({...item, type: 'found'}); setIsEditModalOpen(true); }}
                       onResolve={(item) => handleResolve(item, 'found')}
@@ -540,13 +664,13 @@ const ProfileCard = ({ user, refreshUser }) => {
                     <DashboardSection 
                       title="Marketplace Items" 
                       items={marketListings} 
-                      badgeColor="bg-blue-400 font-bold" 
+                      badgeColor="bg-blue-500 font-bold" 
                       onViewAll={() => navigate("/profile/items-posted")}
                       onEdit={(item) => { setEditingItem({...item, type: 'market'}); setIsEditModalOpen(true); }}
                       onResolve={(item) => handleResolve(item, 'market')}
                       userTrust={user.trust?.level}
                     />
-                    <hr className="my-10 border-slate-100" />
+                    <hr className="my-10 border-white/10" />
                     <DashboardSection 
                       title="Sold Items" 
                       items={soldItems} 
@@ -556,7 +680,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                       onResolve={(item) => handleResolve(item, 'market')}
                       userTrust={user.trust?.level}
                     />
-                    <hr className="my-10 border-slate-100" />
+                    <hr className="my-10 border-white/10" />
                     <DashboardSection 
                       title="My Bids" 
                       items={myBids} 
@@ -573,162 +697,185 @@ const ProfileCard = ({ user, refreshUser }) => {
 
         {/* TRUST & REPUTATION TAB */}
         {activeTab === "Trust & Reputation" && (
-          <div className="pt-2 animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-white rounded-[2.5rem] shadow-2xl p-8 md:p-12 border border-slate-50 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
-               
-               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
-                  <div>
-                    <h3 className="text-3xl font-black text-slate-800 tracking-tight">Trust Magnitude</h3>
-                    <p className="text-sm font-medium text-slate-400 mt-1">Calculated based on community interaction</p>
-                  </div>
-                  <div className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg ${
-                    (user.stats?.trustScore || 0) >= 80 ? "bg-indigo-500 text-white shadow-indigo-200" : 
-                    (user.stats?.trustScore || 0) >= 40 ? "bg-amber-500 text-white shadow-amber-200" : "bg-rose-500 text-white shadow-rose-200"
-                  }`}>
-                    {user.trust?.level || "Unranked"} Standing
-                  </div>
-               </div>
+          <div className="pt-2 animate-fade-in-up w-full grid grid-cols-1 lg:grid-cols-3 gap-8 font-inter">
+            <div className="lg:col-span-2 space-y-8">
+              
+              {/* PENALTY WARNING BANNER */}
+              {(user.stats?.penalties < 0) && (
+                <div className="bg-rose-50 border border-rose-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center gap-6 shadow-[0_12px_30px_rgba(244,63,94,0.1)]">
+                   <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shrink-0 border border-rose-200">⚠️</div>
+                   <div className="flex-1 text-center md:text-left">
+                     <h4 className="text-rose-900 font-black text-sm uppercase tracking-widest mb-1">Deduction Protocol Active</h4>
+                     <p className="text-rose-600/80 text-xs font-bold leading-relaxed">
+                        Your score has a {user.stats.penalties} pt deduction due to unresolved disputes or record flags. Resolve pending issues to restore your standing.
+                     </p>
+                   </div>
+                   <button onClick={() => setActiveTab("Activity")} className="px-6 py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-rose-700 transition-all">
+                      Review Records
+                   </button>
+                </div>
+              )}
 
-               {/* PROGRESS Visual - Radial Dial */}
-               <div className="mb-14 relative z-10 bg-slate-50/50 p-6 md:p-8 rounded-[2rem] border border-slate-100 flex flex-col md:flex-row items-center gap-8 md:gap-12 hover:bg-slate-50 transition-colors">
-                  <div className="relative w-40 h-40 shrink-0 flex items-center justify-center">
-                    <svg className="w-full h-full transform -rotate-90 drop-shadow-lg" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-200" />
-                      <circle 
-                        cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" 
-                        strokeDasharray="251.2" 
-                        strokeDashoffset={251.2 - (251.2 * (user.stats?.trustScore || 0)) / 100}
-                        strokeLinecap="round"
-                        className={`transition-all duration-1000 ease-out ${
-                          (user.stats?.trustScore || 0) >= 80 ? "text-indigo-500" : 
-                          (user.stats?.trustScore || 0) >= 40 ? "text-amber-500" : "text-rose-500"
-                        }`} 
-                      />
-                    </svg>
-                    <div className="absolute flex flex-col items-center justify-center">
-                      <span className="text-5xl font-black text-slate-800 tracking-tighter leading-none">{user.stats?.trustScore || 0}</span>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Score</span>
+              <div className="bg-white rounded-[3rem] shadow-[0_32px_80px_rgba(30,58,138,0.06)] p-8 md:p-14 border border-white relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
+                 
+                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-8 relative z-10">
+                    <div>
+                      <h3 className="text-3xl font-black text-slate-900 tracking-tight font-epilogue">Reputation Algorithm</h3>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">V2.0 ALPHA • SECURE AUDIT SYNC</p>
                     </div>
-                  </div>
-                  
-                  <div className="flex-1 text-center md:text-left">
-                    <h4 className="text-xl font-black text-slate-800 mb-2">Platform Reliability</h4>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                      This metric defines your reliability across marketplace interactions, reporting honesty, and general community behavior. Higher scores unlock increased marketplace visibility.
-                    </p>
-                    <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
-                      <span className="px-4 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-[0.15em] border border-indigo-100">
-                        Target: 80+ FOR SUPREME STATUS
-                      </span>
-                    </div>
-                  </div>
-               </div>
-
-               {/* BREAKDOWN SCALES */}
-               <div className="relative z-10">
-                  <h4 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                    <span className="w-8 h-[2px] bg-indigo-500/30"></span>
-                    Detailed Breakdown
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {(user.stats?.trustBreakdown || []).map((item, idx) => {
-                      const pct = item.max > 0 ? Math.round((item.earned / item.max) * 100) : 0;
-                      const labelMap = {
-                        "Marketplace Items": { title: "Portfolio Mag.", icon: "📦" },
-                        "Found & Returned": { title: "Resolve Mag.", icon: "🤝" },
-                        "Items Sold": { title: "Marketplace Mag.", icon: "🛍️" },
-                        "Lost Reports": { title: "Discovery Mag.", icon: "🔍" },
-                        "Verified Account": { title: "Identity Mag.", icon: "🛡️" },
-                      };
-                      const data = labelMap[item.name] || { title: item.name, icon: "📊" };
-                      
-                      return (
-                        <div key={idx} className="flex items-center p-5 rounded-[1.5rem] bg-slate-50 transition-all hover:bg-white border border-slate-100 hover:border-indigo-200 hover:shadow-xl group cursor-default">
-                          <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-lg mr-4 shrink-0 group-hover:scale-110 group-hover:bg-indigo-50 transition-transform">
-                             {data.icon}
-                          </div>
-                          
-                          <div className="flex flex-col gap-2 flex-1 mr-4">
-                             <div className="flex justify-between items-baseline mb-0.5">
-                               <span className="text-sm font-black text-slate-700 tracking-tight group-hover:text-indigo-600 transition-colors">{data.title}</span>
-                               <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{item.earned} / {item.max}</span>
-                             </div>
-                             
-                             <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                               <div
-                                 className={`h-full rounded-full transition-all duration-700 ${
-                                   pct >= 80 ? "bg-indigo-500" : pct >= 40 ? "bg-amber-400" : "bg-rose-400"
-                                 }`}
-                                 style={{ width: `${pct}%` }}
-                               />
-                             </div>
-                          </div>
+                    {user.stats?.nextMilestone?.pointsNeeded > 0 && (
+                      <div className="bg-indigo-50 border border-indigo-100 px-6 py-4 rounded-[2rem] flex items-center gap-4">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-lg shadow-sm">🚀</div>
+                        <div>
+                          <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-0.5">NEXT RANK: {user.stats.nextMilestone.label}</p>
+                          <p className="text-xs font-black text-indigo-900 tracking-tight">Need {user.stats.nextMilestone.pointsNeeded} pts</p>
                         </div>
-                      );
-                    })}
-                  </div>
-               </div>
+                      </div>
+                    )}
+                 </div>
 
-               {/* AI Feedback Summary */}
-               <div className="mt-10 p-8 rounded-[2rem] bg-gradient-to-r from-indigo-600 to-indigo-700 text-white relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700"></div>
-                  <h5 className="text-[10px] uppercase font-black tracking-[0.3em] mb-3 opacity-70 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                    Insight Analysis
-                  </h5>
-                  <p className="text-[15px] font-bold leading-relaxed italic pr-12 text-indigo-50">
-                     " {user.trust?.feedbackSummary || "Your data footprint is growing. Continue high-integrity participation to unlock supreme community privileges."} "
-                  </p>
-               </div>
+                 {/* SCORE HERO */}
+                 <div className="grid grid-cols-1 md:grid-cols-5 gap-10 items-center mb-16 relative z-10">
+                    <div className="md:col-span-2 flex justify-center">
+                       <TrustGauge 
+                         score={user.stats?.totalScore || 0} 
+                         status={user.stats?.status || "Standard"}
+                         onInfoClick={() => setIsTrustInfoOpen(true)} 
+                       />
+                    </div>
+                    <div className="md:col-span-3">
+                       <MilestoneIndicator score={user.stats?.totalScore || 0} />
+                    </div>
+                 </div>
+
+                 {/* PILLAR BREAKDOWN GRID */}
+                 <div className="relative z-10 space-y-12">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {[
+                        { 
+                          name: "Identity Verification", 
+                          icon: "🛡️", 
+                          key: "identityVerification", 
+                          hint: "Complete Student ID validation for a fixed security boost.",
+                          cta: "Verify Now",
+                          path: "/verify" 
+                        },
+                        { 
+                          name: "Community Hero", 
+                          icon: "🌍", 
+                          key: "communityHero", 
+                          hint: "Return lost items to earn +5 pts per resolution.", 
+                          cta: "Report Found",
+                          path: "/report-found"
+                        },
+                        { 
+                          name: "Marketplace Reliability", 
+                          icon: "🛍️", 
+                          key: "marketplaceTrust", 
+                          hint: "Complete successful sales to earn +4 pts per trade.", 
+                          cta: "Manage Items",
+                          path: "/profile/items-posted"
+                        },
+                        { 
+                          name: "Peer Consistency", 
+                          icon: "⭐", 
+                          key: "peerReview", 
+                          hint: "Maintain 5-star feedback to maximize this rating.", 
+                          cta: "View Feedback",
+                          path: "/profile/feedback"
+                        }
+                      ].map((pillar, idx) => {
+                        const data = user.stats?.pillars?.[pillar.key] || { earned: 0, max: 25 };
+                        const pct = Math.round((data.earned / data.max) * 100);
+                        
+                        return (
+                          <div key={idx} className="bg-slate-50/50 border border-slate-100 rounded-[2.5rem] p-8 flex flex-col hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all group overflow-hidden relative">
+                            <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12 group-hover:rotate-0 transition-transform text-6xl">{pillar.icon}</div>
+                            
+                            <div className="flex items-center gap-4 mb-6 relative">
+                              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-xl shadow-sm border border-slate-100">{pillar.icon}</div>
+                              <div>
+                                <h4 className="font-epilogue font-black text-slate-900 text-sm tracking-tight">{pillar.name}</h4>
+                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{data.earned} / {data.max} PTS</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-4 relative">
+                               <div className="h-2 w-full bg-white rounded-full border border-slate-100 overflow-hidden">
+                                  <div 
+                                    className={`h-full rounded-full transition-all duration-1000 ${pct >= 85 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                    style={{ width: `${pct}%` }}
+                                  />
+                               </div>
+                               <p className="text-[11px] text-slate-500 font-bold leading-relaxed min-h-[32px]">💡 {pillar.hint}</p>
+                               <button 
+                                 onClick={() => navigate(pillar.path)}
+                                 className="w-full py-4 mt-2 bg-white border border-slate-200 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm"
+                               >
+                                 {pillar.cta} →
+                               </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                   </div>
+                 </div>
+              </div>
             </div>
 
-            {/* SECONDARY COLUMN - Trust Tips */}
-            <div className="lg:col-span-1 space-y-6">
-               <div className="bg-gradient-to-b from-[#1a1c29] to-[#0f111a] rounded-[2.5rem] shadow-2xl p-8 text-white relative overflow-hidden border border-slate-800">
-                  <div className="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/20 rounded-full blur-[40px] pointer-events-none"></div>
+            {/* SECONDARY COLUMN - QUICK WINS SIDEBAR */}
+            <div className="lg:col-span-1 space-y-8">
+               <div className="bg-slate-900 text-white rounded-[3rem] shadow-2xl p-10 border border-white/10 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
                   
-                  <div className="flex items-center gap-3 mb-8 relative z-10">
-                     <span className="p-2.5 rounded-xl bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)] text-lg">💡</span>
-                     <h3 className="text-xl font-black tracking-tight">Trust Boosters</h3>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-4 mb-10">
+                       <span className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-xl backdrop-blur-md shadow-inner">⚡</span>
+                       <h3 className="text-xl font-black tracking-tight font-epilogue">Quick Wins</h3>
+                    </div>
+
+                    <div className="space-y-6">
+                       {/* DYNAMIC QUICK WINS LOGIC */}
+                       {[
+                         { condition: !(user.profileImage), label: "Avatar Upload", points: "+8 Pts", action: "Edit Profile", path: "/profile/edit" },
+                         { condition: !(user.phone), label: "Link Contact", points: "+6 Pts", action: "Verify ID", path: "/verify" },
+                         { condition: !(user.isVerified), label: "ID Verification", points: "+30 Pts", action: "Submit ID", path: "/verify" },
+                         { condition: (user.stats?.stats?.itemsSold === 0), label: "Complete Marketplace Sale", points: "+4 Pts", action: "Open Shop", path: "/marketplace" },
+                       ].filter(w => w.condition).slice(0, 3).map((win, i) => (
+                         <div key={i} className="p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer group/win" onClick={() => navigate(win.path)}>
+                            <div className="flex justify-between items-start mb-3">
+                               <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">{win.points} GROWTH</span>
+                               <span className="text-white/20 group-hover/win:text-white transition-colors">→</span>
+                            </div>
+                            <h5 className="text-[15px] font-black tracking-tight mb-2 font-epilogue">{win.label}</h5>
+                            <button className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover/win:text-indigo-400">Run protocol: {win.action}</button>
+                         </div>
+                       ))}
+                       
+                       {/* If all quick wins achieved or no points left */}
+                       {(!user.isVerified && user.profileImage && user.phone) === false && (
+                          <div className="p-6 text-center text-slate-400 italic text-xs font-bold font-epilogue opacity-50">
+                             Analysis complete. Your integrity profile is performing within optimal parameters.
+                          </div>
+                       )}
+                    </div>
+
+                    <div className="mt-14 pt-8 border-t border-white/10 flex flex-col items-center gap-4">
+                       <div className="group/audit relative inline-block">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] cursor-help hover:text-indigo-400 transition-colors">
+                           AI Audited by UniVault
+                         </p>
+                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-4 bg-white text-slate-900 rounded-2xl shadow-2xl scale-0 group-hover/audit:scale-100 transition-all origin-bottom pointer-events-none">
+                            <p className="text-[10px] font-bold leading-relaxed">
+                              Your trust score is verified by UniVault's AI integrity engine, which cross-checks all activity in real time.
+                            </p>
+                            <div className="w-3 h-3 bg-white rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2" />
+                         </div>
+                       </div>
+                       <span className="text-[9px] font-bold text-slate-600">LAST SYNC: {new Date(user.stats?.lastAudit || Date.now()).toLocaleString()}</span>
+                    </div>
                   </div>
-
-                  <ul className="space-y-5 relative z-10">
-                     <li className="flex gap-4 group">
-                       <span className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-white transition-colors">✓</span>
-                       <div>
-                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-emerald-400 transition-colors">Return Items Swiftly</h5>
-                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Resolving found items within 48 hours grants bonus reputation.</p>
-                       </div>
-                     </li>
-                     <li className="flex gap-4 group">
-                       <span className="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30 group-hover:bg-blue-500 group-hover:text-white transition-colors">⭐</span>
-                       <div>
-                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-blue-400 transition-colors">Earn 5-Star Reviews</h5>
-                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Marketplace feedback directly heavily impacts your standing.</p>
-                       </div>
-                     </li>
-                     <li className="flex gap-4 group">
-                       <span className="w-7 h-7 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/30 group-hover:bg-purple-500 group-hover:text-white transition-colors">🛡️</span>
-                       <div>
-                         <h5 className="text-sm font-black text-white mb-0.5 group-hover:text-purple-400 transition-colors">Verify Your ID</h5>
-                         <p className="text-xs text-slate-400 leading-relaxed font-medium">Linking your student ID grants a permanent trust multiplier.</p>
-                       </div>
-                     </li>
-                  </ul>
-
-                  <div className="mt-8 pt-6 border-t border-slate-800">
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
-                      Monitored by UniVault AI
-                    </p>
-                  </div>
-               </div>
-
-               {/* Top Badges Card Placeholder (Optional future feature) */}
-               <div className="bg-white rounded-[2.5rem] shadow-xl p-8 border border-slate-100 flex flex-col items-center text-center justify-center h-[200px] hover:shadow-2xl transition-shadow">
-                 <span className="text-4xl mb-3 opacity-40">🏆</span>
-                 <h4 className="text-sm font-black text-slate-800 title-font uppercase tracking-widest">Community Badges</h4>
-                 <p className="text-xs text-slate-400 font-medium mt-2">Participate in more activities to unlock achievement badges.</p>
                </div>
             </div>
           </div>
@@ -747,13 +894,13 @@ const ProfileCard = ({ user, refreshUser }) => {
       {/* EDIT MODAL Overlay */}
       {isEditModalOpen && editingItem && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fade-in">
-           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
+           <div className="absolute inset-0 bg-[#0F0A2E]/80 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
            
-           <div className="relative bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl border border-white overflow-hidden animate-fade-in-up">
-              <div className="bg-indigo-600 p-8 text-white relative">
+           <div className="relative bg-[#1A1A2E]/90 backdrop-blur-2xl w-full max-w-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden animate-fade-in-up">
+              <div className="bg-gradient-to-r from-[#4A5FE8] to-[#8B5CF6] p-8 text-white relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
                 <h3 className="text-2xl font-black tracking-tight">Modify Vault Record</h3>
-                <p className="text-indigo-100 text-sm font-bold uppercase tracking-widest mt-1">UUID: {editingItem._id?.slice(-8)}</p>
+                <p className="text-white/70 text-sm font-bold uppercase tracking-widest mt-1">UUID: {editingItem._id?.slice(-8)}</p>
                 <button onClick={() => setIsEditModalOpen(false)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -761,64 +908,159 @@ const ProfileCard = ({ user, refreshUser }) => {
 
               <form onSubmit={handleUpdate} className="p-10 space-y-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Item Designation</label>
+                  <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Item Designation</label>
                   <input 
                     type="text" 
                     value={editingItem.title || editingItem.itemName || editingItem.item_name || ""} 
                     onChange={(e) => setEditingItem({...editingItem, title: e.target.value, item_name: e.target.value, itemName: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sector / Category</label>
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Sector / Category</label>
                     <input 
                       type="text" 
                       value={editingItem.category || ""} 
                       onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Valuation (LKR)</label>
+                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Valuation (LKR)</label>
                     <input 
                       type="number" 
                       value={editingItem.price || ""} 
                       onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Detailed Specification</label>
+                  <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Detailed Specification</label>
                   <textarea 
                     rows="4"
                     value={editingItem.description || ""} 
                     onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all resize-none"
                   ></textarea>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <button 
-                    type="button" 
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="flex-1 py-4 rounded-2xl bg-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
-                  >
-                    Abort Changes
+                <div className="pt-6 border-t border-white/10 flex items-center justify-end gap-4">
+                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="text-sm font-bold text-white/50 uppercase tracking-widest hover:text-white transition-colors">
+                    Discard
                   </button>
-                  <button 
-                    type="submit"
-                    disabled={isSaving}
-                    className={`flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all ${isSaving ? "opacity-50" : ""}`}
-                  >
-                    {isSaving ? "Synchronizing..." : "Update Vault Record →"}
+                  <button type="submit" disabled={isSaving} className={`bg-gradient-to-r from-[#4A5FE8] to-[#8B5CF6] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-[0_8px_20px_rgba(79,70,229,0.3)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 ${isSaving ? "opacity-50 cursor-not-allowed leading-[0]" : ""}`}>
+                     {isSaving ? <span className="inline-block w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></span> : "Update Record"}
                   </button>
                 </div>
               </form>
            </div>
+        </div>
+      )}
+      {/* TRUST INFO MODAL */}
+      {isTrustInfoOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+          <div className="absolute inset-0 bg-[#0F0A2E]/90 backdrop-blur-xl" onClick={() => setIsTrustInfoOpen(false)}></div>
+          
+          <div className="relative bg-white w-full max-w-2xl rounded-[3rem] shadow-[0_32px_100px_rgba(0,0,0,0.5)] border border-white overflow-hidden animate-fade-in-up font-inter">
+            {/* Header */}
+            <div className="bg-[#0F0A2E] p-10 text-white relative">
+               <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/20 rounded-full -mr-24 -mt-24 blur-3xl"></div>
+               <div className="relative z-10 flex justify-between items-start">
+                  <div>
+                    <span className="inline-block px-3 py-1 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">Integrity Algorithm Analysis</span>
+                    <h3 className="text-3xl font-black tracking-tight font-epilogue">Trust Protocol V2</h3>
+                    <p className="text-slate-400 text-sm font-bold mt-2">Decentralized reputation scoring system</p>
+                  </div>
+                  <button onClick={() => setIsTrustInfoOpen(false)} className="p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+               </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-10 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { icon: "🛡️", title: "Identity Verification", points: "30 PTS", desc: "Awarded for completing the secure Student ID verification process.", status: user.isVerified },
+                    { icon: "📋", title: "Profile Integrity", points: "20 PTS", desc: "Avatar (8pts), Phone (6pts), and Faculty (6pts) records.", status: !!(user.profileImage && user.phone) },
+                    { icon: "🌍", title: "Community Hero", points: "25 PTS", desc: "Earn 5 pts for each lost item successfully returned to its owner.", status: (user.stats?.foundReturned || 0) > 0 },
+                    { icon: "🤝", title: "Marketplace Trust", points: "20 PTS", desc: "Earn 4 pts for each successful marketplace transaction completed.", status: (user.stats?.itemsSold || 0) > 0 },
+                    { icon: "⭐", title: "Peer Reputation", points: "10 PTS", desc: "Calculated from your average marketplace rating (Avg x 2).", status: (user.stats?.reviewCount || 0) > 0 },
+                    { icon: "⚡", title: "Response Factor", points: "3 PTS", desc: "Measures your interaction speed and reliability in chat.", status: true },
+                    { icon: "⏳", title: "Account Maturity", points: "2 PTS", desc: "Awarded to vetted accounts older than 30 days.", status: true }
+                  ].map((pillar, i) => (
+                    <div key={i} className="p-6 rounded-[2rem] border border-slate-100 bg-slate-50/50 flex flex-col gap-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl">{pillar.icon}</span>
+                        <span className={`text-[10px] font-black ${pillar.status ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 bg-slate-100'} px-2 py-1 rounded-lg`}>
+                          {pillar.status ? 'ACTIVE' : pillar.points}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-black text-slate-800 font-epilogue">{pillar.title}</h4>
+                      <p className="text-[11px] text-slate-500 font-bold leading-relaxed">{pillar.desc}</p>
+                    </div>
+                  ))}
+               </div>
+
+               <div className="bg-rose-50 p-6 rounded-[2rem] border border-rose-100 mt-4">
+                  <div className="flex gap-4 items-start">
+                    <span className="text-xl">⚠️</span>
+                    <div>
+                      <h5 className="text-[11px] font-black text-rose-900 uppercase mb-1">Deduction Protocols</h5>
+                      <p className="text-[11px] text-rose-700 font-bold leading-relaxed">
+                        Unresolved disputes (-5 pts) and verified false reports (-10 pts) will significantly impact your community standing.
+                      </p>
+                    </div>
+                  </div>
+               </div>
+            </div>
+
+            <div className="px-10 pb-10">
+               <button 
+                onClick={() => setIsTrustInfoOpen(false)}
+                className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-600 transition-all"
+               >
+                 Acknowledge Protocol
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LOGOUT CONFIRMATION MODAL */}
+      {isLogoutConfirmOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+          <div className="absolute inset-0 bg-[#0F0A2E]/90 backdrop-blur-xl" onClick={() => setIsLogoutConfirmOpen(false)}></div>
+          
+          <div className="relative bg-white/5 backdrop-blur-3xl w-full max-w-sm rounded-[2.5rem] p-8 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] text-center animate-fade-in-up">
+            <div className="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-500/20">
+               <svg className="w-10 h-10 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+               </svg>
+            </div>
+            
+            <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Confirm Sign Out</h3>
+            <p className="text-white/60 font-medium mb-8 leading-relaxed">Are you sure you want to end your secure session with UniVault?</p>
+            
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={handleLogout}
+                className="w-full py-4 bg-rose-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-[0_10px_25px_rgba(225,29,72,0.3)] hover:bg-rose-700 hover:-translate-y-0.5 active:translate-y-0 transition-all"
+              >
+                Yes, Sign Me Out
+              </button>
+              <button 
+                onClick={() => setIsLogoutConfirmOpen(false)}
+                className="w-full py-4 bg-white/5 text-white/70 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all"
+              >
+                No, Keep me logged in
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -827,16 +1069,30 @@ const ProfileCard = ({ user, refreshUser }) => {
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        
         @keyframes fade-in-up {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up { animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
         @keyframes fade-in {
           from { opacity: 0; }
           to { opacity: 1; }
         }
         .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.1); }
+          50% { box-shadow: 0 0 40px rgba(234, 179, 8, 0.25); }
+        }
+        .animate-pulse-glow { animation: pulse-glow 3s infinite; }
+
+        @keyframes bounce-subtle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-subtle { animation: bounce-subtle 3s infinite ease-in-out; }
       `}} />
     </div>
   );

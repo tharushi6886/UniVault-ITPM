@@ -51,151 +51,120 @@ const VerifyOtpPage = () => {
   const isExpired = secondsLeft === 0;
 
   return (
-    <div className="min-h-screen flex font-epilogue">
+    <div className="min-h-screen flex flex-col items-center justify-center font-epilogue bg-[#F0F9FF] p-6 relative overflow-hidden">
+      <style>{`
+        @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-rotate-slow { animation: rotate-slow 20s linear infinite; }
+      `}</style>
 
-      {/* ── LEFT PANEL ──────────────────────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between w-[45%] xl:w-[42%] shrink-0 relative overflow-hidden bg-[#1e2a78] px-14 py-12">
-        <div className="absolute top-[-120px] right-[-80px] w-[340px] h-[340px] bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-[-100px] left-[-60px] w-[280px] h-[280px] bg-blue-700/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-[38%] left-[-40px] w-[180px] h-[180px] bg-indigo-400/20 rounded-full blur-2xl pointer-events-none" />
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[120px] -mr-64 -mt-64 animate-rotate-slow"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[100px] -ml-40 -mb-40"></div>
 
-        {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center text-xl">🔎</div>
-          <div>
-            <p className="text-white font-black text-xl leading-none">UniVault</p>
-            <p className="text-indigo-300 text-[10px] font-bold uppercase tracking-widest">Campus Ecosystem</p>
-          </div>
+      {/* Back to Home Button */}
+      <button 
+        onClick={() => navigate("/")}
+        className="fixed top-8 left-8 z-[100] group flex items-center gap-2 px-4 py-2 bg-white shadow-xl border border-slate-200 rounded-xl text-slate-600 text-xs font-bold hover:bg-slate-50 transition-all"
+      >
+        <svg className="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Home
+      </button>
+
+      {/* Logo */}
+      <div className="flex items-center gap-3 mb-10 relative z-10">
+        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-lg font-black shadow-[0_8px_20px_rgba(79,134,239,0.3)] text-white">
+          U
         </div>
-
-        {/* Hero */}
-        <div className="relative z-10 max-w-sm">
-          <div className="inline-block mb-6 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-            <span className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Identity Verification</span>
-          </div>
-          <h2 className="text-4xl xl:text-5xl font-black text-white leading-[1.1] tracking-tight mb-5">
-            Complete your verification
-          </h2>
-          <p className="text-[#a5b4fc] text-base font-medium leading-relaxed mb-10">
-            We sent a 6-digit OTP to your university email. Enter it to activate your UniVault account.
-          </p>
-
-          {/* Live Countdown Badge */}
-          <div className={`inline-flex items-center gap-3 px-5 py-3 rounded-2xl border mb-8 ${
-            isExpired
-              ? "bg-rose-500/20 border-rose-400/30"
-              : secondsLeft < 60
-              ? "bg-amber-500/20 border-amber-400/30"
-              : "bg-white/10 border-white/20"
-          }`}>
-            <span className="text-xl">{isExpired ? "⛔" : "⏱️"}</span>
-            <div>
-              <p className="text-[10px] text-white/60 uppercase font-bold tracking-widest leading-none mb-0.5">
-                {isExpired ? "OTP Expired" : "Code expires in"}
-              </p>
-              <p className={`text-2xl font-black leading-none ${
-                isExpired ? "text-rose-300" : secondsLeft < 60 ? "text-amber-300" : "text-white"
-              }`}>
-                {formatTime(secondsLeft)}
-              </p>
-            </div>
-          </div>
-
-          <ul className="space-y-4">
-            {[
-              { icon: "✉️", text: "Check your @my.sliit.lk inbox" },
-              { icon: "🔢", text: "Enter the 6-digit code exactly" },
-              { icon: "🏛️", text: "University-only access granted" },
-            ].map((f, i) => (
-              <li key={i} className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-base shrink-0">{f.icon}</div>
-                <span className="text-white/80 text-sm font-medium">{f.text}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <p className="relative z-10 text-white/30 text-xs font-medium">© 2026 UniVault Secure Systems</p>
+        <span className="text-2xl font-black tracking-tight text-slate-900">UniVault</span>
       </div>
 
-      {/* ── RIGHT PANEL ─────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center bg-[#f0f2f9] px-6 py-12">
-        <div className="w-full max-w-[420px]">
-          <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(30,42,120,0.12)] border border-slate-100 px-10 py-10">
+      <div className="w-full max-w-[440px] relative z-10">
+        <div className="bg-white rounded-[40px] shadow-[0_32px_80px_rgba(30,58,138,0.1)] border border-white p-8 md:p-12">
 
-            {/* Header */}
-            <div className="mb-8 text-center">
-              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4">✉️</div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Verify Your Account</h2>
-              <p className="text-sm text-slate-400 font-medium mt-1">Enter the OTP sent to your university email</p>
-              {/* Mobile countdown */}
-              <p className={`mt-2 text-xs font-bold lg:hidden ${isExpired ? "text-rose-500" : "text-indigo-500"}`}>
-                {isExpired ? "⛔ OTP Expired" : `⏱️ Expires in: ${formatTime(secondsLeft)}`}
-              </p>
+          {/* Header */}
+          <div className="mb-10 text-center">
+            <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-[1.1] mb-4">
+              Identity Verification
+            </h2>
+            <p className="text-[15px] text-slate-500 font-medium leading-relaxed">
+              We've sent a 6-digit decryption code to your university email.
+            </p>
+          </div>
+
+          {/* Countdown Area */}
+          <div className={`flex items-center justify-between px-6 py-4 rounded-3xl mb-8 border transition-all duration-500 ${
+            isExpired 
+              ? "bg-rose-50 border-rose-100 shadow-sm" 
+              : "bg-indigo-50 border-indigo-100 shadow-sm"
+          }`}>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{isExpired ? "⛔" : "⏱️"}</span>
+              <span className={`text-sm font-bold uppercase tracking-widest ${isExpired ? "text-rose-500" : "text-indigo-600"}`}>
+                {isExpired ? "Expired" : "Expires in"}
+              </span>
+            </div>
+            <span className={`text-2xl font-black ${isExpired ? "text-rose-600" : "text-indigo-700"}`}>
+              {formatTime(secondsLeft)}
+            </span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Field (Disabled-like appearance) */}
+            <div className="group space-y-2">
+              <label className="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1">Email Address</label>
+              <div className="relative flex items-center h-14 rounded-2xl border border-slate-200 bg-slate-50 px-5 text-slate-400 font-bold text-sm">
+                {formData.email}
+              </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-2 tracking-wide">University Email</label>
-                <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 gap-3 focus-within:border-[#4f46e5] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all">
-                  <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="itXXXXXX@my.sliit.lk"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="flex-1 bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-300 outline-none"
-                  />
-                </div>
+            {/* OTP Field */}
+            <div className="group space-y-2">
+              <label className="text-[11px] font-black uppercase tracking-widest text-indigo-600 ml-1">Verification Code</label>
+              <div className="relative flex items-center h-16 rounded-2xl border-2 border-indigo-100 bg-indigo-50/30 px-5 gap-4 focus-within:border-indigo-500 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(79,134,239,0.1)] transition-all">
+                <input
+                  type="text"
+                  name="otp"
+                  placeholder="0 0 0 0 0 0"
+                  value={formData.otp}
+                  onChange={handleChange}
+                  required
+                  maxLength={6}
+                  className="w-full bg-transparent text-2xl font-black text-slate-900 outline-none placeholder:text-slate-300 tracking-[0.4em] text-center"
+                />
               </div>
+            </div>
 
-              {/* OTP */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-2 tracking-wide">OTP Code</label>
-                <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 gap-3 focus-within:border-[#4f46e5] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all">
-                  <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <input
-                    type="text"
-                    name="otp"
-                    placeholder="Enter 6-digit OTP"
-                    value={formData.otp}
-                    onChange={handleChange}
-                    required
-                    maxLength={6}
-                    className="flex-1 bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-300 outline-none tracking-[0.3em]"
-                  />
-                </div>
-              </div>
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading || isExpired}
+              className="w-full h-16 rounded-2xl bg-gradient-to-r from-[#4A8EF0] to-[#8B5CF6] hover:shadow-[0_12px_30px_rgba(74,134,240,0.3)] text-white text-[15px] font-black uppercase tracking-widest hover:-translate-y-1 active:translate-y-0 transition-all disabled:opacity-40 disabled:grayscale disabled:translate-y-0 mt-4"
+            >
+              {loading ? "Verifying..." : "Confirm Verification →"}
+            </button>
+          </form>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={loading || isExpired}
-                className="w-full h-12 rounded-xl bg-[#3b46c8] hover:bg-[#2f3baa] text-white text-sm font-black uppercase tracking-widest shadow-[0_4px_18px_rgba(59,70,200,0.35)] hover:shadow-[0_6px_24px_rgba(59,70,200,0.45)] hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:translate-y-0 mt-2"
+          {/* Footer */}
+          <div className="mt-10 text-center">
+            <p className="text-[14px] text-slate-400 font-medium">
+              Didn't receive a code?{" "}
+              <button 
+                type="button" 
+                onClick={() => window.location.reload()}
+                className="text-indigo-600 font-black hover:underline ml-1"
               >
-                {loading ? "Verifying..." : "Verify OTP →"}
+                Resend OTP
               </button>
-            </form>
-
-            {/* Footer */}
-            <div className="mt-7 text-center space-y-2">
-              <p className="text-sm text-slate-400 font-medium">
-                Already verified?{" "}
-                <Link to="/login" className="text-[#4f46e5] font-bold hover:underline">Login</Link>
-              </p>
-              <Link to="/register" className="block text-xs text-slate-400 font-medium hover:text-[#4f46e5] transition-colors">
-                ← Back to Registration
-              </Link>
-            </div>
+            </p>
           </div>
         </div>
+
+        {/* Support Link */}
+        <p className="mt-8 text-center text-[13px] text-slate-400 font-medium opacity-60">
+          Shielded by UniVault Secure Auth System
+        </p>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 const Item = require("../models/itemModels");
 const calculateTrustScore = require("../utils/trustScore");
+const syncUserTrust = require("../utils/reputationSync");
 
 // GET all items
 const getAllItems = async (req, res, next) => {
@@ -101,6 +102,9 @@ const addItems = async (req, res, next) => {
 
     await item.save();
 
+    // Recalculate and persist trust score for the user
+    await syncUserTrust(userIdToSave);
+
     return res.status(201).json({
       message: "Item added successfully",
       item: item
@@ -129,9 +133,11 @@ const getItemById = async (req, res, next) => {
       item,
       ownerTrust: ownerTrust
         ? {
-            score: ownerTrust.score,
-            level: ownerTrust.level,
-            levelClass: ownerTrust.levelClass
+            score: ownerTrust.totalScore,
+            level: ownerTrust.status,
+            levelClass: ownerTrust.totalScore >= 80 ? 'high' : ownerTrust.totalScore >= 50 ? 'medium' : 'low',
+            avgRating: ownerTrust.stats.avgRating,
+            reviewCount: ownerTrust.stats.reviewCount
           }
         : null
     });
@@ -149,6 +155,10 @@ const updateItem = async (req, res, next) => {
       return res.status(403).json({ message: "Not authorized" });
     }
     const updated = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    
+    // Sync trust score (could be a status change or deletion proxy)
+    await syncUserTrust(item.userId);
+
     res.status(200).json({ item: updated });
   } catch (err) {
     res.status(500).json({ message: "Error updating item" });

@@ -18,6 +18,9 @@ export const getProfile = (token) =>
   });
 
 export const getPublicProfile = (userId) => API.get(`/public/${userId}`);
+export const getPublicSystemStats = () => API.get("/public-stats");
+export const getTrustLeaderboard = () => API.get("/leaderboard");
+export const getUserTrust = (studentId) => API.get(`/trust/${studentId}`);
 
 export const updateProfile = (token, data) =>
   API.put("/profile", data, {
