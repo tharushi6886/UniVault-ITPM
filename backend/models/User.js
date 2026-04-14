@@ -55,6 +55,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    trustMetrics: {
+      disputedTransactions: { type: Number, default: 0 },
+      falseLostReports: { type: Number, default: 0 },
+      respondedCount: { type: Number, default: 0 },
+      totalMessagesReceived: { type: Number, default: 0 },
+      lastAuditDate: { type: Date, default: Date.now },
+    },
+    trustScore: {
+      type: Number,
+      default: 0,
+      index: true
+    },
+    trustLevel: {
+      type: String,
+      default: "Improving",
+      enum: ["Improving", "Standard", "Trusted", "Elite"]
+    },
   },
   {
     timestamps: true,

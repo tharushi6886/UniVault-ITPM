@@ -147,14 +147,14 @@ const EditProfilePage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-[#f3f0ff] via-[#f8f9ff] to-[#eef6ff] pt-28 pb-16 px-4">
+      <div className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue">
         
-        {/* Background decorations */}
-        <div className="fixed inset-0 pointer-events-none z-0" style={{
-          background: "radial-gradient(ellipse 600px 400px at 10% 10%, rgba(79,70,229,0.06) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 90% 90%, rgba(99,102,241,0.06) 0%, transparent 60%)"
-        }} />
+        {/* Ambient Premium Background Shapes */}
+        <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[800px] h-[800px] bg-blue-100/40 rounded-full blur-[150px] pointer-events-none"></div>
+        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <div className="relative z-10 max-w-2xl mx-auto">
+        <div className="relative z-10 max-w-2xl mx-auto w-full">
 
           {/* Header */}
           <div className="mb-8 flex items-center gap-4">
@@ -173,10 +173,10 @@ const EditProfilePage = () => {
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(79,70,229,0.1)] border border-white/80 overflow-hidden">
+          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10">
             
             {/* Card Header Banner */}
-            <div className="relative bg-gradient-to-br from-indigo-500 to-indigo-700 p-10 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-[#4A5FE8] to-[#8B5CF6] p-10 overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 blur-2xl" />
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16" />
               <div className="relative z-10">
@@ -196,12 +196,12 @@ const EditProfilePage = () => {
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5">
                     {label}
                   </label>
-                  <div className={`flex items-center gap-4 bg-slate-50 rounded-2xl px-5 py-4 border-2 transition-all duration-300 ${
+                  <div className={`relative flex items-center h-[48px] rounded-[10px] border px-4 gap-3 transition-all duration-300 ${
                     errors[key]
                       ? "border-rose-300 bg-rose-50"
-                      : "border-transparent focus-within:border-indigo-300 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(99,102,241,0.08)]"
+                      : "border-[#E2E8F0] bg-[#F7F8FC] focus-within:border-[#4A5FE8] focus-within:bg-white focus-within:shadow-[0_0_0_2px_rgba(74,95,232,0.2)]"
                   }`}>
-                    <span className={`shrink-0 transition-colors ${errors[key] ? "text-rose-400" : "text-slate-300 group-focus-within:text-indigo-500"}`}>
+                    <span className={`shrink-0 transition-colors w-4 h-4 flex items-center justify-center ${errors[key] ? "text-rose-400" : "text-[#4A5FE8]"}`}>
                       {icon}
                     </span>
                     <input
@@ -210,7 +210,7 @@ const EditProfilePage = () => {
                       value={formData[key]}
                       onChange={handleChange}
                       placeholder={placeholder}
-                      className="flex-1 bg-transparent text-sm font-bold text-slate-700 placeholder-slate-300 focus:outline-none"
+                      className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
                     />
                     {formData[key] && !errors[key] && (
                       <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -242,14 +242,14 @@ const EditProfilePage = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/profile")}
-                  className="flex-1 py-4 rounded-2xl bg-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  className="flex-1 h-[48px] rounded-[10px] bg-slate-100 text-slate-500 font-bold text-[14px] uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`flex-1 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
+                  className={`flex-1 h-[48px] rounded-[10px] bg-gradient-to-r from-[#4A5FE8] to-[#8B5CF6] hover:opacity-90 text-white font-bold text-[14px] uppercase tracking-widest shadow-[0_6px_15px_-4px_rgba(74,95,232,0.4)] hover:-translate-y-[2px] active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? (
                     <>

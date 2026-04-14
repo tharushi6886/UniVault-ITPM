@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const Lost = require("../models/lost");
 const Item = require("../models/itemModels");
 const calculateTrustScore = require("../utils/trustScore");
+const syncUserTrust = require("../utils/reputationSync");
 
 // Register User
 const registerUser = async (req, res) => {
@@ -142,6 +143,9 @@ const verifyOtp = async (req, res) => {
     user.otpExpires = null;
 
     await user.save();
+    
+    // Award verification points immediately
+    await syncUserTrust(user._id);
 
     res.json({
       message: "OTP verified successfully. Your account is now active.",
@@ -205,25 +209,25 @@ const getUserProfile = async (req, res) => {
       }
 
       const trust = {
-        level: trustData.level,
-        levelClass: trustData.levelClass,
-        rating: trustData.score + "/100",
-        feedbackSummary: trustData.score >= 80 ? "Highly reliable and trusted campus user" : trustData.score >= 40 ? "Regular and verified campus user" : "New or unverified member",
+        level: trustData.status,
+        rating: trustData.totalScore + "/100",
+        feedbackSummary: trustData.totalScore >= 80 ? "Highly reliable and trusted campus user" : trustData.totalScore >= 40 ? "Regular and verified campus user" : "New or unverified member",
         buyerFeedback: trustData.stats.itemsSold > 0 ? "Positive transaction history" : "No recent transactions",
         sellerFeedback: trustData.stats.itemsSold > 0 ? "Reliable seller" : "No recent transactions",
         recoveryTrust: trustData.stats.foundReturned > 0 ? "Proven helper in Lost & Found" : "No recoveries yet",
-        communityScore: trustData.score >= 60 ? "Active member with good standing" : "Building community trust"
+        communityScore: trustData.totalScore >= 60 ? "Active member with good standing" : "Building community trust"
       };
 
       res.json({
         ...user.toObject(),
         stats: {
           ...trustData.stats,
+          ...trustData, // Include pillars, milestones, lastAudit, etc.
           buySellHistory: 0,
           myBids: 0,
-          trustScore: trustData.score,
-          trustLevel: trustData.level,
-          trustBreakdown: trustData.breakdown
+          trustScore: trustData.totalScore,
+          trustLevel: trustData.status,
+          trustBreakdown: Object.entries(trustData.pillars || {}).map(([name, data]) => ({ name, ...data }))
         },
         trust
       });
@@ -245,18 +249,17 @@ const getPublicProfile = async (req, res) => {
       const trustData = await calculateTrustScore(user._id);
       
       const trust = trustData ? {
-        level: trustData.level,
-        levelClass: trustData.levelClass,
-        rating: trustData.score + "/100"
-      } : null;
+        level: trustData.status,
+        rating: trustData.totalScore + "/100"
+      } : { level: "Unranked", rating: "0/100" };
 
       res.json({
         ...user.toObject(),
         stats: trustData ? {
-          trustScore: trustData.score,
-          trustLevel: trustData.level,
-          trustBreakdown: trustData.breakdown
-        } : null,
+          ...trustData.stats,
+          trustScore: trustData.totalScore,
+          trustLevel: trustData.status
+        } : {},
         trust
       });
     } else {
@@ -278,6 +281,9 @@ const updateUserProfile = async (req, res) => {
       user.faculty = req.body.faculty || user.faculty;
 
       const updatedUser = await user.save();
+      
+      // Update trust score for profile integrity changes
+      await syncUserTrust(user._id);
 
       res.json({
         message: "Profile updated successfully",
@@ -442,6 +448,76 @@ const getAdminDashboardStats = async (req, res) => {
   }
 };
 
+// Public System Stats (Homepage)
+const getPublicSystemStats = async (req, res) => {
+  try {
+    const [
+      studentsCount,
+      marketplaceListingsCount,
+      lostItemsCount,
+      oldLostItemsCount,
+      foundItemsCount,
+      resolvedLostCount,
+      resolvedFoundCount
+    ] = await Promise.all([
+      User.countDocuments({ role: "Student", status: "active" }),
+      Item.countDocuments({ availability_status: "available" }), 
+      LostItem.countDocuments({ status: "active" }),
+      Lost.countDocuments({ status: "active" }),
+      FoundItem.countDocuments({ status: "available" }), 
+      LostItem.countDocuments({ status: "resolved" }),
+      FoundItem.countDocuments({ status: "resolved" }) 
+    ]);
+
+    const activeReports = lostItemsCount + oldLostItemsCount + foundItemsCount;
+    const itemsRecovered = resolvedLostCount + resolvedFoundCount;
+
+    res.json({
+      studentsCount,
+      itemsRecovered,
+      marketplaceListingsCount,
+      activeReports
+    });
+  } catch (error) {
+    console.error("Public stats error:", error);
+    res.status(500).json({ message: "Failed to load system stats" });
+  }
+};
+
+// Get Trust Leaderboard (Homepage)
+const getTrustLeaderboard = async (req, res) => {
+  try {
+    // 1. Fetch top users by trustScore directly (Super fast due to index)
+    const topUsers = await User.find({ status: "active" })
+      .sort({ trustScore: -1, createdAt: 1 })
+      .limit(3)
+      .select("_id name studentId profileImage faculty trustScore trustLevel");
+
+    // 2. Fetch fresh stats for these top users to ensure labels are perfect
+    const leaderboardScores = await Promise.all(
+      topUsers.map(async (user) => {
+        // We still fetch fresh calculation to get the 'stats' like itemsRecovered
+        const trustData = await calculateTrustScore(user._id);
+        return {
+          id: user._id,
+          name: user.name,
+          studentId: user.studentId,
+          profileImage: user.profileImage,
+          faculty: user.faculty,
+          trustScore: trustData?.totalScore || 0,
+          trustLevel: trustData?.status || "Improving",
+          itemsRecovered: trustData?.stats?.foundReturned || 0
+        };
+      })
+    );
+
+    res.json(leaderboardScores);
+  } catch (error) {
+    console.error("Leaderboard error:", error);
+    res.status(500).json({ message: "Failed to fetch leaderboard" });
+  }
+};
+
 // Forgot Password - Send OTP
 const forgotPassword = async (req, res) => {
   try {
@@ -532,6 +608,10 @@ const uploadAvatar = async (req, res) => {
     if (user) {
       user.profileImage = `/uploads/avatars/${req.file.filename}`;
       await user.save();
+      
+      // Sync trust score for avatar update
+      await syncUserTrust(user._id);
+
       res.json({
         message: "Profile picture updated",
         profileImage: user.profileImage,
@@ -539,6 +619,27 @@ const uploadAvatar = async (req, res) => {
     } else {
       res.status(404).json({ message: "User not found" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get User Trust Score by Student ID
+const getUserTrustByStudentId = async (req, res) => {
+  try {
+    const user = await User.findOne({ studentId: req.params.studentId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const trustData = await calculateTrustScore(user._id);
+    res.json({
+      studentId: user.studentId,
+      totalScore: trustData.totalScore,
+      status: trustData.status,
+      pillars: trustData.pillars,
+      stats: trustData.stats
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -558,8 +659,12 @@ module.exports = {
   deleteUser,
   unblockUser,
   getAdminDashboardStats,
+  getPublicSystemStats,
+  getTrustLeaderboard,
+  syncUserTrust,
   forgotPassword,
   resetPassword,
   updateUserRole,
   uploadAvatar,
+  getUserTrustByStudentId,
 };

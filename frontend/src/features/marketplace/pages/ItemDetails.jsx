@@ -216,7 +216,7 @@ const ItemDetails = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <button className="w-full py-3.5 rounded-xl font-bold transition-all bg-[#4f46e5] text-white hover:bg-[#3f37c9] shadow-lg shadow-indigo-200">
+                    <button onClick={() => navigate('/delivery', { state: { item } })} className="w-full py-3.5 rounded-xl font-bold transition-all bg-[#4f46e5] text-white hover:bg-[#3f37c9] shadow-lg shadow-indigo-200">
                       I'm Interested
                     </button>
                     <button className="w-full py-3.5 rounded-xl font-bold transition-all border-2 border-[#e0ddff] text-[#4f46e5] hover:bg-[#f0efff]">
@@ -231,32 +231,63 @@ const ItemDetails = () => {
 
               {/* Owner Trust Card */}
               {owner && (
-                <Link to={`/user/${owner._id}`} className="block bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07)] p-6 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(46,0,96,0.12)] transition-all cursor-pointer group">
-                  <div className="flex items-center justify-between mb-5">
+                <Link 
+                  to={`/user/${owner._id}`} 
+                  className="block bg-white rounded-2xl border-[1.5px] border-[#e4d9f7] shadow-[0_4px_20px_rgba(46,0,96,0.07)] p-6 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(79,70,229,0.15)] transition-all cursor-pointer group relative overflow-hidden"
+                >
+                  {/* Subtle Background Glow */}
+                  <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl -mr-12 -mt-12 transition-colors ${ownerTrust?.score >= 80 ? 'bg-amber-400/20' : 'bg-indigo-400/10'}`}></div>
+
+                  <div className="flex items-center justify-between mb-5 relative z-10">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-[#4f46e5] to-[#8b5cf6] flex items-center justify-center text-lg font-black text-white shrink-0">
+                      <div className="w-12 h-12 rounded-2xl overflow-hidden bg-gradient-to-br from-[#4f46e5] to-[#8b5cf6] flex items-center justify-center text-lg font-black text-white shrink-0 shadow-lg group-hover:rotate-6 transition-transform">
                         {ownerAvatar ? <img src={ownerAvatar} alt={ownerName} className="w-full h-full object-cover" /> : nameInitial}
                       </div>
                       <div>
-                        <h4 className="font-bold text-[#1f1b5b] group-hover:text-[#4f46e5] transition-colors">{ownerName}</h4>
-                        <p className="text-[11px] text-gray-400">View Public Profile →</p>
+                        <h4 className="font-epilogue font-bold text-[#1f1b5b] group-hover:text-[#4f46e5] transition-colors">{ownerName}</h4>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                           <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Verified Seller</span>
+                           <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
+                           <span className="text-[9px] font-bold text-slate-400">@{owner.studentId || 'Member'}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-[#f0f9ff] border border-[#bae6fd]">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-[10px] font-bold text-sky-700 uppercase">Trust Level</span>
-                        <span className="text-sm font-black text-sky-800">{ownerTrust?.score || 0}%</span>
+                  <div className="space-y-4 relative z-10">
+                    <div className={`p-4 rounded-2xl border transition-colors ${ownerTrust?.score >= 80 ? 'bg-amber-50 border-amber-200' : 'bg-[#f0f9ff] border-[#bae6fd]'}`}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${ownerTrust?.score >= 80 ? 'text-amber-700' : 'text-sky-700'}`}>
+                          Trust Protocol
+                        </span>
+                        <div className="flex items-center gap-1">
+                           <span className="text-sm font-black text-slate-900">{ownerTrust?.score || 0}%</span>
+                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Integrity</span>
+                        </div>
                       </div>
-                      <div className="w-full h-1.5 bg-sky-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-sky-500" style={{ width: `${ownerTrust?.score || 0}%` }}></div>
+                      
+                      <div className="w-full h-1.5 bg-white/60 rounded-full overflow-hidden shadow-inner">
+                        <div 
+                          className={`h-full transition-all duration-1000 ${ownerTrust?.score >= 80 ? 'bg-amber-500' : 'bg-sky-500'}`} 
+                          style={{ width: `${ownerTrust?.score || 0}%` }}
+                        ></div>
                       </div>
-                      <p className="text-[10px] text-sky-600 mt-2 font-medium">
-                        Status: <strong>{ownerTrust?.level || 'New'}</strong>
-                      </p>
+
+                      <div className="mt-4 flex items-center justify-between">
+                         <div className="flex items-center gap-1">
+                            <span className="text-sm">⭐</span>
+                            <span className="text-xs font-black text-slate-700">{ownerTrust?.avgRating || '0.0'}</span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase">Avg</span>
+                         </div>
+                         <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/50 px-2 py-0.5 rounded-lg border border-white">
+                           {ownerTrust?.level || 'Improving'}
+                         </div>
+                      </div>
                     </div>
+
+                    <p className="text-[10px] font-bold text-slate-400 text-center uppercase tracking-widest group-hover:text-indigo-500 transition-colors">
+                      View full reputation ledger →
+                    </p>
                   </div>
                 </Link>
               )}

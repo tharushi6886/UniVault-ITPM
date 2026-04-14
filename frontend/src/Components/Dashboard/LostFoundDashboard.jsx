@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Search, Bell, User, ShieldCheck, ArrowLeft } from "lucide-react";
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
@@ -921,6 +920,22 @@ export default function LostFoundDashboard({ ads }) {
   }, [refreshMatches]);
 
   const displayAds = allAds;
+  const searchParams = new URLSearchParams(location.search);
+  const urlItemId = searchParams.get('id');
+
+  // Auto-open popup if ID is in URL
+  useEffect(() => {
+    if (urlItemId && Object.keys(allAds).length > 0) {
+      const targetItem = allAds[urlItemId];
+      if (targetItem) {
+        // Switch board filter if necessary based on item type
+        if (targetItem.type === 'LOST') setBoardFilter('Lost');
+        if (targetItem.type === 'FOUND') setBoardFilter('Found');
+        
+        openAdPopup(urlItemId);
+      }
+    }
+  }, [urlItemId, Object.keys(allAds).length]);
 
   const openAdPopup = async (id, source = 'feed') => {
     // Set initial data for immediate response
@@ -951,6 +966,10 @@ export default function LostFoundDashboard({ ads }) {
   const closePopup = () => {
     setPopupData(null);
     document.body.style.overflow = '';
+    // Clear URL param if it exists
+    if (urlItemId) {
+      navigate(location.pathname, { replace: true });
+    }
   };
 
   const openReportModal = (type) => {

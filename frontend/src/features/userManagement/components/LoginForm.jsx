@@ -41,60 +41,68 @@ const LoginForm = () => {
     }
   };
 
-  return (
-    <div className="w-full max-w-[420px]">
-      <div className="bg-white rounded-2xl shadow-[0_8px_40px_rgba(30,42,120,0.12)] border border-slate-100 px-10 py-10">
+  const isEmailValid = formData.email.trim().toLowerCase().endsWith('@my.sliit.lk');
 
+  return (
+    <div className="w-full max-w-[400px] relative z-10">
+      <div className="bg-white rounded-[32px] shadow-[0_32px_80px_rgba(30,58,138,0.12)] border border-white px-8 md:px-10 py-10 md:py-12">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Welcome back</h2>
-          <p className="text-sm text-slate-400 font-medium mt-1">Sign in to your UniVault account</p>
+          <h2 className="text-[32px] font-black text-slate-900 tracking-tight leading-none mb-3 font-clash">
+            Secure Access
+          </h2>
+          <p className="text-[15px] text-slate-500 font-medium">Verify your identity to enter the vault.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-2 tracking-wide">Email</label>
-            <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 gap-3 focus-within:border-[#4f46e5] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all">
-              <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="relative flex items-center h-[48px] rounded-[10px] border border-[#E2E8F0] bg-[#F7F8FC] px-4 gap-3 focus-within:border-[#4A5FE8] focus-within:bg-white focus-within:shadow-[0_0_0_2px_rgba(74,95,232,0.2)] transition-all">
+              <svg className="w-4 h-4 text-[#4A5FE8] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <input
-                type="email"
-                name="email"
-                placeholder="student@my.sliit.lk"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="flex-1 bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-300 outline-none"
-              />
+              <div className="relative flex-1 h-full flex flex-col justify-center pt-2">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder=" "
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="peer w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder-transparent"
+                />
+                <label className="absolute left-0 text-[10px] sm:text-xs text-slate-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#3B4ED8] pointer-events-none">Email</label>
+              </div>
             </div>
+            {isEmailValid && <p className="text-[10px] text-[#27AE60] font-medium mt-1.5 ml-1 tracking-wide">Valid SLIIT domain format</p>}
           </div>
 
           {/* Password */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-slate-600 tracking-wide">Password</label>
-              <Link to="/forgot-password" className="text-xs font-bold text-[#4f46e5] hover:underline">
-                Forgot Password?
-              </Link>
-            </div>
-            <div className="flex items-center h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 gap-3 focus-within:border-[#4f46e5] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.08)] transition-all">
-              <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="relative flex items-center h-[48px] rounded-[10px] border border-[#E2E8F0] bg-[#F7F8FC] px-4 gap-3 focus-within:border-[#4A5FE8] focus-within:bg-white focus-within:shadow-[0_0_0_2px_rgba(74,95,232,0.2)] transition-all">
+              <svg className="w-4 h-4 text-[#4A5FE8] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="flex-1 bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-300 outline-none"
-              />
+              <div className="relative flex-1 h-full flex flex-col justify-center pt-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder=" "
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="peer w-full bg-transparent text-sm font-medium text-slate-700 outline-none placeholder-transparent"
+                />
+                <label className="absolute left-0 text-[10px] sm:text-xs text-slate-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#3B4ED8] pointer-events-none">Password</label>
+              </div>
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-slate-400 hover:text-[#4f46e5] transition-colors shrink-0">
                 {showPassword ? <EyeOpen /> : <EyeClosed />}
               </button>
+            </div>
+            <div className="flex justify-end mt-1.5">
+              <Link to="/forgot-password" className="text-[11px] font-bold text-[#4f46e5] hover:underline">
+                Forgot Password?
+              </Link>
             </div>
           </div>
 
@@ -102,9 +110,9 @@ const LoginForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-[#3b46c8] hover:bg-[#2f3baa] text-white text-sm font-black uppercase tracking-widest shadow-[0_4px_18px_rgba(59,70,200,0.35)] hover:shadow-[0_6px_24px_rgba(59,70,200,0.45)] hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:translate-y-0 mt-2"
+            className="w-full h-[54px] rounded-2xl bg-gradient-to-r from-[#4A8EF0] to-[#8B5CF6] hover:shadow-[0_8px_25px_rgba(74,95,232,0.35)] text-white text-[14px] font-black uppercase tracking-widest hover:-translate-y-1 active:translate-y-0 transition-all disabled:opacity-60 disabled:translate-y-0 mt-6 font-epilogue"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Decrypting..." : "Enter Vault →"}
           </button>
         </form>
 

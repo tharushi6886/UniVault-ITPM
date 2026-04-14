@@ -1,11 +1,17 @@
 const LostItem = require("../models/LostItem");
 const User = require("../models/User");
 const calculateTrustScore = require("../utils/trustScore");
+const syncUserTrust = require("../utils/reputationSync");
 
 exports.createLostItem = async (req, res) => {
   try {
     const lostItem = new LostItem(req.body);
     await lostItem.save();
+
+    // Trigger real-time sync for the item owner
+    const user = await User.findOne({ studentId: lostItem.studentId });
+    if (user) await syncUserTrust(user._id);
+
     res.status(201).json(lostItem);
   } catch (err) {
     res.status(500).json({ message: "Error creating lost item", error: err.message });
@@ -33,6 +39,11 @@ exports.getAllLostItems = async (req, res) => {
 exports.updateLostItem = async (req, res) => {
   try {
     const updated = await LostItem.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    
+    // Sync trust if status or ownership could have changed
+    const user = await User.findOne({ studentId: updated.studentId });
+    if (user) await syncUserTrust(user._id);
+
     res.status(200).json(updated);
   } catch (err) {
     res.status(500).json({ message: "Error updating lost item", error: err.message });
@@ -41,7 +52,12 @@ exports.updateLostItem = async (req, res) => {
 
 exports.deleteLostItem = async (req, res) => {
   try {
-    await LostItem.findByIdAndDelete(req.params.id);
+    const item = await LostItem.findById(req.params.id);
+    if (item) {
+      const user = await User.findOne({ studentId: item.studentId });
+      await LostItem.findByIdAndDelete(req.params.id);
+      if (user) await syncUserTrust(user._id);
+    }
     res.status(200).json({ message: "Lost item deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting lost item", error: err.message });
