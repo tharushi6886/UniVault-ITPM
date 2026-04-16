@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadAvatar } from "../../../api/userApi";
 import { getMyMarketplaceItems, getMyLostItems, getMyFoundItems, updateMarketplaceItem, updateLostItem, updateFoundItem } from "../../../api/itemApi";
-import { toast } from "react-toastify";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import { toast } from "react-toastify";
 import ReviewSection from "./ReviewSection";
 
 const InfoCard = ({ title, value, editable, onClick, icon }) => {
@@ -12,11 +13,11 @@ const InfoCard = ({ title, value, editable, onClick, icon }) => {
     <CardWrapper
       type={editable ? "button" : undefined}
       onClick={editable ? onClick : undefined}
-      className={`group relative flex items-center gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all duration-300 w-full text-left font-inter ${
-        editable ? "cursor-pointer hover:border-indigo-200 hover:shadow-md hover:-translate-y-1 active:scale-95" : ""
+      className={`group relative flex items-center gap-4 ag-card-secondary p-5 transition-all duration-300 w-full text-left font-inter ${
+        editable ? "cursor-pointer hover:border-indigo-200 hover:shadow-md ag-hover-lift active:scale-95" : ""
       }`}
     >
-      <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-slate-50 text-slate-400 border border-slate-100 transition-colors ${editable ? "group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100" : ""}`}>
+      <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-white text-slate-400 border border-slate-100 shadow-sm transition-colors ${editable ? "group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100" : ""}`}>
         {icon || "📄"}
       </div>
       <div className="flex-1 min-w-0">
@@ -147,22 +148,68 @@ const ActivityCard = ({ icon, title, count, note, bgColor, iconColor, onClick })
   <button
     type="button"
     onClick={onClick}
-    className="group relative flex items-center gap-6 bg-white rounded-[1.5rem] p-6 border border-slate-100 shadow-sm hover:shadow-[0_15px_40px_rgba(30,58,138,0.06)] hover:border-indigo-100 hover:-translate-y-1 transition-all duration-300 text-left w-full font-inter"
+    className="group relative flex items-center gap-6 bg-white rounded-[1.8rem] p-7 border border-slate-100 shadow-sm shadow-indigo-900/5 transition-all duration-300 text-left w-full font-inter ag-hover-lift"
   >
-    <div className={`w-14 h-14 flex items-center justify-center rounded-[1.2rem] text-2xl shrink-0 ${bgColor} ${iconColor} border border-white/50 shadow-inner group-hover:scale-110 transition-transform`}>
+    <div className={`w-16 h-16 flex items-center justify-center rounded-2xl text-2xl shrink-0 ${bgColor} ${iconColor} border border-white/50 shadow-inner group-hover:scale-110 transition-transform`}>
       {icon}
     </div>
     <div className="flex-1 min-w-0">
-      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Total {title}</span>
+      <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest block mb-1">Total {title}</span>
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-black text-slate-900 leading-none">{count}</span>
+        <span className="text-3xl font-black text-[#1f1b5b] leading-none">{count}</span>
         <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full">+ Records</span>
       </div>
     </div>
-    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors shadow-sm">
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" /></svg>
     </div>
   </button>
+);
+
+const ReputationTimeline = ({ history }) => (
+  <div className="ag-card p-8 h-full flex flex-col bg-white">
+    <div className="flex items-center gap-4 mb-10">
+      <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center border border-indigo-100 text-lg shadow-sm">📈</div>
+      <div>
+        <h3 className="text-xl font-black tracking-tight text-[#1f1b5b] font-epilogue leading-none">Intelligence Timeline</h3>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5">Historical Activity</p>
+      </div>
+    </div>
+
+    {(!history || history.length === 0) ? (
+      <div className="flex-1 flex flex-col items-center justify-center text-center p-6 opacity-30">
+        <div className="text-4xl mb-3">🕯️</div>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">No History Logged Yet</p>
+      </div>
+    ) : (
+      <ul className="flex-1 space-y-6 relative before:absolute before:inset-0 before:left-3 before:h-full before:w-px before:bg-slate-100 before:z-0 list-none">
+        {history.slice().reverse().map((entry, i) => (
+          <li key={i} className="relative z-10 pl-10 group/item">
+            <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-2 border-indigo-100 flex items-center justify-center group-hover/item:border-indigo-500 transition-colors shadow-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+            </div>
+            <div className="ag-card-secondary p-4 hover:bg-white hover:border-indigo-100 transition-all">
+              <div className="flex justify-between items-start mb-1">
+                <span className="text-[12px] font-black text-[#1f1b5b] tracking-tight leading-none">{entry.event}</span>
+                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${entry.points >= 65 ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-indigo-600'} shadow-sm`}>
+                   {entry.points} Pts
+                </span>
+              </div>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+                {new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+    
+    <div className="mt-8 pt-6 border-t border-slate-50">
+       <div className="p-4 rounded-2xl bg-slate-50/80 text-[10px] font-bold text-slate-400 leading-relaxed italic border border-slate-100">
+          💡 Every verified action on UniVault updates your global integrity record.
+       </div>
+    </div>
+  </div>
 );
 
 const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResolve, userTrust }) => (
@@ -187,21 +234,29 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
     </div>
     
     {items.length === 0 ? (
-      <div className="bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] p-16 text-center">
-        <div className="text-5xl mb-4 opacity-10 font-black text-slate-900 uppercase italic">#EMPTY</div>
-        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">No active decentralized records found.</p>
+      <div className="bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-[2.5rem] p-16 text-center shadow-inner">
+        <div className="text-5xl mb-4 opacity-10 font-black text-[#1f1b5b] uppercase italic tracking-[0.2em]">#EMPTY</div>
+        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-relaxed">No active decentralized records found in your vault.</p>
       </div>
     ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.slice(0, 3).map((item, idx) => (
-          <div key={item._id || idx} className="group relative bg-white border border-slate-100 rounded-[2rem] p-6 shadow-sm hover:shadow-[0_20px_50px_rgba(30,58,138,0.08)] hover:border-indigo-100 hover:-translate-y-1.5 transition-all duration-500 overflow-hidden">
+          <div key={item._id || idx} className="group relative ag-card p-6 overflow-hidden ag-hover-lift">
             
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-6">
-                <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner border border-white/50 ${
+                <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner border border-white/50 overflow-hidden ${
                    item.item_id ? "bg-indigo-50 text-indigo-500" : item.status === "active" ? "bg-amber-50 text-amber-500" : "bg-sky-50 text-sky-500"
                 }`}>
-                  {item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"}
+                  {(item.imageUrl || item.image || (item.images && item.images[0])) ? (
+                    <img 
+                      src={(item.imageUrl || item.image || item.images[0]).startsWith('http') ? (item.imageUrl || item.image || item.images[0]) : `http://localhost:5000${item.imageUrl || item.image || item.images[0]}`} 
+                      className="w-full h-full object-cover" 
+                      alt="" 
+                    />
+                  ) : (
+                    item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"
+                  )}
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
@@ -345,15 +400,36 @@ const ProfileCard = ({ user, refreshUser }) => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    
+    // Front-end Validation
+    const tTitle = editingItem.title || editingItem.itemName || editingItem.item_name || "";
+    if (!tTitle.trim()) return toast.error("Item Designation is required.");
+    if (!editingItem.category?.trim()) return toast.error("Sector / Category is required.");
+    if (!editingItem.description?.trim()) return toast.error("Detailed Specification is required.");
+    
+    if (editingItem.type === 'market') {
+       if (!editingItem.price || Number(editingItem.price) < 0) return toast.error("Valid Valuation is required.");
+    } else {
+       if (!editingItem.location?.trim()) return toast.error("Event Location is required.");
+       if (!editingItem.date) return toast.error("Reported Date is required.");
+       
+       const selectedDate = new Date(editingItem.date);
+       const today = new Date();
+       today.setHours(0, 0, 0, 0);
+       if (selectedDate > today) return toast.error("Date cannot be in the future.");
+    }
+
     setIsSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const { _id, type, title, itemName, item_name, description, category, price } = editingItem;
+      const { _id, type, title, itemName, item_name, description, category, price, location, date } = editingItem;
       const data = { 
         title: title || itemName || item_name, 
         description, 
         category, 
-        price 
+        price,
+        location,
+        date
       };
 
       if (type === 'lost') await updateLostItem(_id, data, token);
@@ -395,10 +471,10 @@ const ProfileCard = ({ user, refreshUser }) => {
   };
 
   return (
-    <div className="animate-fade-in font-inter w-full mx-auto">
+    <div className="font-inter w-full mx-auto ag-fade-in">
       
-      {/* Production-Level Header Card */}
-      <div className="bg-white rounded-[2rem] shadow-[0_32px_80px_rgba(30,58,138,0.1)] p-8 md:p-10 border border-white mb-10 flex flex-col xl:flex-row items-center justify-between gap-10 transition-all duration-500 relative overflow-hidden">
+      {/* Anti-Gravity Header Card */}
+      <div className="ag-card p-8 md:p-10 mb-10 border-white relative overflow-hidden flex flex-col xl:flex-row items-center justify-between gap-10">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/40 rounded-full blur-3xl -mr-32 -mt-32"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row shadow-sm md:shadow-none bg-slate-50/50 md:bg-transparent p-6 md:p-0 rounded-3xl md:rounded-none items-center gap-8 text-center md:text-left flex-1 border md:border-none border-indigo-100">
@@ -446,8 +522,8 @@ const ProfileCard = ({ user, refreshUser }) => {
           </div>
         </div>
 
-        {/* Stats Section with Circular Gauge */}
-        <div className="flex items-center gap-10 md:gap-14 bg-slate-50/60 p-8 rounded-[2rem] border border-slate-100 shadow-inner">
+        {/* Trust Stats with Circular Gauge */}
+        <div className="flex items-center gap-10 md:gap-14 bg-slate-50/60 p-8 rounded-[2.2rem] border border-slate-100 shadow-inner">
            <TrustGauge 
              score={user.stats?.totalScore || user.stats?.trustScore || 0} 
              status={user.stats?.status || "Unranked"}
@@ -490,15 +566,15 @@ const ProfileCard = ({ user, refreshUser }) => {
         </div>
       </div>
 
-      {/* Modern Navigation Tabs - Pill Style */}
-      <div className="flex bg-white shadow-[0_8px_30px_rgba(30,58,138,0.06)] border border-white p-1.5 rounded-[1.8rem] gap-1 mb-10 overflow-x-auto scrollbar-hide sticky top-24 z-30 font-epilogue">
+      {/* Modern Navigation Tabs - Anti-Gravity Pill Style */}
+      <div className="flex ag-card p-1.5 gap-1 mb-10 overflow-x-auto scrollbar-hide sticky top-24 z-30 font-epilogue bg-white/80 backdrop-blur-xl border border-white/40">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`whitespace-nowrap flex-1 px-10 py-3.5 rounded-[1.4rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
+            className={`whitespace-nowrap flex-1 px-10 py-3.5 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-500 ${
               activeTab === tab
-                ? "bg-slate-900 text-white shadow-xl scale-100"
+                ? "bg-slate-900 text-white shadow-2xl scale-100"
                 : "text-slate-400 hover:text-slate-800 hover:bg-slate-50"
             }`}
           >
@@ -824,18 +900,20 @@ const ProfileCard = ({ user, refreshUser }) => {
               </div>
             </div>
 
-            {/* SECONDARY COLUMN - QUICK WINS SIDEBAR */}
-            <div className="lg:col-span-1 space-y-8">
-               <div className="bg-slate-900 text-white rounded-[3rem] shadow-2xl p-10 border border-white/10 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+            {/* SECONDARY COLUMN - QUICK WINS & TIMELINE */}
+            <div className="lg:col-span-1 space-y-6">
+               <ReputationTimeline history={user.reputationHistory} />
+
+               <div className="bg-slate-900 text-white rounded-[2.5rem] shadow-2xl p-8 border border-white/10 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32 opacity-50"></div>
                   
                   <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-10">
-                       <span className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-xl backdrop-blur-md shadow-inner">⚡</span>
-                       <h3 className="text-xl font-black tracking-tight font-epilogue">Quick Wins</h3>
+                    <div className="flex items-center gap-3 mb-6">
+                       <span className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-lg backdrop-blur-md shadow-inner">⚡</span>
+                       <h3 className="text-lg font-black tracking-tight font-epilogue uppercase">Quick Wins</h3>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                        {/* DYNAMIC QUICK WINS LOGIC */}
                        {[
                          { condition: !(user.profileImage), label: "Avatar Upload", points: "+8 Pts", action: "Edit Profile", path: "/profile/edit" },
@@ -868,7 +946,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                          </p>
                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 p-4 bg-white text-slate-900 rounded-2xl shadow-2xl scale-0 group-hover/audit:scale-100 transition-all origin-bottom pointer-events-none">
                             <p className="text-[10px] font-bold leading-relaxed">
-                              Your trust score is verified by UniVault's AI integrity engine, which cross-checks all activity in real time.
+                               Your trust score is verified by UniVault's AI integrity engine, which cross-checks all activity in real time.
                             </p>
                             <div className="w-3 h-3 bg-white rotate-45 absolute -bottom-1.5 left-1/2 -translate-x-1/2" />
                          </div>
@@ -892,59 +970,89 @@ const ProfileCard = ({ user, refreshUser }) => {
       </div>
 
       {/* EDIT MODAL Overlay */}
-      {isEditModalOpen && editingItem && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fade-in">
-           <div className="absolute inset-0 bg-[#0F0A2E]/80 backdrop-blur-md" onClick={() => setIsEditModalOpen(false)}></div>
+      {isEditModalOpen && editingItem && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-fade-in" style={{ isolate: 'isolate' }}>
+           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onClick={() => setIsEditModalOpen(false)}></div>
            
-           <div className="relative bg-[#1A1A2E]/90 backdrop-blur-2xl w-full max-w-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden animate-fade-in-up">
-              <div className="bg-gradient-to-r from-[#4A5FE8] to-[#8B5CF6] p-8 text-white relative">
+           <div className="relative bg-[#1A1A2E]/95 backdrop-blur-2xl w-full max-w-xl rounded-[3rem] shadow-[0_40px_100px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden animate-fade-in-up">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-10 text-white relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                <h3 className="text-2xl font-black tracking-tight">Modify Vault Record</h3>
-                <p className="text-white/70 text-sm font-bold uppercase tracking-widest mt-1">UUID: {editingItem._id?.slice(-8)}</p>
-                <button onClick={() => setIsEditModalOpen(false)} className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                <h3 className="text-2xl font-black tracking-tight font-epilogue">Modify Vault Record</h3>
+                <p className="text-white/60 text-[10px] font-black uppercase tracking-[0.3em] mt-2">UUID: {editingItem._id?.slice(-8)} • SECURITY LAYER ON</p>
+                <button onClick={() => setIsEditModalOpen(false)} className="absolute top-10 right-10 p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
 
-              <form onSubmit={handleUpdate} className="p-10 space-y-6">
+              <form onSubmit={handleUpdate} className="p-10 space-y-8">
                 <div>
-                  <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Item Designation</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Item Designation</label>
                   <input 
                     type="text" 
+                    placeholder="Brief name of item"
                     value={editingItem.title || editingItem.itemName || editingItem.item_name || ""} 
                     onChange={(e) => setEditingItem({...editingItem, title: e.target.value, item_name: e.target.value, itemName: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-white/20"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Sector / Category</label>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Sector / Category</label>
                     <input 
                       type="text" 
                       value={editingItem.category || ""} 
                       onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Valuation (LKR)</label>
-                    <input 
-                      type="number" 
-                      value={editingItem.price || ""} 
-                      onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all"
-                    />
+                    {editingItem.type === 'market' ? (
+                      <>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Valuation (LKR)</label>
+                        <input 
+                          type="number" 
+                          placeholder="Points equivalent"
+                          value={editingItem.price || ""} 
+                          onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-white/20"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Reported Date</label>
+                        <input 
+                          type="date" 
+                          value={editingItem.date ? new Date(editingItem.date).toISOString().split('T')[0] : ""} 
+                          onChange={(e) => setEditingItem({...editingItem, date: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
 
+                {editingItem.type !== 'market' && (
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Event Location</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Main Library, Faculty Cafe"
+                      value={editingItem.location || ""} 
+                      onChange={(e) => setEditingItem({...editingItem, location: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-white/20"
+                    />
+                  </div>
+                )}
+
                 <div>
-                  <label className="block text-[10px] font-black text-white/50 uppercase tracking-widest mb-2">Detailed Specification</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Detailed Specification</label>
                   <textarea 
                     rows="4"
+                    placeholder="Provide specific identifiers..."
                     value={editingItem.description || ""} 
                     onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#00D9FF]/50 transition-all resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all resize-none placeholder:text-white/20"
                   ></textarea>
                 </div>
 
@@ -958,11 +1066,12 @@ const ProfileCard = ({ user, refreshUser }) => {
                 </div>
               </form>
            </div>
-        </div>
+        </div>,
+        document.body
       )}
       {/* TRUST INFO MODAL */}
-      {isTrustInfoOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+      {isTrustInfoOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-fade-in" style={{ isolate: 'isolate' }}>
           <div className="absolute inset-0 bg-[#0F0A2E]/90 backdrop-blur-xl" onClick={() => setIsTrustInfoOpen(false)}></div>
           
           <div className="relative bg-white w-full max-w-2xl rounded-[3rem] shadow-[0_32px_100px_rgba(0,0,0,0.5)] border border-white overflow-hidden animate-fade-in-up font-inter">
@@ -1028,12 +1137,13 @@ const ProfileCard = ({ user, refreshUser }) => {
                </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* LOGOUT CONFIRMATION MODAL */}
-      {isLogoutConfirmOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fade-in">
+      {isLogoutConfirmOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 animate-fade-in" style={{ isolate: 'isolate' }}>
           <div className="absolute inset-0 bg-[#0F0A2E]/90 backdrop-blur-xl" onClick={() => setIsLogoutConfirmOpen(false)}></div>
           
           <div className="relative bg-white/5 backdrop-blur-3xl w-full max-w-sm rounded-[2.5rem] p-8 border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] text-center animate-fade-in-up">
@@ -1061,7 +1171,8 @@ const ProfileCard = ({ user, refreshUser }) => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style dangerouslySetInnerHTML={{ __html: `

@@ -341,7 +341,21 @@ const getUserById = async (req, res) => {
     const user = await User.findById(req.params.id).select("-password -otp -otpExpires");
 
     if (user) {
-      res.json(user);
+      // Add trust calculation for administrative insight
+      const trustData = await calculateTrustScore(user._id);
+      
+      const response = {
+        ...user.toObject(),
+        stats: trustData ? {
+          ...trustData.stats,
+          trustScore: trustData.totalScore,
+          trustLevel: trustData.status,
+          trustBreakdown: Object.entries(trustData.pillars || {}).map(([name, data]) => ({ name, ...data })),
+          milestones: trustData.milestones
+        } : {}
+      };
+
+      res.json(response);
     } else {
       res.status(404).json({ message: "User not found" });
     }

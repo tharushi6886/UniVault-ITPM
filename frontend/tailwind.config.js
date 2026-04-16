@@ -39,6 +39,8 @@ module.exports = {
                 'soft-pulse': 'soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 slideInL: 'slideInL 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
                 fadeUp: 'fadeUp 0.35s ease both',
+                'fade-in': 'fade-in 0.5s ease-out both',
+                'fade-in-up': 'fade-in-up 0.5s ease-out both',
             },
             keyframes: {
                 'blob-drift': {
@@ -77,6 +79,14 @@ module.exports = {
                 },
                 fadeUp: {
                     '0%': { opacity: '0', transform: 'translateY(12px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                'fade-in': {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' },
+                },
+                'fade-in-up': {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 }
             }
