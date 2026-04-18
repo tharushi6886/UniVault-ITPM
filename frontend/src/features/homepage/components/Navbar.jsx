@@ -55,12 +55,16 @@ const Navbar = () => {
   };
 
   const isActive = (path) => location.pathname === path;
+  const isHomePage = location.pathname === "/";
+  const isProfilePage = location.pathname === "/profile";
+  const isAdminPage = location.pathname.startsWith("/admin");
+  const useSolidStyle = scrolled || (!isHomePage && !isProfilePage && !isAdminPage);
 
   const navClass = (path) =>
     `text-[13px] font-bold transition-all duration-300 font-inter cursor-pointer px-5 py-2 rounded-xl relative group ${
       isActive(path)
-        ? (scrolled ? "text-indigo-600 bg-indigo-50/50" : "text-white bg-white/15")
-        : (scrolled ? "text-slate-500 hover:text-slate-900 hover:bg-slate-50" : "text-white/70 hover:text-white hover:bg-white/10")
+        ? (useSolidStyle ? "text-indigo-600 bg-indigo-50/50" : "text-white bg-white/15")
+        : (useSolidStyle ? "text-slate-500 hover:text-slate-900 hover:bg-slate-50" : "text-white/70 hover:text-white hover:bg-white/10")
     }`;
 
   const profileImageSrc = loggedUser?.profileImage
@@ -72,9 +76,9 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-5 transition-all duration-500 ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-3.5 border-b border-black/5"
-          : "bg-transparent border-b border-transparent"
+        useSolidStyle
+          ? "bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-3.5 border-b border-black/5 text-slate-900"
+          : "bg-transparent border-b border-transparent text-white"
       }`}
     >
       <div
@@ -84,7 +88,7 @@ const Navbar = () => {
         <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-sm font-black shadow-[0_4px_14px_rgba(79,134,239,0.24)] shrink-0 text-white">
           U
         </div>
-        <span className={`text-[20px] font-bold tracking-[-0.02em] drop-shadow-sm transition-colors duration-300 ${scrolled ? 'text-slate-900' : 'text-white'}`}>
+        <span className={`text-[20px] font-bold tracking-[-0.02em] drop-shadow-sm transition-colors duration-300 ${useSolidStyle ? 'text-slate-900' : 'text-white'}`}>
           UniVault
         </span>
       </div>
@@ -146,8 +150,8 @@ const Navbar = () => {
               onClick={handleLogin}
               className={`text-[13px] font-bold px-[20px] py-[8px] rounded-xl transition-all duration-300 ${
                 isActive("/login")
-                  ? (scrolled ? "bg-slate-900 text-white shadow-sm" : "bg-white/30 border border-white/45 text-white shadow-sm")
-                  : (scrolled 
+                  ? (useSolidStyle ? "bg-slate-900 text-white shadow-sm" : "bg-white/30 border border-white/45 text-white shadow-sm")
+                  : (useSolidStyle 
                       ? "bg-transparent border border-slate-200 text-slate-700 hover:border-indigo-600 hover:text-indigo-600" 
                       : "bg-transparent border border-white/24 text-white/90 hover:border-cyan-200/60 hover:text-white hover:shadow-[0_4px_14px_rgba(103,232,249,0.12)]")
               }`}

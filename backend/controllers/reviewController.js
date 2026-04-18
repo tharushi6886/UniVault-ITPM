@@ -66,7 +66,7 @@ const createReview = async (req, res) => {
     await review.populate("reviewer", "name profileImage");
 
     // Recalculate trust for the user who was reviewed
-    await syncUserTrust(reviewedUserId);
+    await syncUserTrust(reviewedUserId, "Received New Review");
 
     return res.status(201).json({ message: "Review submitted successfully.", review });
   } catch (err) {
@@ -162,7 +162,7 @@ const deleteReview = async (req, res) => {
     await review.save();
     
     // Update trust score after deletion
-    await syncUserTrust(reviewedId);
+    await syncUserTrust(reviewedId, "Review Removed/Deleted");
 
     return res.status(200).json({ message: "Review removed successfully." });
   } catch (err) {

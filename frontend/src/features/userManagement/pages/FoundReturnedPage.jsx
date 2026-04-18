@@ -72,7 +72,10 @@ const FoundReturnedPage = () => {
       description="Displays all lost items you have found and reported/returned."
     >
       {loading ? (
-        <div className="flex justify-center p-8"><span className="text-gray-500">Loading...</span></div>
+        <div className="py-20 text-center animate-pulse">
+          <div className="w-10 h-10 border-4 border-slate-100 border-t-sky-500 rounded-full animate-spin mx-auto mb-6 shadow-sky-100"></div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Querying Return Intelligence...</p>
+        </div>
       ) : items.length === 0 ? (
         <div className="bg-white/40 backdrop-blur-md rounded-[2.5rem] p-16 border border-white text-center shadow-inner">
           <div className="text-6xl mb-6 opacity-20 italic font-black text-slate-400">#ZERO_RETURNS</div>

@@ -58,6 +58,13 @@ export const unblockUser = (token, userId) =>
     },
   });
 
+export const getUserById = (token, userId) =>
+  API.get(`/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const deleteUser = (token, userId) =>
   API.delete(`/${userId}`, {
     headers: {

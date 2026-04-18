@@ -10,7 +10,7 @@ exports.createFoundItem = async (req, res) => {
 
     // Trigger real-time sync for the item owner
     const user = await User.findOne({ studentId: foundItem.studentId });
-    if (user) await syncUserTrust(user._id);
+    if (user) await syncUserTrust(user._id, "Reported Found Item");
 
     res.status(201).json(foundItem);
   } catch (err) {
@@ -42,7 +42,7 @@ exports.updateFoundItem = async (req, res) => {
     
     // Sync trust if status or ownership could have changed
     const user = await User.findOne({ studentId: updated.studentId });
-    if (user) await syncUserTrust(user._id);
+    if (user) await syncUserTrust(user._id, `Updated Found Item: ${updated.status}`);
 
     res.status(200).json(updated);
   } catch (err) {

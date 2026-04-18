@@ -72,6 +72,13 @@ const userSchema = new mongoose.Schema(
       default: "Improving",
       enum: ["Improving", "Standard", "Trusted", "Elite"]
     },
+    reputationHistory: [
+      {
+        event: { type: String, required: true },
+        points: { type: Number, required: true },
+        date: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,

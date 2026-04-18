@@ -3,6 +3,7 @@ import { getProfile, updateProfile } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../homepage/components/Navbar";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
@@ -49,8 +50,8 @@ const EditProfilePage = () => {
       newErrors.name = "Name can only contain letters, spaces, hyphens, or apostrophes.";
     }
 
-    if (formData.phone && !/^\+?[0-9\s\-()]{7,15}$/.test(formData.phone.trim())) {
-      newErrors.phone = "Enter a valid phone number (7–15 digits).";
+    if (formData.phone && !/^(?:\+94|0)?7[0-9]{8}$/.test(formData.phone.trim())) {
+      newErrors.phone = "Enter a valid Sri Lankan phone number (e.g. 07XXXXXXXX or +947XXXXXXXX).";
     }
 
     if (formData.faculty && formData.faculty.trim().length < 2) {
@@ -147,7 +148,11 @@ const EditProfilePage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue"
+      >
         
         {/* Ambient Premium Background Shapes */}
         <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
@@ -157,10 +162,15 @@ const EditProfilePage = () => {
         <div className="relative z-10 max-w-2xl mx-auto w-full">
 
           {/* Header */}
-          <div className="mb-8 flex items-center gap-4">
+          <motion.div 
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 flex items-center gap-4"
+          >
             <button
               onClick={() => navigate("/profile")}
-              className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600"
+              className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600 active:scale-95"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
@@ -170,10 +180,15 @@ const EditProfilePage = () => {
               <h1 className="text-2xl font-black text-slate-800 tracking-tight">Vault Identity Editor</h1>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Modify Your UniVault Profile</p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card */}
-          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10"
+          >
             
             {/* Card Header Banner */}
             <div className="relative bg-gradient-to-br from-[#4A5FE8] to-[#8B5CF6] p-10 overflow-hidden">
@@ -204,14 +219,30 @@ const EditProfilePage = () => {
                     <span className={`shrink-0 transition-colors w-4 h-4 flex items-center justify-center ${errors[key] ? "text-rose-400" : "text-[#4A5FE8]"}`}>
                       {icon}
                     </span>
-                    <input
-                      type={type}
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={placeholder}
-                      className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
-                    />
+                    {key === "faculty" ? (
+                      <select
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] focus:outline-none h-full appearance-none cursor-pointer"
+                      >
+                        <option value="" disabled hidden>Select Faculty</option>
+                        <option value="Faculty of Computing">Faculty of Computing</option>
+                        <option value="SLIIT Business School">SLIIT Business School</option>
+                        <option value="Faculty of Engineering">Faculty of Engineering</option>
+                        <option value="School of Architecture">School of Architecture</option>
+                        <option value="Faculty of Humanities & Sciences">Faculty of Humanities & Sciences</option>
+                      </select>
+                    ) : (
+                      <input
+                        type={type}
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
+                      />
+                    )}
                     {formData[key] && !errors[key] && (
                       <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
@@ -270,9 +301,9 @@ const EditProfilePage = () => {
               </p>
 
             </form>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

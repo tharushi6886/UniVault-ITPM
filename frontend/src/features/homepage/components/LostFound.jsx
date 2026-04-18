@@ -89,7 +89,7 @@ const LostCard = ({ item }) => (
                 <img
                     src={getImageUrl(item.imageUrl)}
                     alt={item.itemName || item.title}
-                    className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
             ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl opacity-20">🔍</div>
@@ -126,7 +126,7 @@ const FoundCard = ({ item }) => {
                     {isClaimed ? 'CLAIMED' : 'FOUND'}
                 </span>
                 {item.imageUrl ? (
-                    <img src={getImageUrl(item.imageUrl)} alt={item.itemName || item.title} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" />
+                    <img src={getImageUrl(item.imageUrl)} alt={item.itemName || item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">✨</div>
                 )}
