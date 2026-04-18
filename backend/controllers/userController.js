@@ -30,27 +30,39 @@ const registerUser = async (req, res) => {
       $or: [{ email }, { studentId }],
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       return res.status(400).json({
-        message: "User already exists with this email or student ID",
+        message: "User already exists with this email or student ID. Please sign in.",
       });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    let user;
 
-    const user = await User.create({
-      name,
-      email,
-      studentId,
-      password,
-      role: "Student",
-      phone,
-      faculty,
-      otp,
-      otpExpires: Date.now() + 10 * 60 * 1000,
-      isVerified: false,
-      status: "pending",
-    });
+    if (existingUser && !existingUser.isVerified) {
+      // Update unverified user instead of creating new one
+      existingUser.name = name;
+      existingUser.password = password;
+      existingUser.phone = phone;
+      existingUser.faculty = faculty;
+      existingUser.otp = otp;
+      existingUser.otpExpires = Date.now() + 10 * 60 * 1000;
+      user = await existingUser.save();
+    } else {
+      user = await User.create({
+        name,
+        email,
+        studentId,
+        password,
+        role: "Student",
+        phone,
+        faculty,
+        otp,
+        otpExpires: Date.now() + 10 * 60 * 1000,
+        isVerified: false,
+        status: "pending",
+      });
+    }
 
     try {
       // Validate environment variables
@@ -172,7 +184,7 @@ const loginUser = async (req, res) => {
 
     if (!user.isVerified || user.status === "pending") {
       return res.status(403).json({
-        message: "Please verify your university email with OTP before login.",
+        message: "Account not verified. Please check your email for OTP or register again to resend code.",
       });
     }
 
