@@ -248,15 +248,18 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
                 <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner border border-white/50 overflow-hidden ${
                    item.item_id ? "bg-indigo-50 text-indigo-500" : item.status === "active" ? "bg-amber-50 text-amber-500" : "bg-sky-50 text-sky-500"
                 }`}>
-                  {(item.imageUrl || item.image || (item.images && item.images[0])) ? (
-                    <img 
-                      src={(item.imageUrl || item.image || item.images[0]).startsWith('http') ? (item.imageUrl || item.image || item.images[0]) : `http://localhost:5000${item.imageUrl || item.image || item.images[0]}`} 
-                      className="w-full h-full object-cover" 
-                      alt="" 
-                    />
-                  ) : (
-                    item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"
-                  )}
+                  {(() => {
+                    const imgSrc = item.imageUrl || item.item_image || item.image || (item.images && item.images[0]);
+                    if (!imgSrc) return item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝";
+                    const isFullUrl = imgSrc.startsWith("http") || imgSrc.startsWith("data:");
+                    return (
+                      <img 
+                        src={isFullUrl ? imgSrc : `http://localhost:5000${imgSrc.startsWith("/") ? "" : "/"}${imgSrc}`} 
+                        className="w-full h-full object-cover" 
+                        alt="" 
+                      />
+                    );
+                  })()}
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">

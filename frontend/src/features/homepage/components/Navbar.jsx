@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 const Navbar = () => {
@@ -60,13 +61,6 @@ const Navbar = () => {
   const isAdminPage = location.pathname.startsWith("/admin");
   const useSolidStyle = scrolled || (!isHomePage && !isProfilePage && !isAdminPage);
 
-  const navClass = (path) =>
-    `text-[13px] font-bold transition-all duration-300 font-inter cursor-pointer px-5 py-2 rounded-xl relative group ${
-      isActive(path)
-        ? (useSolidStyle ? "text-indigo-600 bg-indigo-50/50" : "text-white bg-white/15")
-        : (useSolidStyle ? "text-slate-500 hover:text-slate-900 hover:bg-slate-50" : "text-white/70 hover:text-white hover:bg-white/10")
-    }`;
-
   const profileImageSrc = loggedUser?.profileImage
     ? loggedUser.profileImage.startsWith("http")
       ? loggedUser.profileImage
@@ -75,69 +69,97 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-5 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-[300] flex items-center justify-between px-8 lg:px-16 py-5 transition-all duration-700 ${
         useSolidStyle
-          ? "bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] py-3.5 border-b border-black/5 text-slate-900"
+          ? "bg-gradient-to-b from-white/95 via-white/92 to-white/85 backdrop-blur-2xl shadow-[0_15px_50px_-15px_rgba(79,134,239,0.15)] py-3.5 border-b border-indigo-500/15 text-slate-900"
           : "bg-transparent border-b border-transparent text-white"
       }`}
     >
       <div
-        className="flex items-center gap-2.5 cursor-pointer"
+        className="flex items-center gap-3 cursor-pointer group"
         onClick={() => navigate("/")}
       >
-        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-sm font-black shadow-[0_4px_14px_rgba(79,134,239,0.24)] shrink-0 text-white">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8EF0] via-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-base font-black shadow-[0_6px_20px_rgba(79,134,239,0.3)] shrink-0 text-white transform transition-transform group-hover:scale-105 group-hover:rotate-3">
           U
         </div>
-        <span className={`text-[20px] font-bold tracking-[-0.02em] drop-shadow-sm transition-colors duration-300 ${useSolidStyle ? 'text-slate-900' : 'text-white'}`}>
+        <span className={`text-[22px] font-black tracking-tight drop-shadow-sm transition-all duration-300 ${useSolidStyle ? 'text-slate-900' : 'text-white'}`}>
           UniVault
         </span>
       </div>
 
-      <ul className="hidden md:flex gap-8 list-none m-0 p-0 items-center">
-        <li><button onClick={() => navigate("/")} className={navClass("/")}>Home</button></li>
-        <li><button onClick={() => handleProtectedNavigation("/lost-items")} className={navClass("/lost-items")}>Lost Items</button></li>
-        <li><button onClick={() => handleProtectedNavigation("/found-items")} className={navClass("/found-items")}>Found Items</button></li>
-        <li><button onClick={() => handleProtectedNavigation("/marketplace")} className={navClass("/marketplace")}>Marketplace</button></li>
-        <li><button onClick={() => handleProtectedNavigation("/bidding")} className={navClass("/bidding")}>Bidding</button></li>
-        <li><button onClick={() => navigate("/about")} className={navClass("/about")}>About</button></li>
-      </ul>
+      <div className="hidden md:flex items-center flex-1 justify-center px-10">
+        <div className={`flex items-center gap-10 p-1.5 px-12 rounded-2xl border transition-all duration-500 w-full max-w-5xl justify-center ${
+          useSolidStyle 
+            ? "bg-indigo-50/30 border-indigo-500/10 shadow-[inset_0_2px_10px_rgba(79,134,239,0.05)]" 
+            : "bg-white/10 backdrop-blur-md border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]"
+        }`}>
+          {[
+            { name: "Home", path: "/", protected: false },
+            { name: "Lost Items", path: "/lost-items", protected: true },
+            { name: "Found Items", path: "/found-items", protected: true },
+            { name: "Marketplace", path: "/marketplace", protected: true },
+            { name: "Bidding", path: "/bidding", protected: true },
+            { name: "About", path: "/about", protected: false },
+          ].map((item) => (
+            <button
+              key={item.path}
+              onClick={() => item.protected ? handleProtectedNavigation(item.path) : navigate(item.path)}
+              className={`relative px-6 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-300 font-inter cursor-pointer z-10 whitespace-nowrap overflow-hidden group/navitem ${
+                isActive(item.path)
+                  ? (useSolidStyle ? "text-indigo-600 font-black" : "text-white font-black")
+                  : (useSolidStyle ? "text-slate-500 hover:text-indigo-600" : "text-white/70 hover:text-white")
+              }`}
+            >
+              {isActive(item.path) && (
+                <motion.div
+                  layoutId="active-nav-pill"
+                  className={`absolute inset-0 rounded-xl z-0 ${
+                    useSolidStyle ? "bg-white/80 shadow-md border border-indigo-500/10" : "bg-white/25 backdrop-blur-md border border-white/30"
+                  }`}
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10 transition-transform group-hover/navitem:scale-105 inline-block">{item.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-5 items-center">
         {loggedUser ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <div
               onClick={handleProfile}
               title="View Profile"
               className="group relative flex items-center justify-center cursor-pointer transition-all duration-300"
             >
-              <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-indigo-500/20 shadow-lg transition-all group-hover:scale-105 group-hover:ring-indigo-500/50 shrink-0">
+              <div className="w-11 h-11 rounded-full overflow-hidden ring-4 ring-indigo-500/10 shadow-xl transition-all group-hover:scale-105 group-hover:ring-indigo-500/30 shrink-0">
                 {profileImageSrc ? (
                   <img
                     src={profileImageSrc}
                     alt={loggedUser.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover shadow-inner"
                     onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                   />
                 ) : null}
                 <div
-                  className="w-full h-full bg-gradient-to-br from-[#4A8EF0] to-[#2c5ea2] shadow-inner flex items-center justify-center text-sm font-black text-white"
+                  className="w-full h-full bg-gradient-to-br from-[#4A8EF0] to-[#2c5ea2] shadow-inner flex items-center justify-center text-base font-black text-white"
                   style={{ display: profileImageSrc ? 'none' : 'flex' }}
                 >
                   {loggedUser.name?.charAt(0).toUpperCase()}
                 </div>
               </div>
               
-              {/* Subtle Online Dot */}
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white shadow-sm z-10 transition-transform group-hover:scale-110"></div>
+              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-lg z-10 transition-transform group-hover:scale-110"></div>
             </div>
 
             {loggedUser.role === "Admin" && (
               <button
                 onClick={() => navigate("/admin/dashboard")}
-                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                  isActive("/admin/dashboard")
-                    ? "bg-[#4A8EF0] text-white shadow-[0_8px_20px_rgba(79,134,239,0.24)]"
-                    : "bg-white/18 text-white hover:bg-white/28 hover:text-white"
+                className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-400 transform hover:-translate-y-0.5 active:scale-95 ${
+                  useSolidStyle
+                    ? "bg-indigo-600 text-white shadow-[0_10px_25px_rgba(79,134,239,0.3)] hover:bg-indigo-700"
+                    : "bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-white/30"
                 }`}
               >
                 Admin Panel
@@ -145,15 +167,15 @@ const Navbar = () => {
             )}
           </div>
         ) : (
-          <>
+          <div className="flex items-center gap-3">
             <button
               onClick={handleLogin}
-              className={`text-[13px] font-bold px-[20px] py-[8px] rounded-xl transition-all duration-300 ${
+              className={`text-[13px] font-bold px-[22px] py-[10px] rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 ${
                 isActive("/login")
-                  ? (useSolidStyle ? "bg-slate-900 text-white shadow-sm" : "bg-white/30 border border-white/45 text-white shadow-sm")
+                  ? (useSolidStyle ? "bg-slate-900 text-white shadow-lg" : "bg-white/30 border border-white/45 text-white shadow-lg")
                   : (useSolidStyle 
-                      ? "bg-transparent border border-slate-200 text-slate-700 hover:border-indigo-600 hover:text-indigo-600" 
-                      : "bg-transparent border border-white/24 text-white/90 hover:border-cyan-200/60 hover:text-white hover:shadow-[0_4px_14px_rgba(103,232,249,0.12)]")
+                      ? "bg-white border border-indigo-500/10 text-slate-700 hover:bg-indigo-50/50 hover:text-indigo-600 hover:border-indigo-500/30" 
+                      : "bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/40")
               }`}
             >
               Login
@@ -161,15 +183,15 @@ const Navbar = () => {
 
             <button
               onClick={handleRegister}
-              className={`text-white text-[13px] font-black px-[24px] py-[9px] rounded-xl transition-all duration-300 cursor-pointer border-t border-white/30 shadow-[0_8px_20px_rgba(56,189,248,0.22)] hover:-translate-y-0.5 hover:shadow-[0_12px_25px_rgba(56,189,248,0.32)] ${
+              className={`text-white text-[13px] font-black px-[26px] py-[11px] rounded-xl transition-all duration-400 cursor-pointer border-t border-white/40 shadow-[0_10px_25px_rgba(79,134,239,0.3)] hover:-translate-y-1 hover:shadow-[0_15px_30px_rgba(79,134,239,0.4)] active:scale-95 transform ${
                 isActive("/register")
-                  ? "bg-gradient-to-r from-[#53aaf2] to-[#2dd4bf] shadow-sky-900/20"
+                  ? "bg-gradient-to-r from-[#53aaf2] to-[#2dd4bf] ring-2 ring-indigo-500/20"
                   : "bg-gradient-to-r from-[#6a8cff] to-[#48d6c2]"
               }`}
             >
               Sign Up
             </button>
-          </>
+          </div>
         )}
       </div>
     </nav>

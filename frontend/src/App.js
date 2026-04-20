@@ -50,17 +50,94 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route path="/marketplace" element={<Dashboard />} />
-        <Route path="/item/:id" element={<ItemDetails />} />
-        <Route path="/myitems" element={<Myitems />} />
-        <Route path="/orders" element={<OrderPage />} />
-        <Route path="/bidding" element={<Bid />} />
-        <Route path="/massage" element={<Massage />} />
-        <Route path="/delivery" element={<Deliveryinfo />} />
-        <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
-        <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
-        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
-        <Route path="/purchasedone" element={<PurchaseDone />} />
+        <Route
+          path="/marketplace"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/item/:id"
+          element={
+            <ProtectedRoute>
+              <ItemDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/myitems"
+          element={
+            <ProtectedRoute>
+              <Myitems />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrderPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bidding"
+          element={
+            <ProtectedRoute>
+              <Bid />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/massage"
+          element={
+            <ProtectedRoute>
+              <Massage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/delivery"
+          element={
+            <ProtectedRoute>
+              <Deliveryinfo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lost-items"
+          element={
+            <ProtectedRoute>
+              <LostFoundDashboard ads={ads} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/found-items"
+          element={
+            <ProtectedRoute>
+              <LostFoundDashboard ads={ads} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/report-item"
+          element={
+            <ProtectedRoute>
+              <LostFoundForm setAds={setAds} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/purchasedone"
+          element={
+            <ProtectedRoute>
+              <PurchaseDone />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

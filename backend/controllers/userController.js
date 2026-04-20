@@ -2,7 +2,8 @@ const User = require("../models/User");
 const LostItem = require("../models/LostItem");
 const FoundItem = require("../models/FoundItem");
 const generateToken = require("../utils/generateToken");
-const nodemailer = require("nodemailer");
+const sendEmail = require("../utils/sendEmail");
+const { getOtpTemplate } = require("../utils/emailTemplates");
 const Lost = require("../models/lost");
 const Item = require("../models/itemModels");
 const calculateTrustScore = require("../utils/trustScore");
@@ -65,46 +66,19 @@ const registerUser = async (req, res) => {
     }
 
     try {
-      // Validate environment variables
-      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.error("Email environment variables not configured");
-        await User.findByIdAndDelete(user._id);
-        return res.status(500).json({
-          message: "Email service not configured. Please try again later.",
-        });
-      }
+      const emailHtml = getOtpTemplate(otp, name, "registration");
+      const emailSubject = "UniVault OTP Verification";
+      const emailText = `Hello ${name}, your OTP for UniVault verification is ${otp}. It will expire in 10 minutes.`;
 
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, 
-          pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-
-      // Verify transporter connection
-      await transporter.verify();
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "UniVault OTP Verification",
-        html: `
-          <h2>UniVault OTP Verification</h2>
-          <p>Your OTP code is: <strong>${otp}</strong></p>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you did not request this, please ignore this email.</p>
-        `,
-      };
-
-      await transporter.sendMail(mailOptions);
+      await sendEmail(email, emailSubject, emailText, emailHtml);
       console.log(`OTP email sent successfully to ${email}`);
     } catch (mailError) {
       console.error("Email sending error:", mailError.message);
-      await User.findByIdAndDelete(user._id);
+      
+      // Clean up the created user if email fails
+      if (user && user._id) {
+        await User.findByIdAndDelete(user._id);
+      }
 
       return res.status(500).json({
         message: "Failed to send OTP email. Please check your email address and try again.",
@@ -559,22 +533,20 @@ const forgotPassword = async (req, res) => {
     user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    try {
+      const emailHtml = getOtpTemplate(otp, user.name, "reset");
+      const emailSubject = "UniVault Password Reset OTP";
+      const emailText = `Hello ${user.name}, your OTP for password reset is ${otp}. It will expire in 10 minutes.`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "UniVault Password Reset OTP",
-      text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
-    });
-
-    res.json({ message: "Password reset OTP sent to your university email" });
+      await sendEmail(email, emailSubject, emailText, emailHtml);
+      res.json({ message: "Password reset OTP sent to your university email" });
+    } catch (mailError) {
+      console.error("Forgot password email error:", mailError.message);
+      res.status(500).json({ 
+        message: "Failed to send reset OTP. Please try again later.",
+        error: process.env.NODE_ENV === "development" ? mailError.message : undefined 
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
