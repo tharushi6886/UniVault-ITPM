@@ -27,6 +27,7 @@ const Hero = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('lost-and-found');
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -206,6 +207,8 @@ const Hero = () => {
                                 placeholder={searchType === 'marketplace' ? 'Search textbooks, electronics, dorm gear...' : 'Search for keys, student IDs, phones...'}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') handleSearch();
                                 }}
@@ -225,43 +228,37 @@ const Hero = () => {
                     </motion.div>
 
                     {/* Quick Categories */}
-                    <AnimatePresence mode="wait">
-                        <motion.div 
-                            key={searchType}
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 5 }}
-                            className="flex gap-2.5 justify-center mt-6 flex-wrap opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"
-                        >
-                            {(searchType === 'lost-and-found' 
-                                ? ['📱 Phone', '🪪 ID Card', '🔑 Keys', '📚 Books', '🎒 Bag'] 
-                                : ['📖 Textbooks', '💻 Laptops', '🎧 Gadgets', '👗 Fashion', '🛋️ Dorm']
-                            ).map((cat) => (
-                                <motion.button
-                                    key={cat}
-                                    whileHover={{ y: -3, scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => {
-                                        const val = cat.split(' ')[1];
-                                        setSearchQuery(val);
-                                    }}
-                                    className="bg-white/5 backdrop-blur-xl border border-white/10 text-white/70 hover:text-white hover:bg-[#00D9FF]/20 hover:border-[#00D9FF]/40 px-4 py-1.5 rounded-full text-[12px] font-medium font-epilogue transition-colors"
-                                >
-                                    {cat}
-                                </motion.button>
-                            ))}
-                        </motion.div>
+                    <AnimatePresence>
+                        {isSearchFocused && (
+                            <motion.div 
+                                key={searchType}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex gap-2.5 justify-center mt-6 flex-wrap z-20"
+                            >
+                                {(searchType === 'lost-and-found' 
+                                    ? ['📱 Phone', '🪪 ID Card', '🔑 Keys', '📚 Books', '🎒 Bag'] 
+                                    : ['📖 Textbooks', '💻 Laptops', '🎧 Gadgets', '👗 Fashion', '🛋️ Dorm']
+                                ).map((cat) => (
+                                    <motion.button
+                                        key={cat}
+                                        whileHover={{ y: -3, scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => {
+                                            const val = cat.split(' ')[1];
+                                            setSearchQuery(val);
+                                        }}
+                                        className="bg-white/95 backdrop-blur-xl border border-white/40 text-[#0F0A2E] shadow-[0_8px_20px_rgba(0,0,0,0.1)] hover:bg-[#00D9FF] hover:text-[#0F0A2E] px-4 py-1.5 rounded-full text-[12px] font-bold font-epilogue transition-all duration-300"
+                                    >
+                                        {cat}
+                                    </motion.button>
+                                ))}
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
 
-                <div className="flex gap-3 justify-center flex-wrap">
-                    <Link to="/report-item" className="flex items-center gap-2 bg-[#8B5CF6] text-white font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(139,92,246,0.3)] transition-all duration-300 hover:bg-[#7e56db] hover:-translate-y-1 no-underline">
-                        Report Lost Item
-                    </Link>
-                    <Link to="/marketplace" className="flex items-center gap-2 bg-transparent backdrop-blur-xl border border-[#00D9FF]/40 text-[#00D9FF] font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(0,217,255,0.1)] transition-all duration-300 hover:border-[#00D9FF] hover:bg-white/5 hover:-translate-y-1 no-underline">
-                        Explore Marketplace
-                    </Link>
-                </div>
             </div>
 
             <div className="relative w-full h-[300px] mt-[60px] shrink-0" ref={stageRef}>
@@ -288,22 +285,35 @@ const Hero = () => {
                 ))}
             </div>
 
-            <div className="flex relative z-30 bg-[#1A103C]/80 backdrop-blur-xl border border-white/10 rounded-[20px] py-[26px] px-10 shadow-[0_26px_60px_rgba(0,0,0,0.5)] mt-10 mx-auto w-fit hidden md:flex hover:border-[#00D9FF]/30 transition-colors">
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.itemsRecovered}<span className="text-[#00D9FF]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Items Recovered</div>
+            <div className="flex flex-col items-center gap-10 mt-10 relative z-30 w-full px-4">
+                <div className="flex bg-[#1A103C]/85 backdrop-blur-2xl border border-white/15 rounded-[24px] py-[30px] px-8 shadow-[0_30px_70px_rgba(0,0,0,0.6)] w-full max-w-[1020px] mx-auto hidden md:flex hover:border-[#00D9FF]/40 transition-all duration-500 group/stats">
+                    {stats.itemsRecovered > 0 && (
+                        <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                            <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.itemsRecovered}<span className="text-[#00D9FF] animate-pulse">+</span></div>
+                            <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Items Recovered</div>
+                        </div>
+                    )}
+                    <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.studentsCount}<span className="text-[#8B5CF6]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Students</div>
+                    </div>
+                    <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.marketplaceListingsCount}<span className="text-[#34D399]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Active Listings</div>
+                    </div>
+                    <div className="flex-1 px-4 text-center">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.activeReports}<span className="text-[#EC4899]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Active Reports</div>
+                    </div>
                 </div>
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.studentsCount}<span className="text-[#8B5CF6]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Students</div>
-                </div>
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.marketplaceListingsCount}<span className="text-[#34D399]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Active Listings</div>
-                </div>
-                <div className="px-9 text-center">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.activeReports}<span className="text-[#EC4899]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Reports</div>
+
+                <div className="flex gap-4 justify-center flex-wrap animate-fade-in-up">
+                    <Link to="/report-item" className="flex items-center gap-2 bg-[#8B5CF6] text-white font-epilogue text-[14px] font-bold py-[14px] px-8 rounded-2xl shadow-[0_12px_28px_rgba(139,92,246,0.35)] transition-all duration-300 hover:bg-[#7e56db] hover:-translate-y-1 hover:shadow-[0_15px_32px_rgba(139,92,246,0.45)] no-underline">
+                        <span className="text-lg">📢</span> Report Lost Item
+                    </Link>
+                    <Link to="/marketplace" className="flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-epilogue text-[14px] font-bold py-[14px] px-8 rounded-2xl shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 no-underline">
+                        <span className="text-lg">🛍️</span> Explore Marketplace
+                    </Link>
                 </div>
             </div>
         </section>

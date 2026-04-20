@@ -6,7 +6,7 @@ const nodemailer = require("nodemailer");
  * Supports both real SMTP (configured via .env) and 
  * test accounts (Ethereal Email).
  */
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, text, html = null) => {
   let transporter;
 
   const { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS } = process.env;
@@ -32,6 +32,9 @@ const sendEmail = async (to, subject, text) => {
           user: EMAIL_USER,
           pass: EMAIL_PASS,
         },
+        tls: {
+          rejectUnauthorized: false,
+        },
       });
     } else {
       // Generic service guess if no host
@@ -39,6 +42,9 @@ const sendEmail = async (to, subject, text) => {
         auth: {
           user: EMAIL_USER,
           pass: EMAIL_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false,
         },
       });
     }
@@ -73,6 +79,7 @@ const sendEmail = async (to, subject, text) => {
       to: to,
       subject: subject,
       text: text,
+      html: html,
     });
 
     if (!EMAIL_USER) {
