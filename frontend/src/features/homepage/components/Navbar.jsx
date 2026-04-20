@@ -64,7 +64,7 @@ const Navbar = () => {
   const profileImageSrc = loggedUser?.profileImage
     ? loggedUser.profileImage.startsWith("http")
       ? loggedUser.profileImage
-      : `http://localhost:5000${loggedUser.profileImage}`
+      : `http://localhost:5000${loggedUser.profileImage.startsWith('/') ? '' : '/'}${loggedUser.profileImage}`
     : null;
 
   return (

@@ -175,6 +175,7 @@ const loginUser = async (req, res) => {
         phone: user.phone,
         faculty: user.faculty,
         status: user.status,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -282,6 +283,7 @@ const updateUserProfile = async (req, res) => {
           phone: updatedUser.phone,
           faculty: updatedUser.faculty,
           status: updatedUser.status,
+          profileImage: updatedUser.profileImage,
         },
       });
     } else {
