@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getItems } from '../../../api/itemApi';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import ItemForm from '../components/ItemForm';
 
 const INITIAL_ITEMS = [
   { id: 1, name: "Borosilicate Beaker 500ml", cat: "Laboratory", brand: "Pyrex", cond: "new", listing: "sell", avail: "available", price: 48, qty: 24, desc: "High-quality borosilicate glass beaker. Heat resistant to 500°C with graduated markings.", color: "Clear Blue", date: "23 Mar 2026", bid: 1240, buyNow: 1650 },
@@ -13,18 +15,22 @@ const INITIAL_ITEMS = [
 
 export default function Myitems() {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showItemForm, setShowItemForm] = useState(false);
+  const [activeNav, setActiveNav] = useState('My Items');
 
   const navLinks = [
-    { name: 'Home', icon: <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />, badge: null },
+    { name: 'Home', icon: <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" />, badge: null },
     { name: 'My Items', icon: <><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" /></>, badge: null },
     { name: 'Orders', icon: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />, badge: { count: 7, color: 'bg-red-500' } },
     { name: 'Biddings', icon: <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />, badge: { count: 4, color: 'bg-orange-500' } },
-    { name: 'Messages', icon: <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />, badge: { count: 12, color: 'bg-violet-600' } },
+    { name: 'Messages', icon: <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />, badge: { count: 12, color: 'bg-indigo-btn' } },
     { name: 'Notifications', icon: <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />, badge: { count: 3, color: 'bg-indigo-500' } },
     { name: 'Map', icon: <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />, badge: null },
     { name: 'Contact', icon: <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />, badge: null },
   ];
-  const [items, setItems] = useState(INITIAL_ITEMS);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filterTab, setFilterTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [condFilter, setCondFilter] = useState('');
@@ -59,6 +65,21 @@ export default function Myitems() {
 
   useEffect(() => {
     let mounted = true;
+
+    // ⚡ INSTANT LOAD: Use cache for personal items
+    const cacheKey = 'univault_myitems_cache';
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error('MyItems cache error:', e);
+      }
+    }
     const load = async () => {
       try {
         const res = await getItems();
@@ -98,9 +119,14 @@ export default function Myitems() {
             image: it.item_image || it.image || null
           }));
           setItems(mapped);
+
+          // Update cache (metadata + URLs only, avoid quota issues)
+          localStorage.setItem(cacheKey, JSON.stringify(mapped.slice(0, 20)));
         }
       } catch (err) {
         console.error('Failed to load items from API', err);
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
     load();
@@ -204,58 +230,53 @@ export default function Myitems() {
   };
 
   return (
-    <div className="font-['Sora',sans-serif] bg-[#f0ebff] min-h-screen pt-[104px] relative scroll-smooth text-gray-900">
+    <div className="font-['Sora',sans-serif] bg-[#f0ebff] min-h-screen relative scroll-smooth text-gray-900">
       <div className="fixed inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(ellipse 900px 600px at -5% 10%, #7c3aed1e 0%, transparent 55%), radial-gradient(ellipse 600px 500px at 105% 90%, #5b21b61e 0%, transparent 55%)' }} />
       <div className="fixed inset-0 z-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#e4d9f725 1px, transparent 1px), linear-gradient(90deg, #e4d9f725 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-      {/* TOPBAR */}
-      <div className="fixed top-0 inset-x-0 h-[40px] bg-[#4f46e5] flex items-center justify-center z-[101] hidden sm:flex">
-        <div className="max-w-[1400px] w-full px-8 flex items-center justify-center gap-6">
-          <div className="flex items-center gap-2 text-[12px] font-medium text-white whitespace-nowrap">
-            <span className="text-[14px]">🏪</span> <strong>Campus Marketplace</strong> — Buy & sell glass items within your university
-          </div>
-          <div className="w-px h-[18px] bg-white/25 hidden md:block"></div>
-          <div className="hidden md:flex items-center gap-1.5 bg-white/15 border border-white/30 rounded-full px-3 py-1 text-[11px] font-semibold text-white">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_0_0_rgba(129,140,248,0.6)]"></span>
-            2,450 students active this week 🎓
-          </div>
-          <div className="w-px h-[18px] bg-white/25 hidden lg:block"></div>
-          <div className="hidden lg:block text-[12px] text-indigo-100 font-medium">Free listings for verified students <span className="text-indigo-300">✓</span></div>
+      {/* ANNOUNCEMENT BAR */}
+      <div className="bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#6366F1] text-white flex flex-wrap items-center justify-center gap-4 py-2 px-6 text-[12.5px] font-medium font-inter shadow-sm sticky top-0 z-[60]">
+        <div className="flex items-center gap-2">
+          <span className="text-base">🎓</span>
+          <span><strong>Campus Marketplace</strong> — Buy & sell glass items within your university</span>
+        </div>
+        <div className="hidden md:flex items-center gap-3">
+          <span className="opacity-40">|</span>
+          <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">Earn XP on every sale 🏆</span>
+          <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">2,450 students active this week</span>
         </div>
       </div>
 
       {/* NAVBAR */}
-      <nav className="fixed top-0 sm:top-[40px] inset-x-0 bg-white border-b border-gray-200 px-4 md:px-8 flex items-center h-[66px] z-50">
-        <div className="flex items-center gap-2.5 flex-shrink-0 mr-7">
-          <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-600 flex items-center justify-center font-[700] text-[13px] text-white">UV</div>
-          <div className="font-[700] text-xl text-gray-900 hidden lg:block tracking-tight text-indigo-950">UniVault</div>
+      <nav className="bg-white border-b border-gray-200 px-8 flex items-center h-[66px] sticky top-[33px] z-50">
+        {/* Menu Button */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="mr-5 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-btn transition-all group"
+          title="Open Menu"
+        >
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className="group-hover:scale-110 transition-transform">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div className="flex items-center gap-2.5 flex-shrink-0 mr-7 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white shadow-md shadow-indigo-100">UV</div>
+          <div className="font-syne font-bold text-xl text-gray-900">UniVault</div>
         </div>
 
-        <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-hide">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => link.name === 'Home' ? navigate('/') : null}
-              className={`relative flex items-center gap-1.5 py-2 px-3 rounded-lg text-[13.5px] transition-all whitespace-nowrap 
-                ${link.name === 'My Items' ? 'bg-purple-100 text-indigo-700 font-semibold' : 'text-gray-600 font-medium hover:bg-purple-50 hover:text-indigo-700'}`}
-            >
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={`w-[15px] h-[15px] flex-shrink-0 ${link.name === 'My Items' ? 'opacity-100' : 'opacity-70'}`}>
-                {link.icon}
-              </svg>
-              {link.name}
-              {link.badge && (
-                <span className={`absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none text-white animate-pulse shadow-sm ${link.badge.color}`}>
-                  {link.badge.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        <div className="flex-1"></div>
 
         <div className="flex items-center gap-2.5 ml-auto pl-4 border-l border-gray-200">
-          <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-indigo-800 to-indigo-400 flex items-center justify-center text-[13px] font-bold text-white cursor-pointer flex-shrink-0 transition hover:shadow-[0_0_0_3px_rgba(124,58,237,0.25)] ml-1" title="User Profile">
-            AK
-          </div>
+          <button
+            onClick={() => setShowItemForm(true)}
+            className="flex items-center gap-1.5 bg-gradient-to-br from-indigo-800 to-indigo-btn text-white border-none py-2 px-4 rounded-lg text-[13px] font-semibold shadow-[0_2px_10px_rgba(91,33,182,0.28)] transition-all hover:-translate-y-[1px] hover:shadow-[0_4px_16px_rgba(91,33,182,0.4)] whitespace-nowrap"
+          >
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span className="hidden sm:inline">Post Item</span>
+          </button>
         </div>
       </nav>
 
@@ -320,7 +341,12 @@ export default function Myitems() {
         </div>
 
         {/* ITEMS GRID */}
-        {filteredItems.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
+            <div className="w-10 h-10 border-4 border-violet-700 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-sm font-medium text-[#7c5aa6]">Gathering your items...</p>
+          </div>
+        ) : filteredItems.length === 0 ? (
           <div className="text-center py-16 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
             <svg viewBox="0 0 64 64" fill="none" className="w-16 h-16 mx-auto opacity-30 mb-4"><rect x="4" y="4" width="56" height="56" rx="10" stroke="#b8a0d4" strokeWidth="2" /><path d="M20 44l8-12 8 9 6-8 10 11" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><circle cx="22" cy="22" r="6" stroke="#b8a0d4" strokeWidth="2" /></svg>
             <h3 className="text-lg font-semibold text-purple-950 mb-1">No items found</h3>
@@ -563,12 +589,15 @@ export default function Myitems() {
         </div>
       )}
 
-      {/* TOAST NOTIFICATION */}
-      <div className={`fixed bottom-6 right-6 z-[500] bg-white border-[1.5px] border-green-400 rounded-xl px-5 py-3.5 shadow-[0_8px_24px_rgba(46,0,96,0.14)] flex items-center gap-2.5 font-medium text-[13.5px] text-green-800 transition-all duration-300 ease-[cubic-bezier(.22,.68,0,1.2)] ${toastMessage ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
-        <svg viewBox="0 0 16 16" fill="none" className="w-[18px] h-[18px] shrink-0"><circle cx="8" cy="8" r="7" fill="#22c55e" /><path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        {toastMessage}
-      </div>
-
+      {showItemForm && <ItemForm onClose={() => setShowItemForm(false)} onAddItem={(newItem) => { setShowItemForm(false); setItems([newItem, ...items]); }} />}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        navLinks={navLinks}
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        navigate={navigate}
+      />
     </div>
   );
 }

@@ -7,30 +7,41 @@ import { getItems } from '../../../api/itemApi';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState('Home');
   const [activeCat, setActiveCat] = useState('All Categories');
   const [searchTerm, setSearchTerm] = useState('');
   const [showItemForm, setShowItemForm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [items, setItems] = useState([
-    { emoji: '🎧', title: 'Sony WH-1000XM4', price: '$180', old: '$350', desc: 'Noise cancelling headphones in perfect condition. Used for one semester only.', cat: 'Electronics', catColor: 'bg-purple-50', badge: 'SALE', badgeColor: 'bg-red-100 text-red-600', stars: 5 },
-    { emoji: '📘', title: 'Calculus Early Trans.', price: '$45', old: '$120', desc: '8th edition James Stewart. Includes unused webassign access code inside.', cat: 'Books', catColor: 'bg-blue-50', badge: '', badgeColor: '', stars: 4 },
-    { emoji: '🪑', title: 'Ergonomic Desk Chair', price: '$65', old: '$110', desc: 'IKEA Markus chair, black mesh back. Must pick up from North Campus.', cat: 'Dorm', catColor: 'bg-green-50', badge: 'HOT', badgeColor: 'bg-yellow-100 text-amber-600', stars: 5 },
-    { emoji: '🔬', title: 'Chemistry Lab Kit', price: '$22', old: '$45', desc: 'Goggles, coat (size M) and lab notebook with 50 blank pages left.', cat: 'Lab', catColor: 'bg-teal-50', badge: '', badgeColor: '', stars: 4 },
-    { emoji: '🔌', title: 'Anker USB-C Hub', price: '$28', old: '$50', desc: '7-in-1 adapter with HDMI, SD card reader, and power delivery.', cat: 'Electronics', catColor: 'bg-amber-50', badge: 'NEW', badgeColor: 'bg-emerald-100 text-emerald-600', stars: 5 },
-    { emoji: '🚲', title: 'Commuter Bicycle', price: '$110', old: '$250', desc: 'Trek FX1 hybrid bike. recently tuned up. Comes with U-lock and lights.', cat: 'Vehicle', catColor: 'bg-yellow-50', badge: '', badgeColor: '', stars: 5 },
-  ]);
 
 
 
   // Fetch items from backend API (override local examples if available)
   useEffect(() => {
     let mounted = true;
+
+    // ⚡ INSTANT LOAD: Use cache if available
+    const cacheKey = 'univault_dashboard_cache';
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false); // Immediate display
+        }
+      } catch (e) {
+        console.error('Dashboard cache error:', e);
+      }
+    }
     const fetchItems = async () => {
       try {
         const res = await getItems();
-        const itemsArr = res?.data?.items || (Array.isArray(res?.data) ? res.data : []);
+        const rawData = res?.data?.items || res?.data;
+        const itemsArr = Array.isArray(rawData) ? rawData : [];
+        
         if (itemsArr.length > 0 && mounted) {
           const mapped = itemsArr.map((it) => ({
             _id: it._id,
@@ -52,9 +63,14 @@ const Dashboard = () => {
             rawItem: it
           }));
           setItems(mapped);
+          
+          // Speed up next visit: Cache top 20 items (metadata + URLs)
+          localStorage.setItem(cacheKey, JSON.stringify(mapped.slice(0, 20)));
         }
       } catch (err) {
         console.error('Failed to load items from API', err);
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
     fetchItems();
@@ -80,17 +96,19 @@ const Dashboard = () => {
     { name: 'Contact', icon: <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />, badge: null },
   ];
 
+  const safeItems = Array.isArray(items) ? items : [];
+
   const categories = [
-    { name: 'All Categories', count: items.length },
-    { name: 'Textbooks', count: items.filter(i => (i.cat || i.category) === 'Textbooks').length },
-    { name: 'Electronics', count: items.filter(i => (i.cat || i.category) === 'Electronics').length },
-    { name: 'Dorm Essentials', count: items.filter(i => (i.cat || i.category) === 'Dorm Essentials' || (i.cat || i.category) === 'Dorm').length },
-    { name: 'Lab Equipment', count: items.filter(i => (i.cat || i.category) === 'Lab Equipment' || (i.cat || i.category) === 'Lab').length },
-    { name: 'Notes & Study', count: items.filter(i => (i.cat || i.category) === 'Notes & Study').length },
-    { name: 'Services', count: items.filter(i => (i.cat || i.category) === 'Services').length },
+    { name: 'All Categories', count: safeItems.length },
+    { name: 'Textbooks', count: safeItems.filter(i => (i.cat || i.category) === 'Textbooks').length },
+    { name: 'Electronics', count: safeItems.filter(i => (i.cat || i.category) === 'Electronics').length },
+    { name: 'Dorm Essentials', count: safeItems.filter(i => (i.cat || i.category) === 'Dorm Essentials' || (i.cat || i.category) === 'Dorm').length },
+    { name: 'Lab Equipment', count: safeItems.filter(i => (i.cat || i.category) === 'Lab Equipment' || (i.cat || i.category) === 'Lab').length },
+    { name: 'Notes & Study', count: safeItems.filter(i => (i.cat || i.category) === 'Notes & Study').length },
+    { name: 'Services', count: safeItems.filter(i => (i.cat || i.category) === 'Services').length },
   ];
 
-  const filteredItems = items.filter(item => {
+  const filteredItems = safeItems.filter(item => {
     // 1. Category Filter
     const itemCat = (item.cat || item.category || '').toLowerCase();
     const active = activeCat.toLowerCase();
@@ -156,9 +174,6 @@ const Dashboard = () => {
             </svg>
             <span className="hidden sm:inline">Post Item</span>
           </button>
-          <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-indigo-800 to-indigo-400 flex items-center justify-center font-syne text-[13px] font-bold text-white cursor-pointer flex-shrink-0 transition hover:shadow-[0_0_0_3px_rgba(124,58,237,0.25)]" title="Academic Curator">
-            AC
-          </div>
         </div>
       </nav>
 
@@ -367,7 +382,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between py-3.5 px-5 bg-white border border-gray-200 border-b-0 rounded-t-xl">
               <div className="flex items-center">
                 <span className="font-syne text-[17px] font-bold text-gray-900">Recommended For You</span>
-                <span className="text-[13px] text-gray-500 ml-2.5">24 Items</span>
+                <span className="text-[13px] text-gray-500 ml-2.5">{filteredItems.length} Items</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <select className="py-1.5 px-3 pr-8 border border-gray-200 rounded-lg font-inter text-[13px] text-gray-700 bg-white outline-none cursor-pointer appearance-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}>
@@ -381,8 +396,19 @@ const Dashboard = () => {
 
             {/* PRODUCTS GRID */}
             <div className="bg-white border border-gray-200 rounded-b-xl p-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredItems.map((item, i) => (
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
+                   <div className="w-10 h-10 border-4 border-indigo-btn border-t-transparent rounded-full animate-spin mb-4"></div>
+                   <p className="text-sm font-medium text-gray-500">Discovering items for you...</p>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
+                   <span className="text-5xl mb-4">🔍</span>
+                   <p className="text-sm font-medium text-gray-500">No items found matching your search</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredItems.map((item, i) => (
                   <div key={i} className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-purple-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(91,33,182,0.1)] bg-white animate-fadeUp flex flex-col" style={{ animationDelay: `${i * 0.05}s` }}>
                     <div className={`h-[165px] relative overflow-hidden flex items-center justify-center text-[70px] ${item.catColor}`}>
                       <div className="absolute top-2.5 left-2.5 py-[3px] px-2.5 rounded-md text-[10px] font-bold tracking-[1px] uppercase text-gray-500 border border-gray-200 bg-white z-10">{item.cat}</div>
@@ -409,7 +435,8 @@ const Dashboard = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* PAGINATION */}

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
 import { getItemById } from '../../../api/itemApi';
+import Sidebar from '../components/Sidebar';
+import ItemForm from '../components/ItemForm';
 
 const ItemDetails = () => {
     useEffect(() => {
@@ -12,7 +14,9 @@ const ItemDetails = () => {
     const [item, setItem] = useState(null);
     const [ownerTrust, setOwnerTrust] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [showPaymentInfo, setShowPaymentInfo] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [showItemForm, setShowItemForm] = useState(false);
+    const [activeNav, setActiveNav] = useState('Home');
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -22,13 +26,11 @@ const ItemDetails = () => {
         const fetchItem = async () => {
             try {
                 setLoading(true);
-                // First check if we have item in location state
                 if (location.state?.item) {
                     setItem(location.state.item);
                     setLoading(false);
                 }
 
-                // If id is a valid MongoId (24 chars), fetch from API
                 if (id && id.length === 24) {
                     const response = await getItemById(id);
                     if (response.data) {
@@ -36,7 +38,6 @@ const ItemDetails = () => {
                         setOwnerTrust(response.data.ownerTrust);
                     }
                 } else if (!location.state?.item) {
-                    // Fallback mock data for testing if no state and invalid ID
                     setItem({
                         item_name: "Borosilicate Beaker 500ml",
                         category: "Laboratory",
@@ -48,9 +49,9 @@ const ItemDetails = () => {
                         quantity: 24,
                         price: 48.00,
                         description: "High-quality borosilicate glass beaker suitable for laboratory use. Heat resistant up to 500°C. Graduated markings for accurate measurement. Ideal for chemical mixing, heating, and storage applications in research and educational settings.",
-                        item_image: "https://p1.jm.vc/800/800/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1.jpg", // Sample beaker image
                         createdAt: new Date().toISOString(),
                         _id: "GLS-00124",
+                        item_image: "https://p1.jm.vc/800/800/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1/1.jpg",
                         payment_details: {
                             bank_name: "Commercial Bank of Ceylon",
                             account_name: "Arjun Karunarathna",
@@ -90,6 +91,22 @@ const ItemDetails = () => {
         });
     };
 
+    const navLinks = [
+        { name: 'Home', icon: <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" />, badge: null },
+        { name: 'My Items', icon: <><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" /></>, badge: null },
+        { name: 'Orders', icon: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />, badge: { count: 7, color: 'bg-red-500' } },
+        { name: 'Biddings', icon: <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />, badge: { count: 4, color: 'bg-orange-500' } },
+        { name: 'Messages', icon: <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />, badge: { count: 12, color: 'bg-indigo-btn' } },
+        { name: 'Notifications', icon: <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />, badge: { count: 3, color: 'bg-indigo-500' } },
+        { name: 'Map', icon: <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />, badge: null },
+        { name: 'Contact', icon: <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />, badge: null },
+    ];
+
+    const handleAddItem = (newItem) => {
+        setShowItemForm(false);
+        navigate('/marketplace', { state: { newItem } });
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#f0ebff]">
@@ -111,7 +128,52 @@ const ItemDetails = () => {
     const itemImageUrl = item.item_image ? (item.item_image.startsWith('http') ? item.item_image : `http://localhost:5000${item.item_image}`) : null;
 
     return (
-        <div className="id-page-root p-4 md:p-10 pt-24 bg-[#f0ebff] font-['Sora',sans-serif] min-h-screen relative overflow-hidden">
+        <div className="id-page-root font-['Sora',sans-serif] bg-[#f0ebff] min-h-screen relative overflow-hidden">
+            {/* ANNOUNCEMENT BAR */}
+            <div className="bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#6366F1] text-white flex flex-wrap items-center justify-center gap-4 py-2 px-6 text-[12.5px] font-medium font-inter shadow-sm sticky top-0 z-[60]">
+                <div className="flex items-center gap-2">
+                    <span className="text-base">🎓</span>
+                    <span><strong>Campus Marketplace</strong> — Buy & sell items within your university</span>
+                </div>
+                <div className="hidden md:flex items-center gap-3">
+                    <span className="opacity-40">|</span>
+                    <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">Earn XP on every sale 🏆</span>
+                    <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">2,450 students active this week</span>
+                </div>
+            </div>
+
+            {/* NAVBAR */}
+            <nav className="bg-white border-b border-gray-200 px-8 flex items-center h-[66px] sticky top-[33px] z-50">
+                <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="mr-5 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-btn transition-all group"
+                    title="Open Menu"
+                >
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className="group-hover:scale-110 transition-transform">
+                        <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
+                <div className="flex items-center gap-2.5 flex-shrink-0 mr-7 cursor-pointer" onClick={() => navigate('/')}>
+                    <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white shadow-md shadow-indigo-100">UV</div>
+                    <div className="font-syne font-bold text-xl text-gray-900">UniVault</div>
+                </div>
+
+                <div className="flex-1"></div>
+
+                <div className="flex items-center gap-2.5 ml-auto pl-4 border-l border-gray-200">
+                    <button
+                        onClick={() => setShowItemForm(true)}
+                        className="flex items-center gap-1.5 bg-gradient-to-br from-indigo-800 to-indigo-btn text-white border-none py-2 px-4 rounded-lg text-[13px] font-semibold shadow-[0_2px_10px_rgba(91,33,182,0.28)] transition-all hover:-translate-y-[1px] hover:shadow-[0_4px_16px_rgba(91,33,182,0.4)] whitespace-nowrap"
+                    >
+                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        <span className="hidden sm:inline">Post Item</span>
+                    </button>
+                </div>
+            </nav>
+
             {/* Background Decorations */}
             <div className="fixed inset-0 z-0 pointer-events-none opacity-20" style={{
                 backgroundImage: 'radial-gradient(circle at 10% 10%, #6d28d9 0%, transparent 40%), radial-gradient(circle at 90% 90%, #6d28d9 0%, transparent 40%)'
@@ -121,7 +183,7 @@ const ItemDetails = () => {
                 backgroundSize: '40px 40px'
             }}></div>
 
-            <div className="max-w-[1200px] mx-auto relative z-10">
+            <div className="max-w-[1200px] mx-auto relative z-10 p-4 md:p-10">
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-6 font-semibold">
                     <button onClick={() => navigate('/marketplace')} className="hover:text-[#6d28d9] transition-colors">Dashboard</button>
@@ -154,9 +216,7 @@ const ItemDetails = () => {
                                 </div>
                                 
                                 <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
-                                    {/* Subtle background glow for image */}
                                     <div className="absolute w-64 h-64 bg-[#6d28d908] rounded-full blur-3xl"></div>
-                                    
                                     {itemImageUrl ? (
                                         <img src={itemImageUrl} alt={item.item_name} className="max-h-[85%] max-w-[85%] object-contain relative z-10 drop-shadow-2xl transition-transform hover:scale-105 duration-500" />
                                     ) : (
@@ -171,7 +231,7 @@ const ItemDetails = () => {
                             {/* Info Section */}
                             <div className="p-8">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <span className="bg-[#f0f2ff] px-2.5 py-1 rounded-md text-[10px] font-bold text-[#4f46e5] border border-[#e0e7ff] uppercase">LABORATORY</span>
+                                    <span className="bg-[#f0f2ff] px-2.5 py-1 rounded-md text-[10px] font-bold text-[#4f46e5] border border-[#e0e7ff] uppercase">{item.category?.toUpperCase() || 'MARKETPLACE'}</span>
                                     <span className="text-xs font-mono text-gray-300">#GLS-00124</span>
                                 </div>
                                 <h1 className="text-3xl font-bold text-[#1f1b5b] mb-2 font-['Lora',serif]">{item.item_name}</h1>
@@ -184,9 +244,9 @@ const ItemDetails = () => {
                                 </div>
 
                                 <div className="flex gap-2 mb-8">
-                                    <span className="bg-[#dcfce7] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#166534] border border-[#bbf7d0]">NEW</span>
-                                    <span className="bg-[#f0f2ff] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#4f46e5] border border-[#e0e7ff]">FOR SALE</span>
-                                    <span className="bg-[#dcfce7] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#166534] border border-[#bbf7d0]">AVAILABLE</span>
+                                    <span className="bg-[#dcfce7] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#166534] border border-[#bbf7d0]">{item.item_condition || 'NEW'}</span>
+                                    <span className="bg-[#f0f2ff] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#4f46e5] border border-[#e0e7ff]">{item.item_type || 'FOR SALE'}</span>
+                                    <span className="bg-[#dcfce7] px-3 py-1.5 rounded-full text-[10px] font-bold text-[#166534] border border-[#bbf7d0]">{item.availability_status?.toUpperCase() || 'AVAILABLE'}</span>
                                 </div>
 
                                 <div className="bg-[#f8f9ff] border border-[#e4d9f7] rounded-2xl p-6 text-sm text-[#4b2c7a] leading-relaxed">
@@ -206,15 +266,15 @@ const ItemDetails = () => {
                             <div className="p-8">
                                 <div className="grid grid-cols-1 gap-y-4">
                                     {[
-                                        { label: 'Item ID', value: 'GLS-00124' },
+                                        { label: 'Item ID', value: item._id?.slice(-8).toUpperCase() || 'N/A' },
                                         { label: 'Item name', value: item.item_name },
                                         { label: 'Category', value: item.category },
-                                        { label: 'Brand', value: item.brand || 'Pyrex' },
-                                        { label: 'Color', value: item.colour || 'Clear Blue', color: true },
-                                        { label: 'Condition', value: 'NEW', badge: 'green' },
-                                        { label: 'Listing type', value: 'SELL', badge: 'purple' },
-                                        { label: 'Availability', value: 'AVAILABLE', badge: 'green' },
-                                        { label: 'Price', value: `$${Number(item.price || 0).toFixed(2)} USD`, highlight: true },
+                                        { label: 'Brand', value: item.brand || 'Generic' },
+                                        { label: 'Color', value: item.colour || 'N/A', color: true },
+                                        { label: 'Condition', value: item.item_condition, badge: 'green' },
+                                        { label: 'Listing type', value: item.item_type, badge: 'purple' },
+                                        { label: 'Availability', value: item.availability_status, badge: 'green' },
+                                        { label: 'Price', value: `LKR ${Number(item.price || 0).toLocaleString()}`, highlight: true },
                                         { label: 'Quantity', value: `${item.quantity || 1} units` },
                                         { label: 'Listed on', value: '23 Mar 2026' }
                                     ].map((row, i) => (
@@ -223,9 +283,9 @@ const ItemDetails = () => {
                                             <div className="flex items-center gap-2">
                                                 {row.color && <span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd]"></span>}
                                                 {row.badge === 'green' ? (
-                                                    <span className="bg-[#dcfce7] text-[#166534] text-[10px] font-bold px-2 py-0.5 rounded border border-[#bbf7d0]">{row.value}</span>
+                                                    <span className="bg-[#dcfce7] text-[#166534] text-[10px] font-bold px-2 py-0.5 rounded border border-[#bbf7d0] uppercase">{row.value}</span>
                                                 ) : row.badge === 'purple' ? (
-                                                    <span className="bg-[#f0f2ff] text-[#4f46e5] text-[10px] font-bold px-2 py-0.5 rounded border border-[#e0e7ff]">{row.value}</span>
+                                                    <span className="bg-[#f0f2ff] text-[#4f46e5] text-[10px] font-bold px-2 py-0.5 rounded border border-[#e0e7ff] uppercase">{row.value}</span>
                                                 ) : (
                                                     <span className={`text-[13px] font-bold ${row.highlight ? 'text-[#6366f1]' : 'text-[#1f1b5b]'}`}>{row.value}</span>
                                                 )}
@@ -239,16 +299,13 @@ const ItemDetails = () => {
 
                     {/* Right Side (4 cols) */}
                     <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
-                        
-                        {/* Bid Card */}
                         <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_15px_40px_rgb(99,102,241,0.08)] p-8">
                             <span className="text-[10px] font-black tracking-widest text-gray-400 uppercase mb-2 block">CURRENT BID</span>
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-4xl font-black text-[#1f1b5b]">$1,240</span>
-                                <span className="text-sm font-bold text-gray-300">USD</span>
+                                <span className="text-4xl font-black text-[#1f1b5b]">LKR {Number(item.price ? item.price * 0.8 : 0).toLocaleString()}</span>
                             </div>
 
-                            <button className="w-full bg-[#1a0040] text-white py-4 rounded-xl font-black hover:opacity-90 transition-all mb-4 shadow-xl shadow-[#1a00401a]">
+                            <button onClick={() => navigate('/delivery', { state: { item } })} className="w-full bg-[#1a0040] text-white py-4 rounded-xl font-black hover:opacity-90 transition-all mb-4 shadow-xl shadow-[#1a00401a]">
                                 Place Bid
                             </button>
 
@@ -258,8 +315,8 @@ const ItemDetails = () => {
                                 <div className="h-px bg-gray-100 flex-1"></div>
                             </div>
 
-                            <button className="w-full bg-white border-2 border-[#e0e7ff] text-[#6366f1] py-4 rounded-xl font-black hover:bg-[#f8f9ff] transition-all mb-6">
-                                Buy Now for $1,650
+                            <button onClick={() => navigate('/delivery', { state: { item } })} className="w-full bg-white border-2 border-[#e0e7ff] text-[#6366f1] py-4 rounded-xl font-black hover:bg-[#f8f9ff] transition-all mb-6">
+                                Buy Now for LKR {Number(item.price || 0).toLocaleString()}
                             </button>
 
                             <div className="flex justify-between items-center text-xs font-bold pt-4 border-t border-gray-50">
@@ -277,138 +334,105 @@ const ItemDetails = () => {
                             </div>
                         </div>
 
-                        {/* Owner Card */}
-                        <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                            <div className="p-6 border-b border-[#f0f2ff] flex items-center gap-3">
-                                <span className="text-[#4f46e5]">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                </span>
-                                <h3 className="text-xs font-black text-[#1f1b5b] tracking-widest uppercase">OWNER DETAILS</h3>
-                            </div>
-                            <div className="p-8">
+                        {owner && (
+                            <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-8 cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(`/user/${owner._id}`)}>
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#6366f1] to-[#a855f7] flex items-center justify-center text-white text-xl font-black shadow-lg">
-                                        AK
+                                        {owner.name?.slice(0, 2).toUpperCase()}
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-[#1f1b5b] text-lg">{owner?.name || 'Arjun Karunarathna'}</h4>
-                                        <p className="text-xs text-gray-400 font-medium mb-2">Private seller - Colombo, LK</p>
+                                        <h4 className="font-black text-[#1f1b5b] text-lg">{owner.name}</h4>
+                                        <p className="text-xs text-gray-400 font-medium mb-2">Private seller - {owner.location || 'Colombo, LK'}</p>
                                         <span className="bg-[#dcfce7] text-[#166534] text-[10px] font-bold px-2 py-1 rounded-full border border-[#bbf7d0] flex items-center gap-1 w-fit">
                                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                             Verified seller
                                         </span>
                                     </div>
                                 </div>
-
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#f8f9ff] transition-all cursor-pointer">
-                                        <div className="w-10 h-10 rounded-xl bg-[#f0f2ff] flex items-center justify-center text-[#6366f1]">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 uppercase text-[10px] font-bold text-gray-400">
+                                        Owner repressetation ledger →
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {item.payment_details && (
+                            <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-8">
+                                <div className="flex justify-between items-center mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[#4f46e5]">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                                        </span>
+                                        <h3 className="text-xs font-black text-[#1f1b5b] tracking-widest uppercase">BANK DETAILS</h3>
+                                    </div>
+                                    <button className="bg-[#f0f2ff] text-[#6366f1] text-[10px] font-bold px-3 py-1 rounded-full border border-[#e0e7ff] uppercase">Settlement info</button>
+                                </div>
+
+                                <div className="w-full h-44 bg-gradient-to-br from-[#1a0040] via-[#4c1d95] to-[#7c3aed] rounded-2xl p-6 text-white relative overflow-hidden mb-8 shadow-xl shadow-[#4c1d954d]">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/20 rounded-full -ml-12 -mb-12 blur-2xl"></div>
+                                    <div className="flex justify-between items-start mb-10 relative z-10">
+                                        <div className="w-10 h-8 bg-amber-200/20 rounded border border-amber-200/50 backdrop-blur-md"></div>
+                                        <div className="flex gap-0.5">
+                                            <div className="w-1 h-1 rounded-full bg-white"></div>
+                                            <div className="w-1 h-1 rounded-full bg-white"></div>
+                                            <div className="w-1 h-1 rounded-full bg-white opacity-40"></div>
                                         </div>
+                                    </div>
+                                    <div className="text-lg tracking-[0.2em] font-mono mb-4 relative z-10">•••• •••• •••• {item.payment_details.account_number?.slice(-4) || '4782'}</div>
+                                    <div className="flex justify-between items-end relative z-10">
                                         <div>
-                                            <p className="text-[10px] font-bold text-gray-300 uppercase">Email</p>
-                                            <p className="text-xs font-bold text-[#1f1b5b]">{owner?.email || 'arjun.k@glassworks.lk'}</p>
+                                            <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest mb-0.5">CARD HOLDER</p>
+                                            <p className="text-xs font-bold uppercase tracking-wide truncate">{item.payment_details.account_name || 'N/A'}</p>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#f8f9ff] transition-all cursor-pointer">
-                                        <div className="w-10 h-10 rounded-xl bg-[#f0f2ff] flex items-center justify-center text-[#6366f1]">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-gray-300 uppercase">Phone</p>
-                                            <p className="text-xs font-bold text-[#1f1b5b]">{owner?.phone || '+94 77 234 5678'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#f8f9ff] transition-all cursor-pointer">
-                                        <div className="w-10 h-10 rounded-xl bg-[#dcfce7] flex items-center justify-center text-[#166534]">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-14h.8A11 11 0 0 1 21 11.5z"></path></svg>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-gray-300 uppercase">WhatsApp</p>
-                                            <p className="text-xs font-bold text-[#1f1b5b]">{owner?.whatsapp || '+94 77 234 5678'}</p>
+                                        <div className="text-right">
+                                            <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest mb-0.5">Expires</p>
+                                            <p className="text-xs font-bold font-mono flex items-center gap-1 justify-end">08/11 <span className="w-3 h-3 rounded-full bg-[#ef4444] border-2 border-white/20"></span></p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Bank Card */}
-                        <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-8">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-[#4f46e5]">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                                    </span>
-                                    <h3 className="text-xs font-black text-[#1f1b5b] tracking-widest uppercase">BANK DETAILS</h3>
+                                <div className="space-y-4 mb-6">
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-gray-400 font-medium">Bank name</span>
+                                        <span className="text-[#1f1b5b] font-black">{item.payment_details.bank_name || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-gray-400 font-medium">Account name</span>
+                                        <span className="text-[#1f1b5b] font-black">{item.payment_details.account_name || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="text-gray-400 font-medium">Account no.</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[#1f1b5b] font-mono font-bold tracking-tighter">{item.payment_details.account_number || 'N/A'}</span>
+                                            <button onClick={() => handleCopy(item.payment_details.account_number, 'account')} className="bg-[#f8f9ff] px-2 py-1 rounded text-[10px] font-bold text-gray-400 hover:text-[#6366f1] transition-colors border border-gray-50">📋</button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <button className="bg-[#f0f2ff] text-[#6366f1] text-[10px] font-bold px-3 py-1 rounded-full border border-[#e0e7ff] uppercase">Payment info</button>
-                            </div>
 
-                            {/* Credit Card Visual */}
-                            <div className="w-full h-44 bg-gradient-to-br from-[#1a0040] via-[#4c1d95] to-[#7c3aed] rounded-2xl p-6 text-white relative overflow-hidden mb-8 shadow-xl shadow-[#4c1d954d]">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                                <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/20 rounded-full -ml-12 -mb-12 blur-2xl"></div>
-                                <div className="flex justify-between items-start mb-10 relative z-10">
-                                    <div className="w-10 h-8 bg-amber-200/20 rounded border border-amber-200/50 backdrop-blur-md"></div>
-                                    <div className="flex gap-0.5">
-                                        <div className="w-1 h-1 rounded-full bg-white"></div>
-                                        <div className="w-1 h-1 rounded-full bg-white"></div>
-                                        <div className="w-1 h-1 rounded-full bg-white opacity-40"></div>
-                                    </div>
-                                </div>
-                                <div className="text-lg tracking-[0.2em] font-mono mb-4 relative z-10">•••• •••• •••• 4782</div>
-                                <div className="flex justify-between items-end relative z-10">
-                                    <div>
-                                        <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest mb-0.5">CARD HOLDER</p>
-                                        <p className="text-xs font-bold uppercase tracking-wide truncate">{item.payment_details?.account_name || 'Arjun Karunarthna'}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[8px] font-bold text-white/50 uppercase tracking-widest mb-0.5">Expires</p>
-                                        <p className="text-xs font-bold font-mono flex items-center gap-1 justify-end">08/11 <span className="w-3 h-3 rounded-full bg-[#ef4444] border-2 border-white/20"></span></p>
-                                    </div>
+                                <div className="bg-[#fffbeb] border border-[#fef3c7] p-4 rounded-xl flex gap-3 items-start">
+                                    <span className="text-[#d97706] mt-0.5 text-sm font-bold">ⓘ</span>
+                                    <p className="text-[10px] text-[#92400e] leading-relaxed font-medium">
+                                        Bank details are confidential. Only share payment after verifying the seller's identity. UniVault is not responsible for third-party transactions.
+                                    </p>
                                 </div>
                             </div>
-
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-400 font-medium">Bank name</span>
-                                    <span className="text-[#1f1b5b] font-black text-right max-w-[150px]">{item.payment_details?.bank_name || 'Commercial Bank of Ceylon'}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-400 font-medium">Account name</span>
-                                    <span className="text-[#1f1b5b] font-black">{item.payment_details?.account_name || 'Arjun Karunarathna'}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-400 font-medium">Account no.</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[#1f1b5b] font-mono font-bold tracking-tighter">8801 2347 4782</span>
-                                        <button onClick={() => handleCopy(item.payment_details?.account_number, 'account')} className="bg-[#f8f9ff] px-2 py-1 rounded text-[10px] font-bold text-gray-400 hover:text-[#6366f1] transition-colors border border-gray-50">Copy</button>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-400 font-medium">Branch den</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[#1f1b5b] font-mono font-bold">010</span>
-                                        <button onClick={() => handleCopy(item.payment_details?.branch_code, 'branch')} className="bg-[#f8f9ff] px-2 py-1 rounded text-[10px] font-bold text-gray-400 hover:text-[#6366f1] transition-colors border border-gray-50">Copy</button>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-center text-xs">
-                                    <span className="text-gray-400 font-medium">Currency</span>
-                                    <span className="text-[#1f1b5b] font-black">LKR / USD</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-[#fffbeb] border border-[#fef3c7] p-4 rounded-xl flex gap-3 items-start">
-                                <span className="text-[#d97706] mt-0.5 text-sm font-bold">ⓘ</span>
-                                <p className="text-[10px] text-[#92400e] leading-relaxed font-medium">
-                                    Bank details are confidential. Only share payment after verifying the seller's identity. Glassworks is not responsible for third-party transactions.
-                                </p>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>
             
+            {showItemForm && <ItemForm onClose={() => setShowItemForm(false)} onAddItem={handleAddItem} />}
+            <Sidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+                navLinks={navLinks}
+                activeNav={activeNav}
+                setActiveNav={setActiveNav}
+                navigate={navigate}
+            />
+
             <style jsx>{`
                 @keyframes fadeInUp {
                     from { opacity: 0; transform: translateY(20px); }
