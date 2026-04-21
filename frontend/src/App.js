@@ -33,9 +33,12 @@ import FoundReturnedPage from "./features/userManagement/pages/FoundReturnedPage
 import LostReportsPage from "./features/userManagement/pages/LostReportsPage";
 import MyBidsPage from "./features/userManagement/pages/MyBidsPage";
 import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage";
+<<<<<<< HEAD
 import MyComplaintsPage from "./features/userManagement/pages/MyComplaintsPage";
 import AdminComplaintsPage from "./features/userManagement/pages/AdminComplaintsPage";
 import AdminBidsPage from "./features/userManagement/pages/AdminBidsPage";
+=======
+>>>>>>> develop
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
@@ -53,6 +56,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<AboutPage />} />
+<<<<<<< HEAD
         <Route path="/marketplace" element={<Dashboard />} />
         <Route path="/item/:id" element={<ItemDetails />} />
         <Route path="/myitems" element={<Myitems />} />
@@ -64,6 +68,96 @@ function App() {
         <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
         <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
         <Route path="/purchasedone" element={<PurchaseDone />} />
+=======
+        <Route
+          path="/marketplace"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/item/:id"
+          element={
+            <ProtectedRoute>
+              <ItemDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/myitems"
+          element={
+            <ProtectedRoute>
+              <Myitems />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrderPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bidding"
+          element={
+            <ProtectedRoute>
+              <Bid />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/massage"
+          element={
+            <ProtectedRoute>
+              <Massage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/delivery"
+          element={
+            <ProtectedRoute>
+              <Deliveryinfo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lost-items"
+          element={
+            <ProtectedRoute>
+              <LostFoundDashboard ads={ads} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/found-items"
+          element={
+            <ProtectedRoute>
+              <LostFoundDashboard ads={ads} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/report-item"
+          element={
+            <ProtectedRoute>
+              <LostFoundForm setAds={setAds} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/purchasedone"
+          element={
+            <ProtectedRoute>
+              <PurchaseDone />
+            </ProtectedRoute>
+          }
+        />
+>>>>>>> develop
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -156,6 +250,7 @@ function App() {
         />
 
         <Route
+<<<<<<< HEAD
           path="/profile/my-complaints"
           element={
             <ProtectedRoute>
@@ -165,6 +260,8 @@ function App() {
         />
 
         <Route
+=======
+>>>>>>> develop
           path="/admin/dashboard"
           element={
             <AdminRoute>
@@ -189,6 +286,7 @@ function App() {
             </AdminRoute>
           }
         />
+<<<<<<< HEAD
 
         <Route
           path="/admin/complaints"
@@ -207,6 +305,8 @@ function App() {
             </AdminRoute>
           }
         />
+=======
+>>>>>>> develop
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} />

@@ -5,7 +5,10 @@ const {
   createReview,
   getReviewsForUser,
   getMyGivenReviews,
+<<<<<<< HEAD
   getMyReceivedReviews,
+=======
+>>>>>>> develop
   getPendingReviews,
   deleteReview,
 } = require("../controllers/reviewController");
@@ -17,7 +20,10 @@ router.get("/user/:userId", getReviewsForUser);
 router.use(protect);
 router.post("/", createReview);
 router.get("/my-given", getMyGivenReviews);
+<<<<<<< HEAD
 router.get("/received", getMyReceivedReviews);
+=======
+>>>>>>> develop
 router.get("/pending", getPendingReviews);
 router.delete("/:id", deleteReview);
 

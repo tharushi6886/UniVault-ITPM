@@ -51,6 +51,34 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    profileImage: {
+      type: String,
+      default: "",
+    },
+    trustMetrics: {
+      disputedTransactions: { type: Number, default: 0 },
+      falseLostReports: { type: Number, default: 0 },
+      respondedCount: { type: Number, default: 0 },
+      totalMessagesReceived: { type: Number, default: 0 },
+      lastAuditDate: { type: Date, default: Date.now },
+    },
+    trustScore: {
+      type: Number,
+      default: 0,
+      index: true
+    },
+    trustLevel: {
+      type: String,
+      default: "Improving",
+      enum: ["Improving", "Standard", "Trusted", "Elite"]
+    },
+    reputationHistory: [
+      {
+        event: { type: String, required: true },
+        points: { type: Number, required: true },
+        date: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -68,4 +96,5 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-module.exports = mongoose.model("User", userSchema);
+
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);

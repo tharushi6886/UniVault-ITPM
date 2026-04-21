@@ -7,17 +7,28 @@ const {
   verifyOtp,
   loginUser,
   getUserProfile,
-  getUsers,
+  getPublicProfile,
   updateUserProfile,
-  deleteUser,
   changePassword,
-  blockUser,
+  getUsers,
   getUserById,
+  blockUser,
+  deleteUser,
+  unblockUser,
+  getAdminDashboardStats,
+  getPublicSystemStats,
+  getTrustLeaderboard,
+  forgotPassword,
+  resetPassword,
+  updateUserRole,
+  uploadAvatar,
+  getUserTrustByStudentId,
 } = require("../controllers/userController");
+
+const upload = require("../middlewares/uploadMiddleware");
 
 const { protect } = require("../middlewares/authMiddleware");
 const { authorizeRoles } = require("../middlewares/roleMiddleware");
-
 const {
   registerValidation,
   loginValidation,
@@ -35,20 +46,30 @@ const validate = (req, res, next) => {
   next();
 };
 
-// Auth routes
+// Auth
 router.post("/register", registerValidation, validate, registerUser);
 router.post("/verify-otp", verifyOtp);
 router.post("/login", loginValidation, validate, loginUser);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
-// User routes
+// User profile
 router.get("/profile", protect, getUserProfile);
+router.get("/public/:id", getPublicProfile);
+router.get("/public-stats", getPublicSystemStats);
+router.get("/leaderboard", getTrustLeaderboard);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
+router.get("/trust/:studentId", getUserTrustByStudentId);
+router.put("/profile/avatar", protect, upload.single("avatar"), uploadAvatar);
 
-// Admin routes
+// Admin
+router.get("/admin/dashboard-stats", protect, authorizeRoles("Admin"), getAdminDashboardStats);
 router.get("/", protect, authorizeRoles("Admin"), getUsers);
-router.put("/block/:id", protect, authorizeRoles("Admin"), blockUser);
-router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
 router.get("/:id", protect, authorizeRoles("Admin"), getUserById);
+router.put("/:id/block", protect, authorizeRoles("Admin"), blockUser);
+router.delete("/:id", protect, authorizeRoles("Admin"), deleteUser);
+router.put("/:id/unblock", protect, authorizeRoles("Admin"), unblockUser);
+router.put("/:id/role", protect, authorizeRoles("Admin"), updateUserRole);
 
 module.exports = router;

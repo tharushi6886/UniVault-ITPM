@@ -10,9 +10,12 @@ const itemRoutes = require("./routes/itemRoutes");
 const lostItemRoutes = require("./routes/lostItemRoutes");
 const foundItemRoutes = require("./routes/foundItemRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+<<<<<<< HEAD
 const complaintRoutes = require("./routes/complaintRoutes");
 const bidRoutes = require("./routes/bidRoutes");
 const bidItemRoutes = require("./routes/bidItemRoutes");
+=======
+>>>>>>> develop
 const adminRoutes = require("./routes/adminRoutes");
 const path = require("path");
 
@@ -30,9 +33,12 @@ app.use("/api/items", itemRoutes);
 app.use("/api/lost-items", lostItemRoutes);
 app.use("/api/found-items", foundItemRoutes);
 app.use("/api/reviews", reviewRoutes);
+<<<<<<< HEAD
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/bids", bidRoutes);
 app.use("/api/bid-items", bidItemRoutes);
+=======
+>>>>>>> develop
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

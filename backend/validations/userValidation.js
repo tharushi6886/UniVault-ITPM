@@ -3,7 +3,9 @@ const { check } = require("express-validator");
 const registerValidation = [
   check("name")
     .notEmpty()
-    .withMessage("Name is required"),
+    .withMessage("Name is required")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("Name can only contain letters and spaces"),
 
   check("email")
     .isEmail()
@@ -24,9 +26,25 @@ const registerValidation = [
     .withMessage("Password must be at least 6 characters"),
 
   check("phone")
-    .optional()
-    .isMobilePhone()
-    .withMessage("Invalid phone number"),
+    .optional({ checkFalsy: true })
+    .matches(/^(?:\+94|0)?7[0-9]{8}$/)
+    .withMessage("Phone number must be valid"),
+
+  check("faculty")
+    .optional({ checkFalsy: true })
+    .isLength({ min: 2 })
+    .withMessage("Faculty must be at least 2 characters"),
+
+  check("email").custom((value, { req }) => {
+    const emailPrefix = value.split("@")[0].toUpperCase(); // IT12345678
+    const studentId = req.body.studentId?.toUpperCase();
+
+    if (emailPrefix !== studentId) {
+      throw new Error("Student ID must match university email ID");
+    }
+
+    return true;
+  }),
 ];
 
 const loginValidation = [
