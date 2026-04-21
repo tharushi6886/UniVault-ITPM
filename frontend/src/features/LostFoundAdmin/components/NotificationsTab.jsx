@@ -1,4 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+const getRelativeTime = (timestamp, fallbackMsg) => {
+  const parseToMs = (val) => {
+    if (!val) return NaN;
+    if (typeof val === 'number') return val;
+    const parsed = Date.parse(val);
+    return isNaN(parsed) ? NaN : parsed;
+  };
+
+  let ts = parseToMs(timestamp);
+  if (isNaN(ts)) ts = parseToMs(fallbackMsg);
+  if (isNaN(ts)) return fallbackMsg || "Just now";
+
+  const diff = Date.now() - ts;
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+};
 
 export default function NotificationsTab({
   openNotifyModal,
@@ -11,6 +33,14 @@ export default function NotificationsTab({
   sendQuickNotif,
   notifications = [],
 }) {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    // Re-render every minute to update relative times
+    const timer = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="grid grid-cols-1 gap-[14px] xl:grid-cols-[1fr_320px]">
       <div className="glass-card p-4">
@@ -40,7 +70,9 @@ export default function NotificationsTab({
               </div>
 
               {n.unread && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-600" />}
-              <div className="shrink-0 whitespace-nowrap text-[11px] text-slate-400">{n.time}</div>
+              <div className="shrink-0 whitespace-nowrap text-[11px] text-slate-400">
+                {getRelativeTime(n.timestamp, n.time)}
+              </div>
             </div>
           )) : (
             <div className="py-12 text-center text-slate-400 font-medium italic text-sm">No notifications recorded in this session.</div>

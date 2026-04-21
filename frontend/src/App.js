@@ -60,6 +60,7 @@ function App() {
         <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
         <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
         <Route path="/purchasedone" element={<PurchaseDone />} />
+        {/* Messages route removed */}
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
