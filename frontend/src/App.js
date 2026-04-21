@@ -33,12 +33,6 @@ import FoundReturnedPage from "./features/userManagement/pages/FoundReturnedPage
 import LostReportsPage from "./features/userManagement/pages/LostReportsPage";
 import MyBidsPage from "./features/userManagement/pages/MyBidsPage";
 import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage";
-<<<<<<< HEAD
-import MyComplaintsPage from "./features/userManagement/pages/MyComplaintsPage";
-import AdminComplaintsPage from "./features/userManagement/pages/AdminComplaintsPage";
-import AdminBidsPage from "./features/userManagement/pages/AdminBidsPage";
-=======
->>>>>>> develop
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
@@ -56,19 +50,6 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<AboutPage />} />
-<<<<<<< HEAD
-        <Route path="/marketplace" element={<Dashboard />} />
-        <Route path="/item/:id" element={<ItemDetails />} />
-        <Route path="/myitems" element={<Myitems />} />
-        <Route path="/orders" element={<OrderPage />} />
-        <Route path="/bidding" element={<Bid />} />
-        <Route path="/massage" element={<Massage />} />
-        <Route path="/delivery" element={<Deliveryinfo />} />
-        <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
-        <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
-        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
-        <Route path="/purchasedone" element={<PurchaseDone />} />
-=======
         <Route
           path="/marketplace"
           element={
@@ -157,7 +138,6 @@ function App() {
             </ProtectedRoute>
           }
         />
->>>>>>> develop
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -250,18 +230,6 @@ function App() {
         />
 
         <Route
-<<<<<<< HEAD
-          path="/profile/my-complaints"
-          element={
-            <ProtectedRoute>
-              <MyComplaintsPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-=======
->>>>>>> develop
           path="/admin/dashboard"
           element={
             <AdminRoute>
@@ -286,27 +254,6 @@ function App() {
             </AdminRoute>
           }
         />
-<<<<<<< HEAD
-
-        <Route
-          path="/admin/complaints"
-          element={
-            <AdminRoute>
-              <AdminComplaintsPage />
-            </AdminRoute>
-          }
-        />
-
-        <Route
-          path="/admin/bids"
-          element={
-            <AdminRoute>
-              <AdminBidsPage />
-            </AdminRoute>
-          }
-        />
-=======
->>>>>>> develop
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} />
