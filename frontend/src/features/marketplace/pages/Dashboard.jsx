@@ -8,7 +8,8 @@ import { getItems } from '../../../api/itemApi';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('Home');
-  const [activeCat, setActiveCat] = useState('Textbooks');
+  const [activeCat, setActiveCat] = useState('All Categories');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showItemForm, setShowItemForm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -80,13 +81,35 @@ const Dashboard = () => {
   ];
 
   const categories = [
-    { name: 'Textbooks', count: 428 },
-    { name: 'Electronics', count: 156 },
-    { name: 'Dorm Essentials', count: 284 },
-    { name: 'Lab Equipment', count: 82 },
-    { name: 'Notes & Study', count: 519 },
-    { name: 'Services', count: 47 },
+    { name: 'All Categories', count: items.length },
+    { name: 'Textbooks', count: items.filter(i => (i.cat || i.category) === 'Textbooks').length },
+    { name: 'Electronics', count: items.filter(i => (i.cat || i.category) === 'Electronics').length },
+    { name: 'Dorm Essentials', count: items.filter(i => (i.cat || i.category) === 'Dorm Essentials' || (i.cat || i.category) === 'Dorm').length },
+    { name: 'Lab Equipment', count: items.filter(i => (i.cat || i.category) === 'Lab Equipment' || (i.cat || i.category) === 'Lab').length },
+    { name: 'Notes & Study', count: items.filter(i => (i.cat || i.category) === 'Notes & Study').length },
+    { name: 'Services', count: items.filter(i => (i.cat || i.category) === 'Services').length },
   ];
+
+  const filteredItems = items.filter(item => {
+    // 1. Category Filter
+    const itemCat = (item.cat || item.category || '').toLowerCase();
+    const active = activeCat.toLowerCase();
+    let matchesCat = activeCat === 'All Categories';
+    
+    if (!matchesCat) {
+      if (active.includes(itemCat) || itemCat.includes(active)) matchesCat = true;
+      if (active === 'dorm essentials' && itemCat === 'dorm') matchesCat = true;
+      if (active === 'lab equipment' && itemCat === 'lab') matchesCat = true;
+      if (itemCat === active) matchesCat = true;
+    }
+
+    // 2. Search Filter
+    const title = (item.title || item.item_name || '').toLowerCase();
+    const search = searchTerm.toLowerCase();
+    const matchesSearch = title.startsWith(search);
+
+    return matchesCat && matchesSearch;
+  });
 
   return (
     <div className="font-sans bg-surface text-gray-900 min-h-screen">
@@ -228,7 +251,13 @@ const Dashboard = () => {
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input type="text" placeholder="Search textbooks, electronics, dorm decor..." className="w-full py-2.5 pl-10 pr-3.5 border-2 border-gray-200 border-r-0 rounded-l-lg font-inter text-sm text-gray-700 outline-none bg-surface transition focus:border-indigo-400 focus:bg-white placeholder-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search textbooks, electronics, dorm decor..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full py-2.5 pl-10 pr-3.5 border-2 border-gray-200 border-r-0 rounded-l-lg font-inter text-sm text-gray-700 outline-none bg-surface transition focus:border-indigo-400 focus:bg-white placeholder-gray-400" 
+            />
           </div>
           <button className="py-2.5 px-6 bg-gradient-to-br from-indigo-800 to-indigo-btn text-white border-none rounded-r-lg font-inter text-sm font-semibold cursor-pointer transition hover:from-indigo-900 hover:to-indigo-700">Search</button>
         </div>
@@ -353,7 +382,7 @@ const Dashboard = () => {
             {/* PRODUCTS GRID */}
             <div className="bg-white border border-gray-200 rounded-b-xl p-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((item, i) => (
+                {filteredItems.map((item, i) => (
                   <div key={i} className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:border-purple-300 hover:-translate-y-1 hover:shadow-[0_10px_30px_rgba(91,33,182,0.1)] bg-white animate-fadeUp flex flex-col" style={{ animationDelay: `${i * 0.05}s` }}>
                     <div className={`h-[165px] relative overflow-hidden flex items-center justify-center text-[70px] ${item.catColor}`}>
                       <div className="absolute top-2.5 left-2.5 py-[3px] px-2.5 rounded-md text-[10px] font-bold tracking-[1px] uppercase text-gray-500 border border-gray-200 bg-white z-10">{item.cat}</div>
@@ -374,7 +403,7 @@ const Dashboard = () => {
                         {item.old && <span className="text-[13px] text-gray-400 line-through ml-1.5">{item.old}</span>}
                       </div>
                       <div className="text-[12.5px] text-gray-500 leading-[1.55] my-2 line-clamp-2 min-h-[38px]">{item.desc}</div>
-                      <button onClick={() => navigate(`/item/${i}`, { state: { item } })} className="mt-auto w-full py-2.5 bg-gradient-to-br from-indigo-800 to-indigo-btn text-white border-none rounded-lg text-[13.5px] font-semibold shadow-[0_2px_10px_rgba(91,33,182,0.25)] transition hover:from-indigo-900 hover:to-indigo-700 hover:shadow-[0_4px_16px_rgba(91,33,182,0.35)] hover:-translate-y-[1px]">
+                      <button onClick={() => navigate(item._id ? `/item/${item._id}` : `/item/${i}`, { state: { item } })} className="mt-auto w-full py-2.5 bg-gradient-to-br from-indigo-800 to-indigo-btn text-white border-none rounded-lg text-[13.5px] font-semibold shadow-[0_2px_10px_rgba(91,33,182,0.25)] transition hover:from-indigo-900 hover:to-indigo-700 hover:shadow-[0_4px_16px_rgba(91,33,182,0.35)] hover:-translate-y-[1px]">
                         Buy Now
                       </button>
                     </div>
