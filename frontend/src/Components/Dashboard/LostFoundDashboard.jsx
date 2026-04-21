@@ -6,9 +6,11 @@ import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getLostItemById, getFoundItemById } from '../../api/itemApi';
+import Navbar from '../../features/homepage/components/Navbar';
 
 
 export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTabChange }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -22,8 +24,8 @@ export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTab
     }
   }, []);
 
-  const userName = user?.name || "Jane Doe";
-  const userRole = user?.faculty ? `${user.faculty} student` : "Engineering · Year 3";
+  const userName = user?.name || "Student";
+  const userRole = user?.faculty ? `${user.faculty} student` : "IT student";
   const userInitials = userName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
   const handleSidebarClick = (e, tab, filter) => {
@@ -32,116 +34,123 @@ export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTab
     if (onFilterChange) onFilterChange(filter);
   };
 
+  const NavLink = ({ href, onClick, icon, label, badge, badgeColor = "bg-red-500", active }) => (
+    <a
+      href={href || "#"}
+      onClick={onClick}
+      className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium transition-colors no-underline ${
+        active ? 'text-[#4f46e5] bg-[#4f46e5]/10 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+      }`}
+    >
+      <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-80 shrink-0">
+        {icon}
+      </span>
+      {label}
+      {badge !== undefined && badge !== null && (
+        <span className={`text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white ${badgeColor}`}>
+          {badge}
+        </span>
+      )}
+    </a>
+  );
+
   return (
-    <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
-      <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
+    <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex shadow-sm">
+      {/* Logo */}
+      <div className="flex items-center gap-[12px] py-[22px] px-[20px]">
         <Logo textColor="text-[#1e1b4b]" size={36} />
       </div>
-      
-      <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">
-        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px]">Overview</div>
-        
-        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'All')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-semibold transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'All' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px]">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          </span>
-          Dashboard
-        </a>
-        
-        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'Lost')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'Lost' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          </span>
-          Lost Items
-          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">{counts?.lost || 0}</span>
-        </a>
-        
-        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'Found')} className={`flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium transition-colors no-underline ${activeTab === 'feed' && activeFilter === 'Found' ? 'text-[#4f46e5] bg-[#4f46e5]/10' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </span>
-          Found Items
-          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-green-500">{counts?.found || 0}</span>
-        </a>
-        
-        <a href="#" onClick={(e) => handleSidebarClick(e, 'feed', 'All')} className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>
-          </span>
-          AI Matches
-          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-blue-500">2</span>
-        </a>
-  
-        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">My Content</div>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          </span>
-          My Vault
-        </a>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-          </span>
-          Campus Map
-        </a>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          </span>
-          Notifications
-          <span className="text-[11px] font-bold py-[2px] px-[8px] rounded-full ml-auto text-white bg-red-500">5</span>
-        </a>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </span>
-          Messages
-        </a>
-  
-        <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[8px] mt-[16px]">More</div>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          </span>
-          Marketplace
-        </a>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
-          </span>
-          Bidding
-        </a>
-        
-        <a href="#" className="flex items-center gap-[12px] py-[10px] px-[12px] rounded-[10px] text-[14px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors no-underline">
-          <span className="flex items-center justify-center text-current w-[20px] h-[20px] opacity-70">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </span>
-          Settings
-        </a>
+
+      {/* Nav */}
+      <nav className="flex-1 py-[8px] px-[12px] overflow-y-auto flex flex-col gap-[2px]">
+
+        {/* OVERVIEW */}
+        <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[6px] mt-[4px]">Overview</div>
+
+        <NavLink
+          onClick={(e) => handleSidebarClick(e, 'feed', 'All')}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>}
+          label="Dashboard"
+          active={activeTab === 'feed' && activeFilter === 'All'}
+        />
+
+        <NavLink
+          onClick={(e) => handleSidebarClick(e, 'feed', 'Lost')}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>}
+          label="Lost Items"
+          badge={counts?.lost || 0}
+          badgeColor="bg-red-500"
+          active={activeTab === 'feed' && activeFilter === 'Lost'}
+        />
+
+        <NavLink
+          onClick={(e) => handleSidebarClick(e, 'feed', 'Found')}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+          label="Found Items"
+          badge={counts?.found || 0}
+          badgeColor="bg-green-500"
+          active={activeTab === 'feed' && activeFilter === 'Found'}
+        />
+
+        <NavLink
+          onClick={(e) => { e.preventDefault(); navigate('/'); }}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/><path d="M18.5 2.5l2 2L17 8"/></svg>}
+          label="AI Matches"
+          badge={2}
+          badgeColor="bg-blue-500"
+        />
+
+        {/* MY CONTENT */}
+        <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-gray-400 px-[12px] pb-[6px] mt-[14px]">My Content</div>
+
+        <NavLink
+          onClick={(e) => handleSidebarClick(e, 'vault', 'All')}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>}
+          label="My Vault"
+          active={activeTab === 'vault'}
+        />
+
+        <NavLink
+          onClick={(e) => { e.preventDefault(); }}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>}
+          label="Campus Map"
+        />
+
+        <NavLink
+          onClick={(e) => { e.preventDefault(); }}
+          icon={<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>}
+          label="Notifications"
+          badge={5}
+          badgeColor="bg-red-500"
+        />
+
+        {/* Messages link removed per request */}
+
+        {/* (Marketplace & Bidding removed) */}
+
       </nav>
-      
-      <div className="flex items-center gap-[12px] p-[20px] border-t border-gray-200 mt-auto">
-        <div className="w-[40px] h-[40px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[14px] text-white font-bold shrink-0">
+
+      {/* User footer */}
+      <div className="flex items-center gap-[12px] p-[16px] border-t border-gray-100">
+        <div className="w-[38px] h-[38px] rounded-full bg-[#4f46e5] flex items-center justify-center text-[13px] text-white font-bold shrink-0">
           {userInitials}
         </div>
         <div className="flex-1 overflow-hidden">
-          <div className="text-[14px] font-semibold text-gray-900 truncate">{userName}</div>
-          <div className="text-[12px] text-gray-500 truncate">{userRole}</div>
+          <div className="text-[13px] font-semibold text-gray-900 truncate">{userName}</div>
+          <div className="text-[11px] text-gray-500 truncate">{userRole}</div>
         </div>
-        <span className="text-[18px] text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-[4px]">⋯</span>
+        <span
+          className="text-[18px] text-gray-400 hover:text-gray-600 cursor-pointer transition-colors p-[4px]"
+          onClick={() => navigate('/profile')}
+        >⋯</span>
       </div>
     </aside>
   );
 };
 
+
 export const LostFoundBanner = ({ searchQuery, onSearchChange, onBack }) => {
+
   return (
     <section className="w-full overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0a2a] shadow-2xl mb-[20px]">
       <div className="relative min-h-[260px] w-full bg-[radial-gradient(circle_at_55%_45%,rgba(116,88,255,0.35),transparent_25%),radial-gradient(circle_at_75%_70%,rgba(150,80,255,0.22),transparent_22%),linear-gradient(135deg,#120f4d_0%,#1c1672_45%,#110d45_100%)]">
@@ -994,6 +1003,7 @@ export default function LostFoundDashboard({ ads }) {
 
   return (
     <div className="font-epilogue text-[#1e1b4b] bg-[radial-gradient(ellipse_80%_50%_at_10%_0%,rgba(196,181,253,0.55),transparent),radial-gradient(ellipse_70%_60%_at_90%_20%,rgba(147,197,253,0.45),transparent),radial-gradient(ellipse_60%_50%_at_50%_80%,rgba(167,139,250,0.3),transparent),radial-gradient(ellipse_50%_40%_at_80%_60%,rgba(191,219,254,0.35),transparent),radial-gradient(ellipse_40%_35%_at_20%_70%,rgba(216,180,254,0.25),transparent),linear-gradient(160deg,#f8f6ff_0%,#ede9fe_22%,#e8eeff_44%,#dbeafe_66%,#eff6ff_100%)] min-h-screen relative">
+      <Navbar />
       <Sidebar 
         counts={{ lost: lostCount, found: foundCount }} 
         activeFilter={boardFilter} 

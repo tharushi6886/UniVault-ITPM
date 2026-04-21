@@ -3,22 +3,20 @@ import AdminLayout from "../components/AdminLayout";
 import OverviewTab from "../components/OverviewTab";
 import AdsTab from "../components/AdsTab";
 import NotificationsTab from "../components/NotificationsTab";
-import MessagesTab from "../components/MessagesTab";
 import ConfirmModal from "../components/ConfirmModal";
 import NotifyModal from "../components/NotifyModal";
 import { getAllLostItems, getAllFoundItems, notifyStudent } from "../../../api/itemApi";
 import axios from "axios";
 import { toast } from "react-toastify";
+ 
 // CHAT_MSGS removed - handling via state
 
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState("overview");
     const [filterType, setFilterType] = useState("all");
     const [filterStatus, setFilterStatus] = useState("all");
-    const [threadSearch, setThreadSearch] = useState("");
-    const [activeThread, setActiveThread] = useState(null);
-    const [chatMsgs, setChatMsgs] = useState({});
-    const [threads, setThreads] = useState([]);
+    
+    
     const [notifications, setNotifications] = useState(() => {
         const saved = localStorage.getItem("adminNotifications");
         return saved ? JSON.parse(saved) : [];
@@ -27,11 +25,36 @@ export default function AdminDashboard() {
     useEffect(() => {
         localStorage.setItem("adminNotifications", JSON.stringify(notifications));
     }, [notifications]);
-    const [chatInput, setChatInput] = useState("");
+
+    // Migrate any legacy notifications that lack a proper ISO timestamp.
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem("adminNotifications");
+            if (!saved) return;
+            const arr = JSON.parse(saved);
+            let changed = false;
+            const migrated = arr.map((n) => {
+                if (n && n.timestamp) return n;
+                const parsed = Date.parse(n?.time);
+                if (!isNaN(parsed)) {
+                    changed = true;
+                    return { ...n, timestamp: new Date(parsed).toISOString() };
+                }
+                return n;
+            });
+            if (changed) {
+                setNotifications(migrated);
+                localStorage.setItem("adminNotifications", JSON.stringify(migrated));
+            }
+        } catch (e) {
+            // ignore migration errors
+        }
+    }, []);
+    
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [notifyOpen, setNotifyOpen] = useState(false);
     const [notifyInfo, setNotifyInfo] = useState({ name: "", item: null });
-    const [modalInfo, setModalInfo] = useState({ title: "", student: "", mode: "archive" });
+    const [modalInfo, setModalInfo] = useState({ id: "", title: "", student: "", mode: "archive", raw: null });
 
     const [allAds, setAllAds] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,6 +62,7 @@ export default function AdminDashboard() {
     const [quickType, setQuickType] = useState("⏰ Expiry Warning (2 days left)");
     const [quickMsg, setQuickMsg] = useState("");
     const [globalSearch, setGlobalSearch] = useState("");
+    
 
     const fetchRealItems = async () => {
         setLoading(true);
@@ -59,17 +83,17 @@ export default function AdminDashboard() {
                     id: item._id,
                     title: item.title || item.itemName || "Unnamed Item",
                     student: item.studentId || "Unknown Student",
-                    studentId: item.studentId, // Keep for actions
+                    studentId: item.studentId, 
                     img: item.imageUrl || "https://images.unsplash.com/photo-1544365558-35aa4af41144?w=500&h=360&fit=crop",
                     type: type,
                     category: item.category || "General",
                     status: item.status || "Active",
                     location: item.location || "Campus",
                     daysLeft: daysLeft,
-                    year: "Student", // Placeholder if not in item
+                    year: "Student",
                     phone: item.contactNumber || "N/A",
                     date: item.date,
-                    raw: item // Keep original data
+                    raw: item 
                 };
             };
 
@@ -89,18 +113,7 @@ export default function AdminDashboard() {
         fetchRealItems();
     }, []);
 
-    const sendChatMsg = () => {
-        if (!chatInput.trim()) return;
-
-        setChatMsgs((prev) => ({
-            ...prev,
-            [activeThread]: [
-                ...(prev[activeThread] || []),
-                { from: "admin", text: chatInput, time: "Now" },
-            ],
-        }));
-        setChatInput("");
-    };
+    
 
     const openArchiveModal = (title, student, mode) => {
         setModalInfo({ title, student, mode });
@@ -145,12 +158,15 @@ export default function AdminDashboard() {
             const res = await notifyStudent(notifyInfo.item.id, notifyInfo.item.type, msgPayload);
             
             // Add to the Notifications Tab history
+            const now = new Date();
             const newNotif = {
                 id: Date.now(),
                 student: notifyInfo.name,
                 item: notifyInfo.item.title,
                 type: notifyInfo.item.type,
-                time: "Just now",
+                // human-readable for fallback, ISO for machine parsing
+                time: now.toLocaleString(),
+                timestamp: now.toISOString(),
                 icon: "🔔",
                 iconBg: "bg-amber-100/80 text-amber-600",
                 title: `Notification sent to ${notifyInfo.name}`,
@@ -215,21 +231,7 @@ export default function AdminDashboard() {
                         notifications={notifications}
                     />
                 );
-            case "messages":
-                return (
-                    <MessagesTab
-                        activeThread={activeThread}
-                        setActiveThread={setActiveThread}
-                        threadSearch={threadSearch}
-                        setThreadSearch={setThreadSearch}
-                        chatMsgs={chatMsgs}
-                        chatInput={chatInput}
-                        setChatInput={setChatInput}
-                        sendChatMsg={sendChatMsg}
-                        openArchiveModal={openArchiveModal}
-                        threads={threads}
-                    />
-                );
+            
 
             default:
                 return <OverviewTab setActiveTab={setActiveTab} globalSearch={globalSearch} />;
@@ -238,17 +240,12 @@ export default function AdminDashboard() {
         activeTab,
         filterType,
         filterStatus,
-        activeThread,
-        threadSearch,
-        chatMsgs,
-        chatInput,
         quickStudent,
         quickType,
         quickMsg,
         globalSearch,
         allAds,
         loading,
-        threads,
         notifications,
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ]);

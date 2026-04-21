@@ -2,7 +2,6 @@ const tabs = [
   { key: "overview", label: "📊 Overview" },
   { key: "ads", label: "📋 Advertisements" },
   { key: "notifications", label: "🔔 Notifications" },
-  { key: "messages", label: "💬 Messages" },
 ];
 
 export default function PageTabs({ activeTab, setActiveTab }) {

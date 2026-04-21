@@ -113,7 +113,7 @@ exports.notifyUser = async (req, res) => {
 
     const subject = `UniVault: Update regarding your lost item "${item.title}"`;
     const emailBody = `
-Dear ${user.name},
+Dear ${user ? user.name : "Student"},
 
 This is an automated notification from the UniVault Admin Team regarding the item you reported as lost: "${item.title}".
 

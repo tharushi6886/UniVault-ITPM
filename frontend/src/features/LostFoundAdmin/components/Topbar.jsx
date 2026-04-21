@@ -3,7 +3,6 @@ const TAB_TITLES = {
   ads: "All Advertisements",
   expiring: "Expiring Soon",
   notifications: "Notifications",
-  messages: "Student Messages",
   archived: "Archived Posts",
 };
 
@@ -43,13 +42,7 @@ export default function Topbar({ activeTab, setActiveTab, globalSearch, setGloba
           <span className="pulse-soft absolute right-1.5 top-1.5 h-[7px] w-[7px] rounded-full border border-white bg-red-500" />
         </button>
 
-        <button
-          onClick={() => setActiveTab("messages")}
-          className="relative flex h-9 w-9 items-center justify-center rounded-[10px] border border-indigo-300/25 bg-slate-100/90 text-[15px] transition hover:border-indigo-400 hover:bg-indigo-100"
-        >
-          💬
-          <span className="pulse-soft absolute right-1.5 top-1.5 h-[7px] w-[7px] rounded-full border border-white bg-violet-500" />
-        </button>
+        
 
         <div className="hidden items-center gap-2 rounded-[11px] border border-indigo-500/20 bg-gradient-to-br from-indigo-600/10 to-indigo-500/5 px-3 py-2 text-[12px] font-bold text-indigo-600 md:flex">
           <span className="h-[7px] w-[7px] rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]" />

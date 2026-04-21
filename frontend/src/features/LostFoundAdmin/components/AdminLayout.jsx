@@ -10,7 +10,7 @@ export default function AdminLayout({
     children,
 }) {
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-[#f3f0ff]">
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
             <Topbar
                 activeTab={activeTab}

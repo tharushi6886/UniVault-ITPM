@@ -33,6 +33,9 @@ import FoundReturnedPage from "./features/userManagement/pages/FoundReturnedPage
 import LostReportsPage from "./features/userManagement/pages/LostReportsPage";
 import MyBidsPage from "./features/userManagement/pages/MyBidsPage";
 import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage";
+import MyComplaintsPage from "./features/userManagement/pages/MyComplaintsPage";
+import AdminComplaintsPage from "./features/userManagement/pages/AdminComplaintsPage";
+import AdminBidsPage from "./features/userManagement/pages/AdminBidsPage";
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
@@ -50,94 +53,18 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<AboutPage />} />
-        <Route
-          path="/marketplace"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/item/:id"
-          element={
-            <ProtectedRoute>
-              <ItemDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/myitems"
-          element={
-            <ProtectedRoute>
-              <Myitems />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/orders"
-          element={
-            <ProtectedRoute>
-              <OrderPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/bidding"
-          element={
-            <ProtectedRoute>
-              <Bid />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/massage"
-          element={
-            <ProtectedRoute>
-              <Massage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/delivery"
-          element={
-            <ProtectedRoute>
-              <Deliveryinfo />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/lost-items"
-          element={
-            <ProtectedRoute>
-              <LostFoundDashboard ads={ads} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/found-items"
-          element={
-            <ProtectedRoute>
-              <LostFoundDashboard ads={ads} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/report-item"
-          element={
-            <ProtectedRoute>
-              <LostFoundForm setAds={setAds} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/purchasedone"
-          element={
-            <ProtectedRoute>
-              <PurchaseDone />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/marketplace" element={<Dashboard />} />
+        <Route path="/item/:id" element={<ItemDetails />} />
+        <Route path="/myitems" element={<Myitems />} />
+        <Route path="/orders" element={<OrderPage />} />
+        <Route path="/bidding" element={<Bid />} />
+        <Route path="/massage" element={<Massage />} />
+        <Route path="/delivery" element={<Deliveryinfo />} />
+        <Route path="/lost-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/found-items" element={<LostFoundDashboard ads={ads} />} />
+        <Route path="/report-item" element={<LostFoundForm setAds={setAds} />} />
+        <Route path="/purchasedone" element={<PurchaseDone />} />
+        {/* Messages route removed */}
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -230,6 +157,15 @@ function App() {
         />
 
         <Route
+          path="/profile/my-complaints"
+          element={
+            <ProtectedRoute>
+              <MyComplaintsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/dashboard"
           element={
             <AdminRoute>
@@ -251,6 +187,24 @@ function App() {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/complaints"
+          element={
+            <AdminRoute>
+              <AdminComplaintsPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/bids"
+          element={
+            <AdminRoute>
+              <AdminBidsPage />
             </AdminRoute>
           }
         />
