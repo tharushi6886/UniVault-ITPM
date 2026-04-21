@@ -27,8 +27,33 @@ const ItemDetails = () => {
             try {
                 setLoading(true);
                 if (location.state?.item) {
-                    setItem(location.state.item);
-                    setLoading(false);
+                    const s = location.state.item;
+                    const raw = s.rawItem || s;
+                    
+                    // If it's a mapped dashboard item, convert back to raw format for the details page
+                    const mappedItem = {
+                        ...raw,
+                        _id: raw._id || s._id,
+                        item_name: raw.item_name || s.item_name || s.title || s.name,
+                        description: raw.description || s.description || s.desc,
+                        price: (raw.price && typeof raw.price === 'number') ? raw.price : (typeof s.price === 'string' ? parseFloat(s.price.replace('$', '').replace('LKR ', '').replace(',', '')) : s.price),
+                        item_condition: raw.item_condition || s.item_condition || s.badge || s.cond,
+                        category: raw.category || s.category || s.cat,
+                        brand: raw.brand || s.brand,
+                        colour: raw.colour || s.colour || s.color,
+                        quantity: raw.quantity || s.quantity || 1,
+                        item_image: raw.item_image || s.item_image || s.image,
+                        createdAt: raw.createdAt || s.createdAt || s.date,
+                        payment_details: raw.payment_details || s.payment_details || {
+                            bank_name: raw.bankName || s.bankName,
+                            account_name: raw.accHolder || s.accHolder || raw.account_name,
+                            account_number: raw.accNumber || s.accNumber || raw.account_number,
+                            branch_code: raw.branch || s.branch || raw.branch_code
+                        },
+                        userId: raw.userId || s.userId || raw.owner
+                    };
+                    setItem(mappedItem);
+                    if (!id) setLoading(false);
                 }
 
                 if (id && id.length === 24) {
@@ -125,7 +150,11 @@ const ItemDetails = () => {
     }
 
     const owner = item.userId;
-    const itemImageUrl = item.item_image ? (item.item_image.startsWith('http') ? item.item_image : `http://localhost:5000${item.item_image}`) : null;
+    const itemImageUrl = item.item_image ? (
+        item.item_image.startsWith('http') || item.item_image.startsWith('data:') 
+        ? item.item_image 
+        : `http://localhost:5000${item.item_image.startsWith('/') ? '' : '/'}${item.item_image}`
+    ) : null;
 
     return (
         <div className="id-page-root font-['Sora',sans-serif] bg-[#f0ebff] min-h-screen relative overflow-hidden">
@@ -209,7 +238,7 @@ const ItemDetails = () => {
                         {/* Main Item Card */}
                         <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                             {/* Image Section */}
-                            <div className="bg-[#f8f9ff] h-[400px] relative flex items-center justify-center p-10 border-b border-[#e4d9f7]">
+                            <div className="bg-[#f8f9ff] h-[450px] relative flex items-center justify-center border-b border-[#e4d9f7] overflow-hidden">
                                 <div className="absolute top-6 left-6 flex gap-2 z-20">
                                     <span className="bg-white px-3 py-1.5 rounded-md border border-[#e4d9f7] text-[10px] font-bold text-[#6d28d9] tracking-widest uppercase shadow-sm">{item.category}</span>
                                     <span className="bg-white px-3 py-1.5 rounded-md border border-[#e4d9f7] text-[10px] font-bold text-[#166534] tracking-widest uppercase shadow-sm">{item.item_condition || 'NEW'}</span>
@@ -218,7 +247,7 @@ const ItemDetails = () => {
                                 <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
                                     <div className="absolute w-64 h-64 bg-[#6d28d908] rounded-full blur-3xl"></div>
                                     {itemImageUrl ? (
-                                        <img src={itemImageUrl} alt={item.item_name} className="max-h-[85%] max-w-[85%] object-contain relative z-10 drop-shadow-2xl transition-transform hover:scale-105 duration-500" />
+                                        <img src={itemImageUrl} alt={item.item_name} className="w-full h-full object-cover relative z-10 transition-transform hover:scale-105 duration-700" />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center text-gray-300">
                                             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-4"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -232,7 +261,7 @@ const ItemDetails = () => {
                             <div className="p-8">
                                 <div className="flex items-center gap-3 mb-3">
                                     <span className="bg-[#f0f2ff] px-2.5 py-1 rounded-md text-[10px] font-bold text-[#4f46e5] border border-[#e0e7ff] uppercase">{item.category?.toUpperCase() || 'MARKETPLACE'}</span>
-                                    <span className="text-xs font-mono text-gray-300">#GLS-00124</span>
+                                    <span className="text-xs font-mono text-gray-300">#{item._id?.slice(-8).toUpperCase() || 'GLS-00124'}</span>
                                 </div>
                                 <h1 className="text-3xl font-bold text-[#1f1b5b] mb-2 font-['Lora',serif]">{item.item_name}</h1>
                                 <div className="flex items-center gap-1.5 text-sm mb-6">
@@ -240,7 +269,7 @@ const ItemDetails = () => {
                                     <span className="text-gray-200 mx-2">•</span>
                                     <span className="text-gray-400">Color:</span> <span className="font-bold text-[#1f1b5b]">{item.colour || 'Clear Blue'}</span>
                                     <span className="text-gray-200 mx-2">•</span>
-                                    <span className="text-gray-400">Added:</span> <span className="font-bold text-[#1f1b5b]">23 Mar 2026</span>
+                                    <span className="text-gray-400">Added:</span> <span className="font-bold text-[#1f1b5b]">{item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '23 Mar 2026'}</span>
                                 </div>
 
                                 <div className="flex gap-2 mb-8">
@@ -276,7 +305,7 @@ const ItemDetails = () => {
                                         { label: 'Availability', value: item.availability_status, badge: 'green' },
                                         { label: 'Price', value: `LKR ${Number(item.price || 0).toLocaleString()}`, highlight: true },
                                         { label: 'Quantity', value: `${item.quantity || 1} units` },
-                                        { label: 'Listed on', value: '23 Mar 2026' }
+                                        { label: 'Listed on', value: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '23 Mar 2026' }
                                     ].map((row, i) => (
                                         <div key={i} className="flex justify-between items-center pb-4 border-b border-[#f8f9ff] last:border-0 last:pb-0">
                                             <span className="text-xs font-medium text-gray-400">{row.label}</span>
