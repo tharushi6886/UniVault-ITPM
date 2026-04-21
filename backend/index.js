@@ -4,23 +4,36 @@ const express = require("express");
 const cors = require("cors");
 
 const dbConnection = require("./config/db");
-const path = require("path");
 const userRoutes = require("./routes/userRoutes");
-const bidRoutes = require("./routes/bidRoutes");
+const matchRoutes = require("./routes/matchRoutes");
 const itemRoutes = require("./routes/itemRoutes");
-const purchaseRoutes = require("./routes/purchaseRoutes");
+const lostItemRoutes = require("./routes/lostItemRoutes");
+const foundItemRoutes = require("./routes/foundItemRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const complaintRoutes = require("./routes/complaintRoutes");
+const bidRoutes = require("./routes/bidRoutes");
+const bidItemRoutes = require("./routes/bidItemRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const path = require("path");
 
 const app = express();
 
-app.use(cors({ origin: "*" }));
-app.use(express.json());
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 dbConnection();
 
 app.use("/api/users", userRoutes);
-app.use("/api/bids", bidRoutes);
+app.use("/api/matches", matchRoutes);
 app.use("/api/items", itemRoutes);
-app.use("/api/purchases", purchaseRoutes);
+app.use("/api/lost-items", lostItemRoutes);
+app.use("/api/found-items", foundItemRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/complaints", complaintRoutes);
+app.use("/api/bids", bidRoutes);
+app.use("/api/bid-items", bidItemRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -31,4 +44,16 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
+});
+
+// Error handler for payload too large and other body parsing errors
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error('Express error handler caught:', err.message || err);
+    if (err.type === 'entity.too.large') {
+      return res.status(413).json({ message: 'Payload too large. Reduce image size or upload via multipart/form-data.' });
+    }
+    return res.status(500).json({ message: err.message || 'Server error' });
+  }
+  next();
 });
