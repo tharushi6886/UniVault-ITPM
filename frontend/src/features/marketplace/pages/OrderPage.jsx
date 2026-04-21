@@ -175,8 +175,8 @@ const OrderPage = () => {
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
-      {/* PAGE */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        {/* PAGE */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {/* STATS */}
           <div className="grid grid-cols-5 gap-3">
             <div className="bg-white border border-purple-200 rounded-2xl p-4 hover:shadow-lg hover:-translate-y-0.5 transition">
@@ -244,15 +244,14 @@ const OrderPage = () => {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 transition ${
-                    filter === f
+                  className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 transition ${filter === f
                       ? f === 'all' ? 'bg-purple-100 text-purple-700 border border-purple-300'
                         : f === 'pending' ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                        : f === 'accepted' ? 'bg-green-100 text-green-800 border border-green-300'
-                        : f === 'completed' ? 'bg-teal-100 text-teal-800 border border-teal-300'
-                        : 'bg-red-100 text-red-800 border border-red-300'
+                          : f === 'accepted' ? 'bg-green-100 text-green-800 border border-green-300'
+                            : f === 'completed' ? 'bg-teal-100 text-teal-800 border border-teal-300'
+                              : 'bg-red-100 text-red-800 border border-red-300'
                       : 'bg-white text-gray-600 border border-purple-200 hover:bg-purple-50'
-                  }`}
+                    }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1)}
                   <span className="text-xs font-bold bg-gray-200 rounded-lg px-1">{counts[f]}</span>
