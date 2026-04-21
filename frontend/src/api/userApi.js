@@ -7,6 +7,8 @@ const API = axios.create({
 export const registerUser = (data) => API.post("/register", data);
 export const verifyOtp = (data) => API.post("/verify-otp", data);
 export const loginUser = (data) => API.post("/login", data);
+export const forgotPassword = (data) => API.post("/forgot-password", data);
+export const resetPassword = (data) => API.post("/reset-password", data);
 
 export const getProfile = (token) =>
   API.get("/profile", {
@@ -15,10 +17,23 @@ export const getProfile = (token) =>
     },
   });
 
+export const getPublicProfile = (userId) => API.get(`/public/${userId}`);
+export const getPublicSystemStats = () => API.get("/public-stats");
+export const getTrustLeaderboard = () => API.get("/leaderboard");
+export const getUserTrust = (studentId) => API.get(`/trust/${studentId}`);
+
 export const updateProfile = (token, data) =>
   API.put("/profile", data, {
     headers: {
       Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const uploadAvatar = (token, data) =>
+  API.put("/profile/avatar", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 
@@ -43,6 +58,13 @@ export const unblockUser = (token, userId) =>
     },
   });
 
+export const getUserById = (token, userId) =>
+  API.get(`/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const deleteUser = (token, userId) =>
   API.delete(`/${userId}`, {
     headers: {
@@ -52,6 +74,13 @@ export const deleteUser = (token, userId) =>
 
 export const getAdminDashboardStats = (token) =>
   API.get("/admin/dashboard-stats", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const updateUserRole = (token, userId, role) =>
+  API.put(`/${userId}/role`, { role }, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -35,8 +35,12 @@ module.exports = {
                 'node-float': 'node-float 0.8s cubic-bezier(0.22, 1, 0.36, 1) both',
                 badgePop: 'badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both',
                 badgeRing: 'badgeRing 1.8s ease-out infinite',
+                badgePulse: 'badgePulse 2s ease-out infinite',
+                'soft-pulse': 'soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 slideInL: 'slideInL 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
                 fadeUp: 'fadeUp 0.35s ease both',
+                'fade-in': 'fade-in 0.5s ease-out both',
+                'fade-in-up': 'fade-in-up 0.5s ease-out both',
             },
             keyframes: {
                 'blob-drift': {
@@ -60,12 +64,29 @@ module.exports = {
                     '0%': { transform: 'scale(1)', opacity: '0.5' },
                     '100%': { transform: 'scale(1.6)', opacity: '0' },
                 },
+                badgePulse: {
+                    '0%': { transform: 'scale(0.9)', opacity: '1' },
+                    '70%': { transform: 'scale(1.5)', opacity: '0' },
+                    '100%': { transform: 'scale(0.9)', opacity: '0' },
+                },
+                'soft-pulse': {
+                    '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(79, 70, 229, 0.4)' },
+                    '70%': { transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(79, 70, 229, 0)' },
+                },
                 slideInL: {
                     '0%': { opacity: '0', transform: 'translateX(-30px)' },
                     '100%': { opacity: '1', transform: 'translateX(0)' },
                 },
                 fadeUp: {
                     '0%': { opacity: '0', transform: 'translateY(12px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                'fade-in': {
+                    '0%': { opacity: '0' },
+                    '100%': { opacity: '1' },
+                },
+                'fade-in-up': {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 }
             }

@@ -1,26 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toppicImg from '../../../assets/toppic.jpg';
 import ItemForm from '../components/ItemForm';
+import Sidebar from '../components/Sidebar';
+import { getItems } from '../../../api/itemApi';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('Home');
   const [activeCat, setActiveCat] = useState('Textbooks');
   const [showItemForm, setShowItemForm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [items, setItems] = useState([
-    { emoji: '🎧', title: 'Sony WH-1000XM4', price: '$180', old: '$350', desc: 'Noise cancelling headphones in perfect condition. Used for one semester only.', cat: 'Electronics', catColor: 'bg-purple-50', badge: 'SALE', badgeColor: 'bg-red-100 text-red-600', stars: 5 },
-    { emoji: '📘', title: 'Calculus Early Trans.', price: '$45', old: '$120', desc: '8th edition James Stewart. Includes unused webassign access code inside.', cat: 'Books', catColor: 'bg-blue-50', badge: '', badgeColor: '', stars: 4 },
-    { emoji: '🪑', title: 'Ergonomic Desk Chair', price: '$65', old: '$110', desc: 'IKEA Markus chair, black mesh back. Must pick up from North Campus.', cat: 'Dorm', catColor: 'bg-green-50', badge: 'HOT', badgeColor: 'bg-yellow-100 text-amber-600', stars: 5 },
-    { emoji: '🔬', title: 'Chemistry Lab Kit', price: '$22', old: '$45', desc: 'Goggles, coat (size M) and lab notebook with 50 blank pages left.', cat: 'Lab', catColor: 'bg-teal-50', badge: '', badgeColor: '', stars: 4 },
-    { emoji: '🔌', title: 'Anker USB-C Hub', price: '$28', old: '$50', desc: '7-in-1 adapter with HDMI, SD card reader, and power delivery.', cat: 'Electronics', catColor: 'bg-amber-50', badge: 'NEW', badgeColor: 'bg-emerald-100 text-emerald-600', stars: 5 },
-    { emoji: '🚲', title: 'Commuter Bicycle', price: '$110', old: '$250', desc: 'Trek FX1 hybrid bike. recently tuned up. Comes with U-lock and lights.', cat: 'Vehicle', catColor: 'bg-yellow-50', badge: '', badgeColor: '', stars: 5 },
-  ]);
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem('univault_items');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse saved items", e);
+      }
+    }
+    return [
+      { emoji: '🎧', title: 'Sony WH-1000XM4', price: '$180', old: '$350', desc: 'Noise cancelling headphones in perfect condition. Used for one semester only.', cat: 'Electronics', catColor: 'bg-purple-50', badge: 'SALE', badgeColor: 'bg-red-100 text-red-600', stars: 5 },
+      { emoji: '📘', title: 'Calculus Early Trans.', price: '$45', old: '$120', desc: '8th edition James Stewart. Includes unused webassign access code inside.', cat: 'Books', catColor: 'bg-blue-50', badge: '', badgeColor: '', stars: 4 },
+      { emoji: '🪑', title: 'Ergonomic Desk Chair', price: '$65', old: '$110', desc: 'IKEA Markus chair, black mesh back. Must pick up from North Campus.', cat: 'Dorm', catColor: 'bg-green-50', badge: 'HOT', badgeColor: 'bg-yellow-100 text-amber-600', stars: 5 },
+      { emoji: '🔬', title: 'Chemistry Lab Kit', price: '$22', old: '$45', desc: 'Goggles, coat (size M) and lab notebook with 50 blank pages left.', cat: 'Lab', catColor: 'bg-teal-50', badge: '', badgeColor: '', stars: 4 },
+      { emoji: '🔌', title: 'Anker USB-C Hub', price: '$28', old: '$50', desc: '7-in-1 adapter with HDMI, SD card reader, and power delivery.', cat: 'Electronics', catColor: 'bg-amber-50', badge: 'NEW', badgeColor: 'bg-emerald-100 text-emerald-600', stars: 5 },
+      { emoji: '🚲', title: 'Commuter Bicycle', price: '$110', old: '$250', desc: 'Trek FX1 hybrid bike. recently tuned up. Comes with U-lock and lights.', cat: 'Vehicle', catColor: 'bg-yellow-50', badge: '', badgeColor: '', stars: 5 },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('univault_items', JSON.stringify(items));
+  }, [items]);
+
+  // Fetch items from backend API (override local examples if available)
+  useEffect(() => {
+    let mounted = true;
+    const fetchItems = async () => {
+      try {
+        const res = await getItems();
+        if (res && res.data && res.data.items && mounted) {
+          const mapped = res.data.items.map((it) => ({
+            emoji: it.emoji || '📦',
+            title: it.item_name || it.title || 'Untitled',
+            price: typeof it.price === 'number' ? `$${it.price}` : (it.price || ''),
+            old: it.old_price ? `$${it.old_price}` : '',
+            desc: it.description || '',
+            cat: it.category || 'Misc',
+            catColor: 'bg-white',
+            badge: '',
+            badgeColor: '',
+            stars: it.stars || 4,
+            image: it.image || it.image_url || undefined,
+          }));
+          setItems(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to load items from API', err);
+      }
+    };
+    fetchItems();
+    return () => { mounted = false; };
+  }, []);
 
   const handleAddItem = (newItem) => {
     setItems(prev => [newItem, ...prev]);
     setShowItemForm(false);
+    // Automatically navigate to the newly created item's details page
+    // We use index 0 as it's added to the front, and pass the item object in state
+    navigate('/item/0', { state: { item: newItem } });
   };
 
   const navLinks = [
@@ -46,48 +96,37 @@ const Dashboard = () => {
   return (
     <div className="font-sans bg-surface text-gray-900 min-h-screen">
       {/* ANNOUNCEMENT BAR */}
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-btn text-white flex flex-wrap items-center justify-center gap-5 py-2.5 px-6 text-[12.5px] font-medium font-inter">
-        <span>🛍️ <strong>Campus Marketplace</strong> — Buy & sell items within your university</span>
-        <span className="opacity-40 hidden sm:inline">|</span>
-        <span className="bg-white/20 border border-white/30 rounded-full py-[3px] px-3 text-xs font-semibold">2,450 students active this week 🎓</span>
-        <span className="opacity-40 hidden md:inline">|</span>
-        <span className="hidden md:inline">Free listings for verified students ✓</span>
+      <div className="bg-gradient-to-r from-[#6366F1] via-[#8B5CF6] to-[#6366F1] text-white flex flex-wrap items-center justify-center gap-4 py-2 px-6 text-[12.5px] font-medium font-inter shadow-sm">
+        <div className="flex items-center gap-2">
+          <span className="text-base">🎓</span>
+          <span><strong>Campus Marketplace</strong> — Buy & sell items within your university</span>
+        </div>
+        <div className="hidden md:flex items-center gap-3">
+          <span className="opacity-40">|</span>
+          <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">Earn XP on every sale 🏆</span>
+          <span className="bg-white/10 border border-white/20 rounded-full py-0.5 px-3 text-[11px] font-semibold whitespace-nowrap">2,450 students active this week</span>
+        </div>
       </div>
 
       {/* NAVBAR */}
       <nav className="bg-white border-b border-gray-200 px-8 flex items-center h-[66px] sticky top-0 z-50">
+        {/* Menu Button */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="mr-5 p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-btn transition-all group"
+          title="Open Menu"
+        >
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className="group-hover:scale-110 transition-transform">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         <div className="flex items-center gap-2.5 flex-shrink-0 mr-7 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white">UV</div>
-          <div className="font-syne font-bold text-xl text-gray-900 hidden lg:block">UniVault</div>
+          <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white shadow-md shadow-indigo-100">UV</div>
+          <div className="font-syne font-bold text-xl text-gray-900">UniVault</div>
         </div>
 
-        <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-hide">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => {
-                if (link.name === 'My Items') navigate('/myitems');
-                else if (link.name === 'Orders') navigate('/orders');
-                else if (link.name === 'Biddings') navigate('/bidding');
-                else if (link.name === 'Messages') navigate('/massage');
-                else if (link.name === 'Home') navigate('/');
-                else setActiveNav(link.name);
-              }}
-              className={`relative flex items-center gap-1.5 py-2 px-3 rounded-lg text-[13.5px] transition-all whitespace-nowrap 
-                ${activeNav === link.name ? 'bg-purple-100 text-indigo-btn font-semibold nav-link active' : 'text-gray-600 font-medium hover:bg-purple-50 hover:text-indigo-btn nav-link'}`}
-            >
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className={`w-[15px] h-[15px] flex-shrink-0 ${activeNav === link.name ? 'opacity-100' : 'opacity-70'}`}>
-                {link.icon}
-              </svg>
-              {link.name}
-              {link.badge && (
-                <span className={`absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none text-white animate-badgePop pulse ${link.badge.color}`}>
-                  {link.badge.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        <div className="flex-1"></div>
 
         <div className="flex items-center gap-2.5 ml-auto pl-4 border-l border-gray-200">
           <button
@@ -289,7 +328,7 @@ const Dashboard = () => {
                 <div className="text-[14px] text-white/65 mb-5 max-w-[300px]">
                   Get everything you need for the new semester up to 40% off retail prices.
                 </div>
-                <button className="inline-flex items-center gap-2 bg-green-500 text-white py-3 px-6 rounded-xl border-none text-sm font-bold shadow-[0_4px_16px_rgba(34,197,94,0.4)] cursor-pointer transition hover:bg-green-600 hover:-translate-y-[1px]">
+                <button className="inline-flex items-center gap-2 bg-[#4f46e5] text-white py-3 px-6 rounded-xl border-none text-sm font-bold shadow-[0_4px_16px_rgba(79,70,229,0.4)] cursor-pointer transition hover:bg-[#4338ca] hover:-translate-y-[1px]">
                   Shop Deals Now
                 </button>
               </div>
@@ -372,12 +411,12 @@ const Dashboard = () => {
         {/* NOTIFY BANNER */}
         <div className="bg-gradient-to-br from-[#1E1B4B] via-[#3730A3] to-[#4338CA] rounded-2xl py-12 px-14 flex flex-col md:flex-row items-center justify-between gap-8 mb-16">
           <div className="text-center md:text-left">
-            <h2 className="font-syne text-[32px] font-extrabold text-white leading-[1.2] mb-2">Can't find <span className="text-green-500">it?</span></h2>
+            <h2 className="font-syne text-[32px] font-extrabold text-white leading-[1.2] mb-2">Can't find <span className="text-[#818cf8]">it?</span></h2>
             <p className="text-sm text-white/60">Set an alert and we'll notify you when someone posts a matching item.</p>
           </div>
           <div className="flex flex-shrink-0 w-full md:w-auto">
             <input type="text" placeholder="e.g. iPad Pro 11-inch" className="py-3 px-5 border-none rounded-l-xl text-sm text-gray-700 w-full md:w-[300px] outline-none bg-white/95 placeholder-gray-400" />
-            <button className="py-3 px-6 border-none bg-green-500 text-white rounded-r-xl text-sm font-bold cursor-pointer transition hover:bg-green-600 whitespace-nowrap">Create Alert</button>
+            <button className="py-3 px-6 border-none bg-[#4f46e5] text-white rounded-r-xl text-sm font-bold cursor-pointer transition hover:bg-[#4338ca] whitespace-nowrap">Create Alert</button>
           </div>
         </div>
       </div>
@@ -434,6 +473,15 @@ const Dashboard = () => {
       </footer>
 
       {showItemForm && <ItemForm onClose={() => setShowItemForm(false)} onAddItem={handleAddItem} />}
+      {/* Sidebar Navigation */}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        navLinks={navLinks}
+        activeNav={activeNav}
+        setActiveNav={setActiveNav}
+        navigate={navigate}
+      />
     </div>
   );
 };

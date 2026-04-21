@@ -55,7 +55,22 @@ export default function Deliveryinfo() {
 
   return (
     <div className="font-['Plus_Jakarta_Sans',sans-serif] bg-[#F2F4F7] min-h-screen flex items-center justify-center p-6 text-[#111827]">
-      <div className="flex flex-col md:flex-row gap-5 items-start w-full max-w-[940px] animate-[fadeUp_0.4s_cubic-bezier(0.34,1.1,0.64,1)_both]">
+      <div className="flex flex-col gap-4 w-full max-w-[940px] animate-[fadeUp_0.4s_cubic-bezier(0.34,1.1,0.64,1)_both]">
+        
+        {/* Topbar / Back button */}
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-1.5 text-[13px] font-medium text-[#4b2c7a] bg-white border-[1.5px] border-[#cfbfed] rounded-lg px-3.5 py-[7px] cursor-pointer transition-all shadow-[0_2px_8px_rgba(46,0,96,0.07)] hover:bg-[#f5f3ff] hover:border-[#a78bfa] hover:text-[#6d28d9]"
+          >
+            <svg viewBox="0 0 14 14" fill="none" className="w-3.5 h-3.5">
+              <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back to item
+          </button>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-5 items-start w-full">
         
         {/* FORM CARD */}
         <div className="bg-white rounded-[20px] border-[1.5px] border-[#E4E8EF] shadow-[0_8px_40px_rgba(0,0,0,0.08)] flex-1 overflow-hidden">
@@ -234,6 +249,7 @@ export default function Deliveryinfo() {
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   );
