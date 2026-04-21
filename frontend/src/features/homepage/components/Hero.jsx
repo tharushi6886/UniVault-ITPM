@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
 import { motion, AnimatePresence } from 'framer-motion';
+>>>>>>> develop
 import { getPublicSystemStats } from '../../../api/userApi';
 
 const NODE_DATA = [
@@ -27,7 +30,10 @@ const Hero = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('lost-and-found');
+<<<<<<< HEAD
+=======
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+>>>>>>> develop
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -165,6 +171,52 @@ const Hero = () => {
                     The ultimate campus platform for item recovery and student marketplace. <span className="text-cyan-400 font-semibold">Secure, verified, and community-driven.</span>
                 </p>
 
+<<<<<<< HEAD
+                <div className="max-w-[560px] mx-auto mb-[34px]">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/82 backdrop-blur-2xl border border-white/85 rounded-2xl p-2 shadow-[0_18px_40px_rgba(42,76,109,0.18)] focus-within:border-cyan-300 focus-within:shadow-[0_14px_32px_rgba(125,211,252,0.22)] transition-all duration-300">
+                        <select
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value)}
+                            className="bg-transparent text-slate-700 border-none outline-none font-epilogue text-sm font-semibold pl-3 pr-8 py-3 cursor-pointer appearance-none rounded-xl hover:bg-sky-50/80"
+                            style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px top 50%', backgroundSize: '10px auto' }}
+                        >
+                            <option value="lost-and-found" className="text-slate-800">Lost &amp; Found</option>
+                            <option value="marketplace" className="text-slate-800">Marketplace</option>
+                        </select>
+
+                        <div className="hidden sm:block w-[1px] h-8 bg-slate-200 mx-1"></div>
+
+                        <input
+                            type="text"
+                            placeholder={searchType === 'marketplace' ? 'Search for textbooks, laptops...' : 'Search for keys, IDs, phones...'}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSearch();
+                            }}
+                            className="bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 font-epilogue text-sm w-full py-3 px-2"
+                        />
+
+                        <button
+                            onClick={handleSearch}
+                            className="bg-gradient-to-r from-[#00D9FF] to-[#34D399] text-[#0F0A2E] p-3 rounded-xl hover:-translate-y-0.5 transition-transform shadow-[0_8px_22px_rgba(0,217,255,0.3)] w-full sm:w-auto flex items-center justify-center shrink-0"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex gap-3 justify-center flex-wrap">
+                    <Link to="/report-item" className="flex items-center gap-2 bg-[#8B5CF6] text-white font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(139,92,246,0.3)] transition-all duration-300 hover:bg-[#7e56db] hover:-translate-y-1 no-underline">
+                        Report Lost Item
+                    </Link>
+                    <Link to="/marketplace" className="flex items-center gap-2 bg-transparent backdrop-blur-xl border border-[#00D9FF]/40 text-[#00D9FF] font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(0,217,255,0.1)] transition-all duration-300 hover:border-[#00D9FF] hover:bg-white/5 hover:-translate-y-1 no-underline">
+                        Explore Marketplace
+                    </Link>
+                </div>
+=======
                 <div className="max-w-[640px] mx-auto mb-[34px] relative group">
                     {/* Mode Toggle */}
                     <div className="flex justify-center mb-5">
@@ -259,6 +311,7 @@ const Hero = () => {
                     </AnimatePresence>
                 </div>
 
+>>>>>>> develop
             </div>
 
             <div className="relative w-full h-[300px] mt-[60px] shrink-0" ref={stageRef}>
@@ -285,6 +338,24 @@ const Hero = () => {
                 ))}
             </div>
 
+<<<<<<< HEAD
+            <div className="flex relative z-30 bg-[#1A103C]/80 backdrop-blur-xl border border-white/10 rounded-[20px] py-[26px] px-10 shadow-[0_26px_60px_rgba(0,0,0,0.5)] mt-10 mx-auto w-fit hidden md:flex hover:border-[#00D9FF]/30 transition-colors">
+                <div className="px-9 text-center border-r border-white/10">
+                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.itemsRecovered}<span className="text-[#00D9FF]">+</span></div>
+                    <div className="text-xs text-white/50 mt-1 font-epilogue">Items Recovered</div>
+                </div>
+                <div className="px-9 text-center border-r border-white/10">
+                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.studentsCount}<span className="text-[#8B5CF6]">+</span></div>
+                    <div className="text-xs text-white/50 mt-1 font-epilogue">Students</div>
+                </div>
+                <div className="px-9 text-center border-r border-white/10">
+                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.marketplaceListingsCount}<span className="text-[#34D399]">+</span></div>
+                    <div className="text-xs text-white/50 mt-1 font-epilogue">Active Listings</div>
+                </div>
+                <div className="px-9 text-center">
+                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.activeReports}<span className="text-[#EC4899]">+</span></div>
+                    <div className="text-xs text-white/50 mt-1 font-epilogue">Reports</div>
+=======
             <div className="flex flex-col items-center gap-10 mt-10 relative z-30 w-full px-4">
                 <div className="flex bg-[#1A103C]/85 backdrop-blur-2xl border border-white/15 rounded-[24px] py-[30px] px-8 shadow-[0_30px_70px_rgba(0,0,0,0.6)] w-full max-w-[1020px] mx-auto hidden md:flex hover:border-[#00D9FF]/40 transition-all duration-500 group/stats">
                     {stats.itemsRecovered > 0 && (
@@ -314,6 +385,7 @@ const Hero = () => {
                     <Link to="/marketplace" className="flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-epilogue text-[14px] font-bold py-[14px] px-8 rounded-2xl shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 no-underline">
                         <span className="text-lg">🛍️</span> Explore Marketplace
                     </Link>
+>>>>>>> develop
                 </div>
             </div>
         </section>

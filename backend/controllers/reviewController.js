@@ -125,6 +125,49 @@ const getMyGivenReviews = async (req, res) => {
 // GET /api/reviews/pending
 const getPendingReviews = async (req, res) => {
   try {
+<<<<<<< HEAD
+    const currentUser = req.user;
+
+    // Find verified L&F matches involving this user's studentId
+    const matches = await Match.find({ status: "verified" })
+      .populate("lostItemId")
+      .populate("foundItemId");
+
+    const involvedMatches = matches.filter((m) => {
+      const lostSid = m.lostItemId?.studentId;
+      const foundSid = m.foundItemId?.studentId;
+      return lostSid === currentUser.studentId || foundSid === currentUser.studentId;
+    });
+
+    // Find which matches the user has already reviewed
+    const reviewedInteractionIds = new Set(
+      (
+        await Review.find({
+          reviewer: currentUser._id,
+          linkedInteractionId: { $in: involvedMatches.map((m) => m._id.toString()) },
+          isDeleted: false,
+        }).select("linkedInteractionId")
+      ).map((r) => r.linkedInteractionId)
+    );
+
+    const pending = involvedMatches
+      .filter((m) => !reviewedInteractionIds.has(m._id.toString()))
+      .map((m) => {
+        const isLostParty = m.lostItemId?.studentId === currentUser.studentId;
+        const otherItem = isLostParty ? m.foundItemId : m.lostItemId;
+        return {
+          matchId: m._id,
+          interactionType: "lost_found",
+          otherPartyStudentId: otherItem?.studentId || null,
+          itemName: otherItem?.itemName || otherItem?.title || "Item",
+          resolvedAt: m.updatedAt,
+        };
+      });
+
+    res.status(200).json({ pending });
+  } catch (error) {
+    console.error("getPendingReviews error:", error);
+=======
     // Find verified matches involving this user
     // (This is a simplified lookup for the sake of the dashboard)
     const matches = await Match.find({ status: "verified" })
@@ -137,6 +180,7 @@ const getPendingReviews = async (req, res) => {
     // while we wait for more robust interaction models (Orders/Sales)
     res.status(200).json({ pending: [] });
   } catch (error) {
+>>>>>>> develop
     res.status(500).json({ message: "Error fetching pending reviews" });
   }
 };
@@ -171,10 +215,30 @@ const deleteReview = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+// GET /api/reviews/received — reviews written ABOUT the logged-in user (protected)
+const getMyReceivedReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ reviewed: req.user._id, isDeleted: false })
+      .populate("reviewer", "name profileImage studentId")
+      .sort({ createdAt: -1 });
+    return res.status(200).json({ reviews });
+  } catch (err) {
+    console.error("getMyReceivedReviews error:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+};
+
+=======
+>>>>>>> develop
 module.exports = { 
   createReview, 
   getReviewsForUser, 
   getMyGivenReviews, 
+<<<<<<< HEAD
+  getMyReceivedReviews,
+=======
+>>>>>>> develop
   getPendingReviews,
   deleteReview 
 };

@@ -3,7 +3,10 @@ import { getProfile, updateProfile } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../homepage/components/Navbar";
 import { toast } from "react-toastify";
+<<<<<<< HEAD
+=======
 import { motion, AnimatePresence } from "framer-motion";
+>>>>>>> develop
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
@@ -50,8 +53,13 @@ const EditProfilePage = () => {
       newErrors.name = "Name can only contain letters, spaces, hyphens, or apostrophes.";
     }
 
+<<<<<<< HEAD
+    if (formData.phone && !/^\+?[0-9\s\-()]{7,15}$/.test(formData.phone.trim())) {
+      newErrors.phone = "Enter a valid phone number (7–15 digits).";
+=======
     if (formData.phone && !/^(?:\+94|0)?7[0-9]{8}$/.test(formData.phone.trim())) {
       newErrors.phone = "Enter a valid Sri Lankan phone number (e.g. 07XXXXXXXX or +947XXXXXXXX).";
+>>>>>>> develop
     }
 
     if (formData.faculty && formData.faculty.trim().length < 2) {
@@ -148,11 +156,15 @@ const EditProfilePage = () => {
   return (
     <>
       <Navbar />
+<<<<<<< HEAD
+      <div className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue">
+=======
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue"
       >
+>>>>>>> develop
         
         {/* Ambient Premium Background Shapes */}
         <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
@@ -162,6 +174,12 @@ const EditProfilePage = () => {
         <div className="relative z-10 max-w-2xl mx-auto w-full">
 
           {/* Header */}
+<<<<<<< HEAD
+          <div className="mb-8 flex items-center gap-4">
+            <button
+              onClick={() => navigate("/profile")}
+              className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600"
+=======
           <motion.div 
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -171,6 +189,7 @@ const EditProfilePage = () => {
             <button
               onClick={() => navigate("/profile")}
               className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600 active:scale-95"
+>>>>>>> develop
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
@@ -180,6 +199,12 @@ const EditProfilePage = () => {
               <h1 className="text-2xl font-black text-slate-800 tracking-tight">Vault Identity Editor</h1>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Modify Your UniVault Profile</p>
             </div>
+<<<<<<< HEAD
+          </div>
+
+          {/* Card */}
+          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10">
+=======
           </motion.div>
 
           {/* Card */}
@@ -189,6 +214,7 @@ const EditProfilePage = () => {
             transition={{ delay: 0.2 }}
             className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10"
           >
+>>>>>>> develop
             
             {/* Card Header Banner */}
             <div className="relative bg-gradient-to-br from-[#4A5FE8] to-[#8B5CF6] p-10 overflow-hidden">
@@ -219,6 +245,16 @@ const EditProfilePage = () => {
                     <span className={`shrink-0 transition-colors w-4 h-4 flex items-center justify-center ${errors[key] ? "text-rose-400" : "text-[#4A5FE8]"}`}>
                       {icon}
                     </span>
+<<<<<<< HEAD
+                    <input
+                      type={type}
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={placeholder}
+                      className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
+                    />
+=======
                     {key === "faculty" ? (
                       <select
                         name={key}
@@ -243,6 +279,7 @@ const EditProfilePage = () => {
                         className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
                       />
                     )}
+>>>>>>> develop
                     {formData[key] && !errors[key] && (
                       <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
@@ -301,9 +338,15 @@ const EditProfilePage = () => {
               </p>
 
             </form>
+<<<<<<< HEAD
+          </div>
+        </div>
+      </div>
+=======
           </motion.div>
         </div>
       </motion.div>
+>>>>>>> develop
     </>
   );
 };
