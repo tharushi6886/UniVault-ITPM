@@ -5,6 +5,7 @@ import GivenReviews from "./GivenReviews";
 import RatingBreakdown from "./RatingBreakdown";
 import { getReviewsForUser, getPendingReviews, submitReview } from "../../../api/reviewApi";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ReviewSection = ({ profileUserId, currentUser }) => {
   const location = useLocation();
@@ -90,55 +91,69 @@ const ReviewSection = ({ profileUserId, currentUser }) => {
         </div>
       )}
 
-      {/* Title & Stats */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-        <div>
-           <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xs shadow-lg">⭐</div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight font-epilogue uppercase">Reputation Ledger</h2>
+      {/* Modern Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12">
+        <div className="max-w-xl">
+           <div className="flex items-center gap-4 mb-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm border border-indigo-100/50">
+                🌠
+              </div>
+              <div>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight font-epilogue uppercase">Reputation Ledger</h2>
+                <div className="flex items-center gap-2 mt-0.5">
+                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Verified Vault Identity</p>
+                </div>
+              </div>
            </div>
-           <p className="text-sm text-slate-400 font-bold tracking-tight">Verified social integrity metrics & testimonials</p>
+           <p className="text-[13px] text-slate-500 font-medium leading-relaxed">
+             Your social integrity score is built on verified student interactions. This ledger tracks testimonials from marketplace trades and lost/found resolutions.
+           </p>
         </div>
 
         {!isOwnProfile && (
            <button 
              onClick={() => setIsModalOpen(true)}
-             className="px-8 py-3.5 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2"
+             className="px-8 py-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-[0_20px_40px_rgba(15,23,42,0.2)] hover:bg-indigo-600 hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-3 group"
            >
-             <span>✍️</span> Leave Feedback
+             <span className="text-base group-hover:rotate-12 transition-transform">✍️</span> Share Experience
            </button>
         )}
       </div>
 
-      {/* Navigation Pills */}
-      <div className="bg-slate-100/50 p-1.5 rounded-[1.8rem] flex gap-1 mb-10 max-w-fit border border-slate-100">
-        <button 
-          onClick={() => handleTabChange("received")}
-          className={`px-8 py-3 rounded-[1.4rem] text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "received" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-400 hover:text-slate-600"}`}
-        >
-          Received ({reviews.length})
-        </button>
-        {isOwnProfile && (
-          <>
+      {/* Navigation Ecosystem - Pill Style */}
+      <div className="flex flex-wrap items-center justify-between gap-6 mb-12 border-b border-slate-100 pb-1">
+        <div className="flex gap-2">
+          {[
+            { id: "received", label: `Received (${reviews.length})` },
+            { id: "given", label: "Given", hide: !isOwnProfile },
+            { id: "breakdown", label: "Analytics", hide: !isOwnProfile }
+          ].filter(t => !t.hide).map((tab) => (
             <button 
-              onClick={() => handleTabChange("given")}
-              className={`px-8 py-3 rounded-[1.4rem] text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "given" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-400 hover:text-slate-600"}`}
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`relative px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${
+                activeTab === tab.id 
+                  ? "text-slate-900" 
+                  : "text-slate-400 hover:text-slate-600"
+              }`}
             >
-              Given
+              {activeTab === tab.id && (
+                <motion.div 
+                  layoutId="feedback-tab-bg"
+                  className="absolute inset-0 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-slate-100 rounded-full"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10">{tab.label}</span>
             </button>
-            <button 
-              onClick={() => handleTabChange("breakdown")}
-              className={`px-8 py-3 rounded-[1.4rem] text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "breakdown" ? "bg-white text-slate-900 shadow-sm border border-slate-200" : "text-slate-400 hover:text-slate-600"}`}
-            >
-              Analytics
-            </button>
-          </>
-        )}
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
       <div className="min-h-[400px]">
-        {activeTab === "received" && <ReceivedReviews userId={profileUserId} />}
+        {activeTab === "received" && <ReceivedReviews userId={profileUserId} isOwnProfile={isOwnProfile} />}
         {activeTab === "given" && <GivenReviews />}
         {activeTab === "breakdown" && <RatingBreakdown reviews={reviews} />}
       </div>

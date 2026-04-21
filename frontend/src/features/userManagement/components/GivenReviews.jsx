@@ -34,10 +34,11 @@ const GivenReviews = () => {
 
   return (
     <div className="space-y-8 animate-fade-in-up">
-      <div className="bg-slate-50 border border-slate-100 p-6 rounded-[2rem] flex items-center gap-4">
-        <span className="text-xl">ℹ️</span>
-        <p className="text-xs font-bold text-slate-500">
-          Reviews you've given are visible on the recipient's public profile. You can delete your reviews within <span className="text-rose-500">24 hours</span> of submission.
+      {/* Subtle Info Banner */}
+      <div className="bg-slate-50 border border-slate-100 px-8 py-4 rounded-2xl flex items-center justify-center gap-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-slate-400"></div>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          Public Visibility: Reviews are public on recipient profiles and editable for <span className="text-slate-900 font-black underline decoration-slate-200 underline-offset-4">24 hours</span>
         </p>
       </div>
 
@@ -52,6 +53,7 @@ const GivenReviews = () => {
             <ReviewCard 
               key={review._id} 
               review={review} 
+              type="given"
               showAction={true} 
               actionLabel="Delete Review" 
               onAction={handleDelete}

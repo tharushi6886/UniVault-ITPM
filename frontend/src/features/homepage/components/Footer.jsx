@@ -1,5 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from '../../../Components/common/Logo';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -15,10 +15,7 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-sm font-black shadow-[0_8px_20px_rgba(79,134,239,0.2)] text-white">
-                U
-              </div>
-              <span className="font-clash text-2xl font-bold text-white tracking-tight">UniVault</span>
+              <Logo textColor="text-white" size={40} />
             </div>
             <p className="font-epilogue text-sm text-slate-400 leading-relaxed max-w-xs">
               The premier campus intelligence platform for secure item recovery and peer-to-peer student trading. Built by students, for students.

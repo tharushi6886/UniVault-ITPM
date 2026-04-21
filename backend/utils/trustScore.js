@@ -63,7 +63,9 @@ const calculateTrustScore = async (userId) => {
     pillars.communityHero = { earned: communityPoints, max: 25 };
 
     // 4. Marketplace Trust (20 pts)
-    const marketPoints = Math.min(itemsSoldCount * 4, 20);
+    const listingPoints = Math.min(itemsPostedCount * 2, 10);
+    const salePoints = Math.min(itemsSoldCount * 2, 10);
+    const marketPoints = listingPoints + salePoints;
     totalScore += marketPoints;
     pillars.marketplaceTrust = { earned: marketPoints, max: 20 };
 

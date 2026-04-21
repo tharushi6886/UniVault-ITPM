@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
 import ReviewSection from "./ReviewSection";
+import { getMyBids } from "../../../api/bidApi";
+import { getMyBidItems } from "../../../api/bidItemApi";
 
 const InfoCard = ({ title, value, editable, onClick, icon }) => {
   const CardWrapper = editable ? "button" : "div";
@@ -248,17 +250,6 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
                 <div className={`w-14 h-14 flex items-center justify-center rounded-2xl text-2xl transition-all duration-500 group-hover:scale-110 shadow-inner border border-white/50 overflow-hidden ${
                    item.item_id ? "bg-indigo-50 text-indigo-500" : item.status === "active" ? "bg-amber-50 text-amber-500" : "bg-sky-50 text-sky-500"
                 }`}>
-<<<<<<< HEAD
-                  {(item.imageUrl || item.image || (item.images && item.images[0])) ? (
-                    <img 
-                      src={(item.imageUrl || item.image || item.images[0]).startsWith('http') ? (item.imageUrl || item.image || item.images[0]) : `http://localhost:5000${item.imageUrl || item.image || item.images[0]}`} 
-                      className="w-full h-full object-cover" 
-                      alt="" 
-                    />
-                  ) : (
-                    item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝"
-                  )}
-=======
                   {(() => {
                     const imgSrc = item.imageUrl || item.item_image || item.image || (item.images && item.images[0]);
                     if (!imgSrc) return item.item_id ? "📦" : item.status === "active" ? "🔍" : "🤝";
@@ -271,7 +262,6 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
                       />
                     );
                   })()}
->>>>>>> develop
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
@@ -311,19 +301,31 @@ const DashboardSection = ({ title, items, badgeColor, onViewAll, onEdit, onResol
 
               {/* Action Buttons */}
               <div className="flex gap-2">
-                <button 
-                  onClick={() => onEdit(item)}
-                  className="flex-1 py-3 rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100 flex items-center justify-center gap-2 shadow-sm"
-                >
-                  Edit Entry
-                </button>
-                <button 
-                  onClick={() => onResolve(item)}
-                  className="px-4 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_8px_15px_rgba(79,70,229,0.2)] flex items-center justify-center"
-                  title="Mark as Resolved"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                </button>
+                {onEdit && (
+                  <button 
+                    onClick={() => onEdit(item)}
+                    className="flex-1 py-3 rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-800 text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100 flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    Edit Entry
+                  </button>
+                )}
+                {onResolve && (
+                  <button 
+                    onClick={() => onResolve(item)}
+                    className="px-4 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_8px_15px_rgba(79,70,229,0.2)] flex items-center justify-center"
+                    title="Mark as Resolved"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                  </button>
+                )}
+                {!onEdit && !onResolve && (
+                  <button 
+                    onClick={onViewAll}
+                    className="flex-1 py-3 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 text-[10px] font-black uppercase tracking-widest transition-all border border-indigo-100 flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    View Bid Details →
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -344,7 +346,8 @@ const ProfileCard = ({ user, refreshUser }) => {
   const [foundItems, setFoundItems] = useState([]);
   const [marketListings, setMarketListings] = useState([]);
   const [soldItems, setSoldItems] = useState([]);
-  const [myBids] = useState([]); // Member not finished yet
+  const [myBids, setMyBids] = useState([]);
+  const [myAuctions, setMyAuctions] = useState([]);
 
   // Edit Management
   const [editingItem, setEditingItem] = useState(null);
@@ -374,10 +377,12 @@ const ProfileCard = ({ user, refreshUser }) => {
       const token = localStorage.getItem("token");
       
       // Parallel Fetching demonstrating system integration
-      const [lostRes, foundRes, marketRes] = await Promise.all([
+      const [lostRes, foundRes, marketRes, bidsRes, auctionRes] = await Promise.all([
         getMyLostItems(token).catch(() => ({ data: [] })),
         getMyFoundItems(token).catch(() => ({ data: [] })),
-        getMyMarketplaceItems(token).catch(() => ({ data: [] }))
+        getMyMarketplaceItems(token).catch(() => ({ data: [] })),
+        getMyBids(token).catch(() => ({ data: { bids: [] } })),
+        getMyBidItems(token).catch(() => ({ data: { items: [] } }))
       ]);
 
       setLostItems(lostRes.data || []);
@@ -387,6 +392,34 @@ const ProfileCard = ({ user, refreshUser }) => {
       const allMarket = marketRes.data?.items || [];
       setMarketListings(allMarket.filter(it => it.availability_status === "available"));
       setSoldItems(allMarket.filter(it => it.availability_status === "not_available"));
+      
+      // Bidding Data Transformation for Dashboard rendering
+      const rawBids = bidsRes.data.bids || [];
+      const transformedBids = rawBids.map(bid => ({
+        ...bid,
+        title: bid.bidItem?.title || "Bid Entry",
+        price: bid.amount,
+        status: bid.status,
+        category: bid.bidItem?.category || "Bidding",
+        image: bid.bidItem?.image,
+        date: bid.createdAt,
+        type: 'bid'
+      }));
+      setMyBids(transformedBids);
+      
+      // Bidding Items (Auctions Posted) Transformation
+      const rawAuctions = auctionRes.data.items || [];
+      const transformedAuctions = rawAuctions.map(item => ({
+        ...item,
+        title: item.title || "Auction Item",
+        price: item.startingPrice,
+        status: item.status,
+        category: item.category || "Auction",
+        image: item.image,
+        date: item.createdAt,
+        type: 'auction'
+      }));
+      setMyAuctions(transformedAuctions);
       
     } catch (error) {
       console.error("Failed to fetch activity dashboard", error);
@@ -450,6 +483,7 @@ const ProfileCard = ({ user, refreshUser }) => {
       if (type === 'lost') await updateLostItem(_id, data, token);
       else if (type === 'found') await updateFoundItem(_id, data, token);
       else if (type === 'market') await updateMarketplaceItem(_id, data, token);
+      else if (type === 'auction') toast.info("Auction record editing coming soon. Status sync active.");
 
       toast.success("Vault record synchronized!");
       setIsEditModalOpen(false);
@@ -549,17 +583,15 @@ const ProfileCard = ({ user, refreshUser }) => {
               <div className="w-16 h-16 rounded-[1.2rem] bg-white shadow-md border border-slate-100 flex items-center justify-center transition-transform hover:scale-110 cursor-default">
                  <div className="flex flex-col items-center">
                     <span className="text-xl font-black text-indigo-600 leading-none">
-                      {user.stats?.pillars ? 
-                        Object.values(user.stats.pillars).reduce((sum, p) => sum + (p.earned || 0), 0) : 
-                        (user.stats?.trustBreakdown?.reduce((sum, item) => sum + (Number(item.earned) || 0), 0) || 0)}
-                    </span>
-                 </div>
+                    {(user.stats?.foundReturned || 0) + (user.stats?.itemsSold || 0)}
+                  </span>
+                </div>
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total Pts</span>
-                <span className="text-xs font-bold text-slate-600">{user.stats?.status || "Bronze"}</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Impact Score</span>
+                <span className="text-xs font-bold text-slate-600">Verified Deeds</span>
               </div>
-           </div>
+            </div>
         </div>
 
         {/* Improved Button Hierarchy */}
@@ -573,9 +605,9 @@ const ProfileCard = ({ user, refreshUser }) => {
           
           <button
             onClick={() => setIsLogoutConfirmOpen(true)}
-            className="flex-1 w-full flex items-center justify-center gap-2 text-slate-400 hover:text-rose-500 bg-transparent px-8 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all duration-300 group"
+            className="flex-1 w-full flex items-center justify-center gap-2 text-rose-500 hover:text-rose-600 bg-rose-50/50 hover:bg-rose-50 px-8 py-3 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all duration-300 group border border-rose-100"
           >
-            <svg className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            <svg className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
             Sign Out
           </button>
         </div>
@@ -664,10 +696,10 @@ const ProfileCard = ({ user, refreshUser }) => {
                      <div>
                        <div className="flex justify-between items-end mb-3">
                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Profile Completion</span>
-                         <span className="text-sm font-black text-indigo-600">85%</span>
+                         <span className="text-sm font-black text-indigo-600">100%</span>
                        </div>
                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                         <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 w-[85%] rounded-full shadow-[0_0_12px_rgba(79,70,229,0.3)]"></div>
+                         <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 w-[100%] rounded-full shadow-[0_0_12px_rgba(79,70,229,0.3)]"></div>
                        </div>
                      </div>
 
@@ -680,17 +712,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                            <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] font-black border border-emerald-200 shadow-sm shrink-0">✓</div>
                            <span className="text-[13px] font-bold text-slate-700">Student ID Records Linked</span>
                         </li>
-                        <li className="flex items-center gap-4">
-                           <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-[10px] font-black border border-slate-200 shrink-0">!</div>
-                           <span className="text-[13px] font-bold text-slate-400">2FA Security Authentication Disabled</span>
-                        </li>
                      </ul>
-
-                     <div className="pt-8 border-t border-slate-50 mt-auto">
-                        <button className="w-full py-4 rounded-2xl bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-[0_10px_25px_rgba(15,10,46,0.15)] hover:shadow-indigo-200">
-                          Manage Security Settings
-                        </button>
-                     </div>
                   </div>
                </div>
             </div>
@@ -724,10 +746,12 @@ const ProfileCard = ({ user, refreshUser }) => {
             ) : (
               <div className="space-y-4">
                 {/* Statistics Overview Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
                    <ActivityCard icon="🔍" title="Lost Reports" count={lostItems.length} note="Missing item logs" bgColor="bg-amber-50" iconColor="text-amber-500" onClick={() => navigate("/profile/lost-reports")} />
                    <ActivityCard icon="🤝" title="Found & Returned" count={foundItems.length} note="Successful resolutions" bgColor="bg-sky-50" iconColor="text-sky-500" onClick={() => navigate("/profile/found-returned")} />
                    <ActivityCard icon="📦" title="Active Listings" count={marketListings.length} note="Listed in Marketplace" bgColor="bg-blue-50" iconColor="text-blue-500" onClick={() => navigate("/profile/items-posted")} />
+                   <ActivityCard icon="🎯" title="My Bids" count={myBids.length} note="Auctions participating" bgColor="bg-rose-50" iconColor="text-rose-500" onClick={() => navigate("/profile/my-bids")} />
+                   <ActivityCard icon="⚖️" title="My Auctions" count={myAuctions.length} note="Items you're selling" bgColor="bg-indigo-50" iconColor="text-indigo-500" onClick={() => navigate("/profile/items-posted")} />
                 </div>
 
                 <div className="bg-white rounded-[2.5rem] p-1.5 shadow-sm border border-white">
@@ -777,6 +801,14 @@ const ProfileCard = ({ user, refreshUser }) => {
                       items={myBids} 
                       badgeColor="bg-rose-400 font-bold" 
                       onViewAll={() => navigate("/profile/my-bids")}
+                      userTrust={user.trust?.level}
+                    />
+                    <hr className="my-10 border-white/10" />
+                    <DashboardSection 
+                      title="My Auctions" 
+                      items={myAuctions} 
+                      badgeColor="bg-indigo-500 font-bold" 
+                      onViewAll={() => navigate("/marketplace")}
                       userTrust={user.trust?.level}
                     />
                   </div>
@@ -850,7 +882,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                           key: "identityVerification", 
                           hint: "Complete Student ID validation for a fixed security boost.",
                           cta: "Verify Now",
-                          path: "/verify" 
+                          path: "/profile/edit" 
                         },
                         { 
                           name: "Community Hero", 
@@ -858,7 +890,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                           key: "communityHero", 
                           hint: "Return lost items to earn +5 pts per resolution.", 
                           cta: "Report Found",
-                          path: "/report-found"
+                          path: "/report-item"
                         },
                         { 
                           name: "Marketplace Reliability", 
@@ -874,7 +906,7 @@ const ProfileCard = ({ user, refreshUser }) => {
                           key: "peerReview", 
                           hint: "Maintain 5-star feedback to maximize this rating.", 
                           cta: "View Feedback",
-                          path: "/profile/feedback"
+                          path: "/profile/feedback-trust"
                         }
                       ].map((pillar, idx) => {
                         const data = user.stats?.pillars?.[pillar.key] || { earned: 0, max: 25 };
@@ -900,12 +932,19 @@ const ProfileCard = ({ user, refreshUser }) => {
                                   />
                                </div>
                                <p className="text-[11px] text-slate-500 font-bold leading-relaxed min-h-[32px]">💡 {pillar.hint}</p>
-                               <button 
-                                 onClick={() => navigate(pillar.path)}
-                                 className="w-full py-4 mt-2 bg-white border border-slate-200 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm"
-                               >
-                                 {pillar.cta} →
-                               </button>
+                               {data.earned >= data.max ? (
+                                 <div className="w-full py-4 mt-2 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center flex items-center justify-center gap-2">
+                                   <span>COMPLETED</span>
+                                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                                 </div>
+                               ) : (
+                                 <button 
+                                   onClick={() => navigate(pillar.path)}
+                                   className="w-full py-4 mt-2 bg-white border border-slate-200 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm"
+                                 >
+                                   {pillar.cta} →
+                                 </button>
+                               )}
                             </div>
                           </div>
                         );

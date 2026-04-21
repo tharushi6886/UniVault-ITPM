@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import RegisterForm from "../components/RegisterForm";
+import Logo from "../../../Components/common/Logo";
 
 const features = [
   { icon: "📋", text: "Create And Manage Lost Item Reports" },
@@ -42,12 +43,7 @@ const RegisterPage = () => {
 
                 {/* Logo */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-sm font-black shadow-[0_4px_14px_rgba(79,134,239,0.24)] text-white">
-                        U
-                    </div>
-                    <span className="text-xl font-bold tracking-tight text-white drop-shadow-sm">
-                        UniVault
-                    </span>
+                    <Logo textColor="text-white" size={40} />
                 </div>
 
         {/* Hero text */}

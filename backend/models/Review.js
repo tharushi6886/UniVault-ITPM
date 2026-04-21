@@ -46,6 +46,16 @@ const reviewSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    reply: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: "",
+    },
+    repliedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

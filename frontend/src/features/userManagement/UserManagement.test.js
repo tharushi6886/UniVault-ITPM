@@ -1,18 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-
-
-
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 
-// ✅ MOCK react-router-dom (IMPORTANT FIX)
+//  MOCK react-router-dom (IMPORTANT FIX)
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
   Link: ({ children }) => children,
 }));
 
-// ✅ Mock API
+//  Mock API
 jest.mock('../../api/userApi', () => ({
   loginUser: jest.fn(() =>
     Promise.resolve({

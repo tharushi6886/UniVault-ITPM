@@ -25,3 +25,10 @@ export const getPendingReviews = (token) =>
 // Delete own review
 export const deleteReview = (token, reviewId) =>
   axios.delete(`${API}/${reviewId}`, authHeader(token));
+
+// Get reviews the logged-in user has received
+export const getMyReceivedReviews = (token) =>
+  axios.get(`${API}/my-received`, authHeader(token));
+// Reply to a review (received by the logged-in user)
+export const replyToReview = (token, reviewId, reply) =>
+  axios.patch(`${API}/${reviewId}/reply`, { reply }, authHeader(token));

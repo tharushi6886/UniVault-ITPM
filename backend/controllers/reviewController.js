@@ -125,7 +125,6 @@ const getMyGivenReviews = async (req, res) => {
 // GET /api/reviews/pending
 const getPendingReviews = async (req, res) => {
   try {
-<<<<<<< HEAD
     const currentUser = req.user;
 
     // Find verified L&F matches involving this user's studentId
@@ -167,20 +166,6 @@ const getPendingReviews = async (req, res) => {
     res.status(200).json({ pending });
   } catch (error) {
     console.error("getPendingReviews error:", error);
-=======
-    // Find verified matches involving this user
-    // (This is a simplified lookup for the sake of the dashboard)
-    const matches = await Match.find({ status: "verified" })
-      .populate("lostItemId foundItemId");
-    
-    // Filter for matches where the user is one of the parties
-    // ... logic would go here to cross-reference existing reviews ...
-    
-    // For now, return a placeholder or empty list to avoid crashing
-    // while we wait for more robust interaction models (Orders/Sales)
-    res.status(200).json({ pending: [] });
-  } catch (error) {
->>>>>>> develop
     res.status(500).json({ message: "Error fetching pending reviews" });
   }
 };
@@ -215,7 +200,6 @@ const deleteReview = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 // GET /api/reviews/received — reviews written ABOUT the logged-in user (protected)
 const getMyReceivedReviews = async (req, res) => {
   try {
@@ -229,16 +213,43 @@ const getMyReceivedReviews = async (req, res) => {
   }
 };
 
-=======
->>>>>>> develop
+// PATCH /api/reviews/:id/reply
+const addReply = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reply } = req.body;
+
+    if (!reply || reply.trim() === "") {
+      return res.status(400).json({ message: "Reply text is required." });
+    }
+
+    const review = await Review.findById(id);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found." });
+    }
+
+    // Security: Only the recipient of the review can reply
+    if (review.reviewed.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to reply to this review." });
+    }
+
+    review.reply = reply.trim();
+    review.repliedAt = new Date();
+    await review.save();
+
+    return res.status(200).json({ message: "Reply added successfully.", review });
+  } catch (err) {
+    console.error("addReply error:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+};
+
 module.exports = { 
   createReview, 
   getReviewsForUser, 
   getMyGivenReviews, 
-<<<<<<< HEAD
   getMyReceivedReviews,
-=======
->>>>>>> develop
   getPendingReviews,
-  deleteReview 
+  deleteReview,
+  addReply
 };

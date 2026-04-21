@@ -10,11 +10,7 @@ const FEATURES = [
         border: 'border-[#00D9FF]/20',
     },
     {
-<<<<<<< HEAD
-        icon: 'M',
-=======
         icon: 'B&S',
->>>>>>> develop
         title: 'Buy & Sell',
         desc: 'A secure student-only marketplace for textbooks, devices, and essentials with lower scam risk.',
         accent: 'from-[#8B5CF6] to-[#a78bfa]',
@@ -53,15 +49,9 @@ const Features = () => (
                         Powerful Features For Campus
                     </span>
                     <h2 className="font-clash text-[clamp(36px,5vw,72px)] tracking-[-0.05em] font-bold text-slate-900 mt-6 leading-[0.98] drop-shadow-sm">
-<<<<<<< HEAD
-                        The smarter
-                        <br />
-                        student platform
-=======
                         The Smarter
                         <br />
                         Student Platform
->>>>>>> develop
                     </h2>
                 </div>
 

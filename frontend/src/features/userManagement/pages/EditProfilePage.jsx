@@ -3,10 +3,8 @@ import { getProfile, updateProfile } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../homepage/components/Navbar";
 import { toast } from "react-toastify";
-<<<<<<< HEAD
-=======
 import { motion, AnimatePresence } from "framer-motion";
->>>>>>> develop
+import ProfileSectionLayout from "../components/ProfileSectionLayout";
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
@@ -53,13 +51,8 @@ const EditProfilePage = () => {
       newErrors.name = "Name can only contain letters, spaces, hyphens, or apostrophes.";
     }
 
-<<<<<<< HEAD
-    if (formData.phone && !/^\+?[0-9\s\-()]{7,15}$/.test(formData.phone.trim())) {
-      newErrors.phone = "Enter a valid phone number (7–15 digits).";
-=======
     if (formData.phone && !/^(?:\+94|0)?7[0-9]{8}$/.test(formData.phone.trim())) {
       newErrors.phone = "Enter a valid Sri Lankan phone number (e.g. 07XXXXXXXX or +947XXXXXXXX).";
->>>>>>> develop
     }
 
     if (formData.faculty && formData.faculty.trim().length < 2) {
@@ -154,200 +147,126 @@ const EditProfilePage = () => {
   }
 
   return (
-    <>
-      <Navbar />
-<<<<<<< HEAD
-      <div className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue">
-=======
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-slate-50 pt-28 pb-16 px-4 md:px-8 relative overflow-hidden font-epilogue"
-      >
->>>>>>> develop
-        
-        {/* Ambient Premium Background Shapes */}
-        <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[-10%] left-[-5%] w-[800px] h-[800px] bg-blue-100/40 rounded-full blur-[150px] pointer-events-none"></div>
-        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-purple-100/30 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div className="relative z-10 max-w-2xl mx-auto w-full">
-
-          {/* Header */}
-<<<<<<< HEAD
-          <div className="mb-8 flex items-center gap-4">
-            <button
-              onClick={() => navigate("/profile")}
-              className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600"
-=======
-          <motion.div 
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mb-8 flex items-center gap-4"
-          >
-            <button
-              onClick={() => navigate("/profile")}
-              className="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 transition-all text-slate-500 hover:text-indigo-600 active:scale-95"
->>>>>>> develop
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-2xl font-black text-slate-800 tracking-tight">Vault Identity Editor</h1>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Modify Your UniVault Profile</p>
-            </div>
-<<<<<<< HEAD
-          </div>
-
-          {/* Card */}
-          <div className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10">
-=======
-          </motion.div>
-
-          {/* Card */}
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-[24px] shadow-[0_20px_60px_rgba(74,95,232,0.15)] border border-white overflow-hidden relative z-10"
-          >
->>>>>>> develop
-            
-            {/* Card Header Banner */}
-            <div className="relative bg-gradient-to-br from-[#4A5FE8] to-[#8B5CF6] p-10 overflow-hidden">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -mr-24 -mt-24 blur-2xl" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16" />
-              <div className="relative z-10">
-                <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl mb-4 backdrop-blur-sm">
+    <ProfileSectionLayout
+      title="Vault Identity Editor"
+      description="Update your UniVault student profile to ensure your listings and reports are accurately synchronized across the campus network."
+    >
+      <div className="max-w-2xl mx-auto w-full">
+        {/* Card */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(74,95,232,0.12)] border border-slate-100 overflow-hidden relative z-10"
+        >
+          {/* Card Header Section */}
+          <div className="p-8 pb-4 border-b border-slate-50">
+             <div className="flex items-center gap-4 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm border border-indigo-100/50">
                   🖊️
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">Edit Profile</h2>
-                <p className="text-indigo-200 text-sm font-medium mt-1">Changes are synced system-wide instantly.</p>
-              </div>
-            </div>
+                <div>
+                   <h2 className="text-xl font-black text-slate-800 tracking-tight font-epilogue">Profile Identification</h2>
+                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Edit Personal Records</p>
+                </div>
+             </div>
+          </div>
 
-            {/* Form Body */}
-            <form onSubmit={handleSubmit} className="p-10 space-y-7" noValidate>
-
-              {fields.map(({ key, label, type, placeholder, icon }) => (
-                <div key={key}>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5">
-                    {label}
-                  </label>
-                  <div className={`relative flex items-center h-[48px] rounded-[10px] border px-4 gap-3 transition-all duration-300 ${
-                    errors[key]
-                      ? "border-rose-300 bg-rose-50"
-                      : "border-[#E2E8F0] bg-[#F7F8FC] focus-within:border-[#4A5FE8] focus-within:bg-white focus-within:shadow-[0_0_0_2px_rgba(74,95,232,0.2)]"
-                  }`}>
-                    <span className={`shrink-0 transition-colors w-4 h-4 flex items-center justify-center ${errors[key] ? "text-rose-400" : "text-[#4A5FE8]"}`}>
-                      {icon}
-                    </span>
-<<<<<<< HEAD
+          {/* Form Body */}
+          <form onSubmit={handleSubmit} className="p-8 pt-6 space-y-6" noValidate>
+            {fields.map(({ key, label, type, placeholder, icon }) => (
+              <div key={key}>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">
+                  {label}
+                </label>
+                <div className={`relative flex items-center h-[52px] rounded-2xl border px-4 gap-3 transition-all duration-300 ${
+                  errors[key]
+                    ? "border-rose-200 bg-rose-50/30"
+                    : "border-slate-100 bg-slate-50/50 focus-within:border-indigo-400 focus-within:bg-white focus-within:shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+                }`}>
+                  <span className={`shrink-0 transition-colors w-5 h-5 flex items-center justify-center ${errors[key] ? "text-rose-400" : "text-indigo-500/70"}`}>
+                    {icon}
+                  </span>
+                  {key === "faculty" ? (
+                    <select
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      className="flex-1 bg-transparent text-[14px] font-semibold text-slate-700 focus:outline-none h-full appearance-none cursor-pointer"
+                    >
+                      <option value="" disabled hidden>Select Faculty</option>
+                      <option value="Faculty of Computing">Faculty of Computing</option>
+                      <option value="SLIIT Business School">SLIIT Business School</option>
+                      <option value="Faculty of Engineering">Faculty of Engineering</option>
+                      <option value="School of Architecture">School of Architecture</option>
+                      <option value="Faculty of Humanities & Sciences">Faculty of Humanities & Sciences</option>
+                    </select>
+                  ) : (
                     <input
                       type={type}
                       name={key}
                       value={formData[key]}
                       onChange={handleChange}
                       placeholder={placeholder}
-                      className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
+                      className="flex-1 bg-transparent text-[14px] font-semibold text-slate-700 placeholder-slate-300 focus:outline-none h-full"
                     />
-=======
-                    {key === "faculty" ? (
-                      <select
-                        name={key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] focus:outline-none h-full appearance-none cursor-pointer"
-                      >
-                        <option value="" disabled hidden>Select Faculty</option>
-                        <option value="Faculty of Computing">Faculty of Computing</option>
-                        <option value="SLIIT Business School">SLIIT Business School</option>
-                        <option value="Faculty of Engineering">Faculty of Engineering</option>
-                        <option value="School of Architecture">School of Architecture</option>
-                        <option value="Faculty of Humanities & Sciences">Faculty of Humanities & Sciences</option>
-                      </select>
-                    ) : (
-                      <input
-                        type={type}
-                        name={key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        placeholder={placeholder}
-                        className="flex-1 bg-transparent text-[14px] font-medium text-[#1A202C] placeholder-slate-300 focus:outline-none h-full"
-                      />
-                    )}
->>>>>>> develop
-                    {formData[key] && !errors[key] && (
-                      <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                  )}
+                  {formData[key] && !errors[key] && (
+                    <div className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" />
                       </svg>
-                    )}
-                    {errors[key] && (
-                      <svg className="w-4 h-4 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    )}
-                  </div>
-                  {errors[key] && (
-                    <p className="mt-2 text-xs font-bold text-rose-500 flex items-center gap-1.5">
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      {errors[key]}
-                    </p>
+                    </div>
                   )}
                 </div>
-              ))}
-
-              {/* Divider */}
-              <div className="border-t border-slate-100 pt-4" />
-
-              {/* Actions */}
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => navigate("/profile")}
-                  className="flex-1 h-[48px] rounded-[10px] bg-slate-100 text-slate-500 font-bold text-[14px] uppercase tracking-widest hover:bg-slate-200 transition-all flex items-center justify-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className={`flex-1 h-[48px] rounded-[10px] bg-gradient-to-r from-[#4A5FE8] to-[#8B5CF6] hover:opacity-90 text-white font-bold text-[14px] uppercase tracking-widest shadow-[0_6px_15px_-4px_rgba(74,95,232,0.4)] hover:-translate-y-[2px] active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2 ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
-                >
-                  {submitting ? (
-                    <>
-                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Syncing...
-                    </>
-                  ) : (
-                    "Save Changes →"
-                  )}
-                </button>
+                {errors[key] && (
+                  <p className="mt-2 text-[11px] font-bold text-rose-500 flex items-center gap-1.5 ml-1">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errors[key]}
+                  </p>
+                )}
               </div>
+            ))}
 
-              {/* Info note */}
-              <p className="text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                Your email and Student ID cannot be changed
+            {/* Actions */}
+            <div className="flex gap-4 pt-4">
+              <button
+                type="button"
+                onClick={() => navigate("/profile")}
+                className="flex-1 h-[52px] rounded-2xl bg-white border border-slate-100 text-slate-400 font-bold text-[11px] uppercase tracking-[0.15em] hover:bg-slate-50 hover:text-slate-600 transition-all flex items-center justify-center uppercase"
+              >
+                Cancel Changes
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`flex-1 h-[52px] rounded-2xl bg-slate-900 text-white font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-indigo-600 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
+              >
+                {submitting ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Syncing...
+                  </>
+                ) : (
+                  "Save Vault Records →"
+                )}
+              </button>
+            </div>
+
+            {/* Footer Tip */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 mt-2">
+               <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                Security Note: Sensitive identifiers like student ID and email are permanently locked to your vault core.
               </p>
-
-            </form>
-<<<<<<< HEAD
-          </div>
-        </div>
+            </div>
+          </form>
+        </motion.div>
       </div>
-=======
-          </motion.div>
-        </div>
-      </motion.div>
->>>>>>> develop
-    </>
+    </ProfileSectionLayout>
   );
 };
 

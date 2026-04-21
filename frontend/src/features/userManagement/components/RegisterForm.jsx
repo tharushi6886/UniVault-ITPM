@@ -27,11 +27,7 @@ const Input = ({ icon, label, action, children }) => (
     {icon && <span className="text-[#4A5FE8] shrink-0 w-4 h-4 flex items-center justify-center">{icon}</span>}
     <div className="relative flex-1 h-full flex flex-col justify-center pt-2">
       {children}
-<<<<<<< HEAD
-      <label className="absolute left-0 text-[10px] sm:text-xs text-slate-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#3B4ED8] pointer-events-none">{label}</label>
-=======
       <label className="absolute left-0 top-0 text-[10px] sm:text-xs text-slate-400 transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:text-[10px] peer-focus:text-[#3B4ED8] pointer-events-none">{label}</label>
->>>>>>> develop
     </div>
     {action}
   </div>
@@ -164,9 +160,6 @@ const RegisterForm = () => {
             </Field>
             <Field>
               <Input label="Faculty" icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>}>
-<<<<<<< HEAD
-                <input type="text" name="faculty" placeholder=" " value={formData.faculty} onChange={handleChange} className={inputClass} />
-=======
                 <select 
                   name="faculty" 
                   value={formData.faculty} 
@@ -181,7 +174,6 @@ const RegisterForm = () => {
                   <option value="School of Architecture">School of Architecture</option>
                   <option value="Faculty of Humanities & Sciences">Faculty of Humanities & Sciences</option>
                 </select>
->>>>>>> develop
               </Input>
             </Field>
           </div>

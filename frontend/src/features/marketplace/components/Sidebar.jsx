@@ -1,4 +1,5 @@
 import React from 'react';
+import Logo from '../../../Components/common/Logo';
 
 const Sidebar = ({ isOpen, onClose, navLinks, activeNav, setActiveNav, navigate }) => {
   return (
@@ -16,8 +17,7 @@ const Sidebar = ({ isOpen, onClose, navLinks, activeNav, setActiveNav, navigate 
         {/* Header */}
         <div className="p-6 flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-indigo-50/50 to-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-[34px] h-[34px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-600 flex items-center justify-center font-syne font-extrabold text-[12px] text-white shadow-lg shadow-indigo-200">UV</div>
-            <div className="font-syne font-bold text-lg text-gray-900 tracking-tight">UniVault</div>
+            <Logo textColor="text-slate-900" size={32} />
           </div>
           <button 
             onClick={onClose}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Search, Bell, User, ShieldCheck, ArrowLeft } from "lucide-react";
+import Logo from '../common/Logo';
 import AIMatchesPanel from '../Matches/AIMatchesPanel';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -34,10 +35,7 @@ export const Sidebar = ({ counts, onFilterChange, activeFilter, activeTab, onTab
   return (
     <aside className="fixed top-0 left-0 bottom-0 w-[260px] bg-white border-r border-gray-200 flex flex-col z-[300] hidden lg:flex">
       <div className="flex items-center gap-[12px] py-[24px] px-[24px]">
-        <div className="flex items-center justify-center w-[36px] h-[36px] bg-[#4f46e5] rounded-[10px]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </div>
-        <span className="text-[20px] font-bold text-[#1e1b4b]">UniVault</span>
+        <Logo textColor="text-[#1e1b4b]" size={36} />
       </div>
       
       <nav className="flex-1 py-[16px] px-[16px] overflow-y-auto flex flex-col gap-[2px]">

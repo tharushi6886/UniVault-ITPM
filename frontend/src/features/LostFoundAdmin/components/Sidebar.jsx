@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../../../Components/common/Logo';
 
 const overviewItems = [
   {
@@ -150,13 +151,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   return (
     <aside className="fixed left-0 top-0 bottom-0 z-[300] hidden w-[260px] flex-col border-r-[1.5px] border-indigo-300/20 bg-white/90 shadow-[4px_0_36px_rgba(79,70,229,0.07)] backdrop-blur-[28px] lg:flex">
       <div className="flex items-center gap-[10px] border-b border-indigo-300/20 px-[18px] pb-[16px] pt-[20px]">
-        <div className="flex h-[36px] w-[36px] items-center justify-center rounded-[10px] bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-[0_4px_14px_rgba(79,70,229,0.35)]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-          </svg>
-        </div>
-        <span className="text-[18px] font-bold text-indigo-950">UniVault</span>
-        <span className="ml-auto rounded-[6px] bg-gradient-to-br from-red-600 to-red-500 px-2 py-[3px] text-[9px] font-extrabold uppercase tracking-[0.06em] text-white">
+        <Logo showText={true} textColor="text-slate-900" size={32} />
+        <span className="ml-auto rounded-[6px] bg-gradient-to-br from-red-600 to-red-500 px-2 py-[3px] text-[9px] font-extrabold uppercase tracking-[0.06em] text-white shrink-0">
           Admin
         </span>
       </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import Logo from "../../../Components/common/Logo";
 import { verifyOtp } from "../../../api/userApi";
 import { toast } from "react-toastify";
 
@@ -74,10 +75,7 @@ const VerifyOtpPage = () => {
 
       {/* Logo */}
       <div className="flex items-center gap-3 mb-10 relative z-10">
-        <div className="w-12 h-12 rounded-[18px] bg-gradient-to-br from-[#4A8EF0] to-[#54DBC8] flex items-center justify-center text-lg font-black shadow-[0_8px_20px_rgba(79,134,239,0.3)] text-white">
-          U
-        </div>
-        <span className="text-2xl font-black tracking-tight text-slate-900">UniVault</span>
+        <Logo textColor="text-slate-900" size={42} />
       </div>
 
       <div className="w-full max-w-[440px] relative z-10">

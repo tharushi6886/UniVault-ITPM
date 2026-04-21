@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../../../Components/common/Logo';
 import toppicImg from '../../../assets/toppic.jpg';
 import ItemForm from '../components/ItemForm';
 import Sidebar from '../components/Sidebar';
@@ -122,8 +123,7 @@ const Dashboard = () => {
         </button>
 
         <div className="flex items-center gap-2.5 flex-shrink-0 mr-7 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-[38px] h-[38px] rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white shadow-md shadow-indigo-100">UV</div>
-          <div className="font-syne font-bold text-xl text-gray-900">UniVault</div>
+          <Logo textColor="text-slate-900" size={38} />
         </div>
 
         <div className="flex-1"></div>
@@ -427,8 +427,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-10">
             <div className="lg:col-span-1 border-r-0 lg:border-r border-white/10 pr-0 lg:pr-8">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-800 to-indigo-btn flex items-center justify-center font-syne font-extrabold text-[13px] text-white">UV</div>
-                <div className="font-syne font-bold text-lg text-white">UniVault</div>
+                <Logo textColor="text-white" size={34} />
               </div>
               <p className="text-[13px] leading-[1.7] max-w-[260px]">The premier campus marketplace for college students. Safe, verified, and strictly local to your university community.</p>
             </div>
