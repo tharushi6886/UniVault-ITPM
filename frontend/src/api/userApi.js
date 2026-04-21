@@ -17,6 +17,11 @@ export const getProfile = (token) =>
     },
   });
 
+export const getPublicProfile = (userId) => API.get(`/public/${userId}`);
+export const getPublicSystemStats = () => API.get("/public-stats");
+export const getTrustLeaderboard = () => API.get("/leaderboard");
+export const getUserTrust = (studentId) => API.get(`/trust/${studentId}`);
+
 export const updateProfile = (token, data) =>
   API.put("/profile", data, {
     headers: {
@@ -48,6 +53,13 @@ export const blockUser = (token, userId) =>
 
 export const unblockUser = (token, userId) =>
   API.put(`/${userId}/unblock`, {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const getUserById = (token, userId) =>
+  API.get(`/${userId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

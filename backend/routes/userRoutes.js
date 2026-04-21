@@ -7,6 +7,7 @@ const {
   verifyOtp,
   loginUser,
   getUserProfile,
+  getPublicProfile,
   updateUserProfile,
   changePassword,
   getUsers,
@@ -15,10 +16,13 @@ const {
   deleteUser,
   unblockUser,
   getAdminDashboardStats,
+  getPublicSystemStats,
+  getTrustLeaderboard,
   forgotPassword,
   resetPassword,
   updateUserRole,
   uploadAvatar,
+  getUserTrustByStudentId,
 } = require("../controllers/userController");
 
 const upload = require("../middlewares/uploadMiddleware");
@@ -51,8 +55,12 @@ router.post("/reset-password", resetPassword);
 
 // User profile
 router.get("/profile", protect, getUserProfile);
+router.get("/public/:id", getPublicProfile);
+router.get("/public-stats", getPublicSystemStats);
+router.get("/leaderboard", getTrustLeaderboard);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
+router.get("/trust/:studentId", getUserTrustByStudentId);
 router.put("/profile/avatar", protect, upload.single("avatar"), uploadAvatar);
 
 // Admin

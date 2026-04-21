@@ -22,6 +22,7 @@ import VerifyOtpPage from "./features/userManagement/pages/VerifyOtpPage";
 import ForgotPasswordPage from "./features/userManagement/pages/ForgotPasswordPage";
 import ResetPasswordPage from "./features/userManagement/pages/ResetPasswordPage";
 import ProfilePage from "./features/userManagement/pages/ProfilePage";
+import PublicProfilePage from "./features/userManagement/pages/PublicProfilePage";
 import EditProfilePage from "./features/userManagement/pages/EditProfilePage";
 import AdminUsersPage from "./features/userManagement/pages/AdminUsersPage";
 import AdminDashboardPage from "./features/userManagement/pages/AdminDashboardPage";
@@ -32,6 +33,9 @@ import FoundReturnedPage from "./features/userManagement/pages/FoundReturnedPage
 import LostReportsPage from "./features/userManagement/pages/LostReportsPage";
 import MyBidsPage from "./features/userManagement/pages/MyBidsPage";
 import FeedbackTrustPage from "./features/userManagement/pages/FeedbackTrustPage";
+import MyComplaintsPage from "./features/userManagement/pages/MyComplaintsPage";
+import AdminComplaintsPage from "./features/userManagement/pages/AdminComplaintsPage";
+import AdminBidsPage from "./features/userManagement/pages/AdminBidsPage";
 
 import ProtectedRoute from "./features/userManagement/components/ProtectedRoute";
 import AdminRoute from "./features/userManagement/components/AdminRoute";
@@ -76,6 +80,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Public Profile View */}
+        <Route path="/user/:id" element={<PublicProfilePage />} />
 
         <Route
           path="/profile/edit"
@@ -150,6 +157,15 @@ function App() {
         />
 
         <Route
+          path="/profile/my-complaints"
+          element={
+            <ProtectedRoute>
+              <MyComplaintsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/dashboard"
           element={
             <AdminRoute>
@@ -171,6 +187,24 @@ function App() {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/complaints"
+          element={
+            <AdminRoute>
+              <AdminComplaintsPage />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/bids"
+          element={
+            <AdminRoute>
+              <AdminBidsPage />
             </AdminRoute>
           }
         />
