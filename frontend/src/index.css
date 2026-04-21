@@ -128,6 +128,39 @@
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
 }
 
+@keyframes shimmer {
+    0% { background-position: -468px 0; }
+    100% { background-position: 468px 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.skeleton {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 800px 104px;
+    display: inline-block;
+    position: relative;
+    animation: shimmer 1s linear infinite;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.animate-fadeUp {
+    animation: fadeUp 0.4s ease-out forwards;
+}
+
 body {
   margin: 0;
   padding: 0;

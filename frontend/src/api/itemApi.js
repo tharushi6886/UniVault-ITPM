@@ -79,3 +79,10 @@ export const notifyStudent = (itemId, itemType, message, token) => {
     } : {},
   });
 };
+
+export const createOrder = (formData, token) =>
+  API.post("/orders", formData, {
+    headers: {
+      Authorization: `Bearer ${token || localStorage.getItem("token")}`,
+    },
+  });

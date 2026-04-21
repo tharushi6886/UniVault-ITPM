@@ -14,7 +14,7 @@ export default function PurchaseDone() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
     const setSize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -41,7 +41,7 @@ export default function PurchaseDone() {
     const animate = () => {
       if (!isAnimating) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       pieces.forEach(p => {
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -50,11 +50,11 @@ export default function PurchaseDone() {
         ctx.globalAlpha = 0.85;
         ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         ctx.restore();
-        
+
         p.y += p.speed;
         p.x += p.drift;
         p.rot += p.rotSpeed;
-        
+
         if (p.y > canvas.height) {
           p.y = -20;
           p.x = Math.random() * canvas.width;
@@ -81,7 +81,7 @@ export default function PurchaseDone() {
     if (!receiptRef.current) return;
     setDownloading(true);
     setDownloadFlash(true);
-    
+
     setTimeout(() => {
       setDownloadFlash(false);
     }, 150);
@@ -93,7 +93,7 @@ export default function PurchaseDone() {
         backgroundColor: '#ffffff',
         borderRadius: 20,
       });
-      
+
       const link = document.createElement('a');
       link.download = 'UniMarket-Receipt-UMK2026-08341.png';
       link.href = canvas.toDataURL('image/png');
@@ -112,11 +112,11 @@ export default function PurchaseDone() {
   return (
     <div className="font-['Plus_Jakarta_Sans',sans-serif] bg-[#F5F3FF] text-[#1E1035] min-h-screen flex flex-col items-center justify-center p-6 relative">
       <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
-      
+
       <div className={`fixed inset-0 bg-white/60 pointer-events-none z-[999] transition-opacity duration-150 ${downloadFlash ? 'opacity-100' : 'opacity-0'}`} />
 
       <div className="flex flex-col items-center gap-5 w-full max-w-[480px] relative z-10">
-        
+
         {/* Success Message */}
         <div className="text-center animate-[fadeUp_0.5s_ease_both]">
           <div className="text-5xl mb-2.5">🎉</div>
@@ -127,7 +127,7 @@ export default function PurchaseDone() {
         </div>
 
         {/* Receipt Card */}
-        <div 
+        <div
           ref={receiptRef}
           className="bg-white rounded-[20px] border-[1.5px] border-[#DDD6FE] shadow-[0_12px_48px_rgba(0,0,0,0.10)] w-full overflow-hidden animate-[fadeUp_0.5s_ease_0.15s_both]"
         >
@@ -141,7 +141,7 @@ export default function PurchaseDone() {
           </div>
 
           {/* Top Zigzag */}
-          <div 
+          <div
             className="h-4 bg-[#6D28D9] relative overflow-hidden"
             style={{
               clipPath: 'polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%)'
@@ -206,10 +206,10 @@ export default function PurchaseDone() {
           </div>
 
           {/* Bottom Zigzag */}
-          <div 
+          <div
             className="h-4 bg-white relative overflow-hidden"
           >
-             <div className="absolute top-0 left-0 right-0 h-4 bg-[#F5F3FF]" style={{ clipPath: 'polygon(0% 0%, 2.5% 100%, 5% 0%, 7.5% 100%, 10% 0%, 12.5% 100%, 15% 0%, 17.5% 100%, 20% 0%, 22.5% 100%, 25% 0%, 27.5% 100%, 30% 0%, 32.5% 100%, 35% 0%, 37.5% 100%, 40% 0%, 42.5% 100%, 45% 0%, 47.5% 100%, 50% 0%, 52.5% 100%, 55% 0%, 57.5% 100%, 60% 0%, 62.5% 100%, 65% 0%, 67.5% 100%, 70% 0%, 72.5% 100%, 75% 0%, 77.5% 100%, 80% 0%, 82.5% 100%, 85% 0%, 87.5% 100%, 90% 0%, 92.5% 100%, 95% 0%, 97.5% 100%, 100% 0%)' }} />
+            <div className="absolute top-0 left-0 right-0 h-4 bg-[#F5F3FF]" style={{ clipPath: 'polygon(0% 0%, 2.5% 100%, 5% 0%, 7.5% 100%, 10% 0%, 12.5% 100%, 15% 0%, 17.5% 100%, 20% 0%, 22.5% 100%, 25% 0%, 27.5% 100%, 30% 0%, 32.5% 100%, 35% 0%, 37.5% 100%, 40% 0%, 42.5% 100%, 45% 0%, 47.5% 100%, 50% 0%, 52.5% 100%, 55% 0%, 57.5% 100%, 60% 0%, 62.5% 100%, 65% 0%, 67.5% 100%, 70% 0%, 72.5% 100%, 75% 0%, 77.5% 100%, 80% 0%, 82.5% 100%, 85% 0%, 87.5% 100%, 90% 0%, 92.5% 100%, 95% 0%, 97.5% 100%, 100% 0%)' }} />
           </div>
 
           {/* Footer */}
@@ -228,7 +228,7 @@ export default function PurchaseDone() {
 
         {/* Action Buttons */}
         <div className="flex w-full gap-2.5 animate-[fadeUp_0.5s_ease_0.3s_both]">
-          <button 
+          <button
             onClick={downloadReceipt}
             disabled={downloading}
             className="flex-[2] py-3.5 bg-[#6D28D9] text-white rounded-xl font-[inherit] text-sm font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#5B21B6] hover:-translate-y-px disabled:opacity-80 disabled:cursor-not-allowed"

@@ -30,15 +30,15 @@ const ItemDetails = () => {
                     const s = location.state.item;
                     const raw = s.rawItem || s;
                     
-                    // If it's a mapped dashboard item, convert back to raw format for the details page
+                    // Defensive mapping to handle various API response formats
                     const mappedItem = {
                         ...raw,
-                        _id: raw._id || s._id,
-                        item_name: raw.item_name || s.item_name || s.title || s.name,
-                        description: raw.description || s.description || s.desc,
-                        price: (raw.price && typeof raw.price === 'number') ? raw.price : (typeof s.price === 'string' ? parseFloat(s.price.replace('$', '').replace('LKR ', '').replace(',', '')) : s.price),
-                        item_condition: raw.item_condition || s.item_condition || s.badge || s.cond,
-                        category: raw.category || s.category || s.cat,
+                        _id: raw._id || s._id || raw.id || s.id,
+                        item_name: raw.item_name || s.title || raw.title || s.item_name || 'Untitled Item',
+                        price: (raw.price && typeof raw.price === 'number') ? raw.price : (typeof s.price === 'string' ? parseFloat(s.price.replace('$', '').replace('LKR ', '').replace(',', '')) : (raw.price || s.price || 0)),
+                        description: raw.description || s.description || s.desc || raw.desc || '',
+                        item_condition: raw.item_condition || s.item_condition || s.badge || s.cond || raw.cond || 'used',
+                        category: raw.category || s.category || s.cat || raw.cat || 'General',
                         brand: raw.brand || s.brand,
                         colour: raw.colour || s.colour || s.color,
                         quantity: raw.quantity || s.quantity || 1,
@@ -364,23 +364,37 @@ const ItemDetails = () => {
                         </div>
 
                         {owner && (
-                            <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-8 cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(`/user/${owner._id}`)}>
+                            <div className="bg-white rounded-3xl border border-[#e4d9f7] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-8 cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(`/user/${owner._id || owner.id}`)}>
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#6366f1] to-[#a855f7] flex items-center justify-center text-white text-xl font-black shadow-lg">
-                                        {owner.name?.slice(0, 2).toUpperCase()}
+                                        {owner.profileImage ? (
+                                             <img src={owner.profileImage.startsWith('http') ? owner.profileImage : `http://localhost:5000${owner.profileImage.startsWith('/') ? '' : '/'}${owner.profileImage}`} className="w-full h-full rounded-full object-cover" alt="" />
+                                        ) : (
+                                            owner.name?.slice(0, 2).toUpperCase() || 'UV'
+                                        )}
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-[#1f1b5b] text-lg">{owner.name}</h4>
-                                        <p className="text-xs text-gray-400 font-medium mb-2">Private seller - {owner.location || 'Colombo, LK'}</p>
-                                        <span className="bg-[#dcfce7] text-[#166534] text-[10px] font-bold px-2 py-1 rounded-full border border-[#bbf7d0] flex items-center gap-1 w-fit">
-                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            Verified seller
-                                        </span>
+                                        <h4 className="font-black text-[#1f1b5b] text-lg">{owner.name || 'Anonymous Seller'}</h4>
+                                        <p className="text-xs text-gray-400 font-medium mb-2">
+                                            {owner.type || 'Private seller'} - {owner.location || 'Registered Campus User'}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 w-fit ${ownerTrust?.score >= 50 ? 'bg-[#dcfce7] text-[#166534] border-[#bbf7d0]' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                                {ownerTrust?.level || 'Verified Seller'}
+                                            </span>
+                                            {ownerTrust?.score && (
+                                                <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded-full border border-indigo-200">
+                                                    Trust: {ownerTrust.score}%
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 uppercase text-[10px] font-bold text-gray-400">
-                                        Owner repressetation ledger →
+                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-dashed border-gray-200 uppercase text-[9px] font-black text-gray-400 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 transition-all group">
+                                        View seller activity & feedback
+                                        <span className="ml-auto group-hover:translate-x-1 transition-transform">→</span>
                                     </div>
                                 </div>
                             </div>

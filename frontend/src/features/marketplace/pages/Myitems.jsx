@@ -3,6 +3,7 @@ import { getItems } from '../../../api/itemApi';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import ItemForm from '../components/ItemForm';
+import SkeletonCard from '../components/SkeletonCard';
 
 const INITIAL_ITEMS = [
   { id: 1, name: "Borosilicate Beaker 500ml", cat: "Laboratory", brand: "Pyrex", cond: "new", listing: "sell", avail: "available", price: 48, qty: 24, desc: "High-quality borosilicate glass beaker. Heat resistant to 500°C with graduated markings.", color: "Clear Blue", date: "23 Mar 2026", bid: 1240, buyNow: 1650 },
@@ -102,7 +103,7 @@ export default function Myitems() {
           }
 
           const mapped = itemsFromApi.map(it => ({
-            id: it._id || it.item_id || Date.now(),
+            id: it._id || it.id || it.item_id || Date.now(),
             name: it.item_name || it.title || 'Untitled',
             cat: it.category || 'Other',
             brand: it.brand || '',
@@ -341,10 +342,9 @@ export default function Myitems() {
         </div>
 
         {/* ITEMS GRID */}
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
-            <div className="w-10 h-10 border-4 border-violet-700 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-sm font-medium text-[#7c5aa6]">Gathering your items...</p>
+        {loading && items.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="text-center py-16 animate-fade-in-up" style={{ animationDelay: '150ms' }}>

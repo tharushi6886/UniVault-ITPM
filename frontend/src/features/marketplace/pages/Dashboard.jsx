@@ -4,6 +4,7 @@ import toppicImg from '../../../assets/toppic.jpg';
 import ItemForm from '../components/ItemForm';
 import Sidebar from '../components/Sidebar';
 import { getItems } from '../../../api/itemApi';
+import SkeletonCard from '../components/SkeletonCard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Dashboard = () => {
         
         if (itemsArr.length > 0 && mounted) {
           const mapped = itemsArr.map((it) => ({
-            _id: it._id,
+            _id: it._id || it.id,
             emoji: it.emoji || '📦',
             title: it.item_name || it.title || 'Untitled',
             price: typeof it.price === 'number' ? `$${it.price}` : (it.price || ''),
@@ -396,10 +397,9 @@ const Dashboard = () => {
 
             {/* PRODUCTS GRID */}
             <div className="bg-white border border-gray-200 rounded-b-xl p-5">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
-                   <div className="w-10 h-10 border-4 border-indigo-btn border-t-transparent rounded-full animate-spin mb-4"></div>
-                   <p className="text-sm font-medium text-gray-500">Discovering items for you...</p>
+              {loading && safeItems.length === 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Array(6).fill(0).map((_, i) => <SkeletonCard key={i} />)}
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 grayscale opacity-40">
