@@ -12,28 +12,16 @@ const Dashboard = () => {
   const [showItemForm, setShowItemForm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem('univault_items');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse saved items", e);
-      }
-    }
-    return [
-      { emoji: '🎧', title: 'Sony WH-1000XM4', price: '$180', old: '$350', desc: 'Noise cancelling headphones in perfect condition. Used for one semester only.', cat: 'Electronics', catColor: 'bg-purple-50', badge: 'SALE', badgeColor: 'bg-red-100 text-red-600', stars: 5 },
-      { emoji: '📘', title: 'Calculus Early Trans.', price: '$45', old: '$120', desc: '8th edition James Stewart. Includes unused webassign access code inside.', cat: 'Books', catColor: 'bg-blue-50', badge: '', badgeColor: '', stars: 4 },
-      { emoji: '🪑', title: 'Ergonomic Desk Chair', price: '$65', old: '$110', desc: 'IKEA Markus chair, black mesh back. Must pick up from North Campus.', cat: 'Dorm', catColor: 'bg-green-50', badge: 'HOT', badgeColor: 'bg-yellow-100 text-amber-600', stars: 5 },
-      { emoji: '🔬', title: 'Chemistry Lab Kit', price: '$22', old: '$45', desc: 'Goggles, coat (size M) and lab notebook with 50 blank pages left.', cat: 'Lab', catColor: 'bg-teal-50', badge: '', badgeColor: '', stars: 4 },
-      { emoji: '🔌', title: 'Anker USB-C Hub', price: '$28', old: '$50', desc: '7-in-1 adapter with HDMI, SD card reader, and power delivery.', cat: 'Electronics', catColor: 'bg-amber-50', badge: 'NEW', badgeColor: 'bg-emerald-100 text-emerald-600', stars: 5 },
-      { emoji: '🚲', title: 'Commuter Bicycle', price: '$110', old: '$250', desc: 'Trek FX1 hybrid bike. recently tuned up. Comes with U-lock and lights.', cat: 'Vehicle', catColor: 'bg-yellow-50', badge: '', badgeColor: '', stars: 5 },
-    ];
-  });
+  const [items, setItems] = useState([
+    { emoji: '🎧', title: 'Sony WH-1000XM4', price: '$180', old: '$350', desc: 'Noise cancelling headphones in perfect condition. Used for one semester only.', cat: 'Electronics', catColor: 'bg-purple-50', badge: 'SALE', badgeColor: 'bg-red-100 text-red-600', stars: 5 },
+    { emoji: '📘', title: 'Calculus Early Trans.', price: '$45', old: '$120', desc: '8th edition James Stewart. Includes unused webassign access code inside.', cat: 'Books', catColor: 'bg-blue-50', badge: '', badgeColor: '', stars: 4 },
+    { emoji: '🪑', title: 'Ergonomic Desk Chair', price: '$65', old: '$110', desc: 'IKEA Markus chair, black mesh back. Must pick up from North Campus.', cat: 'Dorm', catColor: 'bg-green-50', badge: 'HOT', badgeColor: 'bg-yellow-100 text-amber-600', stars: 5 },
+    { emoji: '🔬', title: 'Chemistry Lab Kit', price: '$22', old: '$45', desc: 'Goggles, coat (size M) and lab notebook with 50 blank pages left.', cat: 'Lab', catColor: 'bg-teal-50', badge: '', badgeColor: '', stars: 4 },
+    { emoji: '🔌', title: 'Anker USB-C Hub', price: '$28', old: '$50', desc: '7-in-1 adapter with HDMI, SD card reader, and power delivery.', cat: 'Electronics', catColor: 'bg-amber-50', badge: 'NEW', badgeColor: 'bg-emerald-100 text-emerald-600', stars: 5 },
+    { emoji: '🚲', title: 'Commuter Bicycle', price: '$110', old: '$250', desc: 'Trek FX1 hybrid bike. recently tuned up. Comes with U-lock and lights.', cat: 'Vehicle', catColor: 'bg-yellow-50', badge: '', badgeColor: '', stars: 5 },
+  ]);
 
-  useEffect(() => {
-    localStorage.setItem('univault_items', JSON.stringify(items));
-  }, [items]);
+
 
   // Fetch items from backend API (override local examples if available)
   useEffect(() => {
@@ -41,8 +29,10 @@ const Dashboard = () => {
     const fetchItems = async () => {
       try {
         const res = await getItems();
-        if (res && res.data && res.data.items && mounted) {
-          const mapped = res.data.items.map((it) => ({
+        const itemsArr = res?.data?.items || (Array.isArray(res?.data) ? res.data : []);
+        if (itemsArr.length > 0 && mounted) {
+          const mapped = itemsArr.map((it) => ({
+            _id: it._id,
             emoji: it.emoji || '📦',
             title: it.item_name || it.title || 'Untitled',
             price: typeof it.price === 'number' ? `$${it.price}` : (it.price || ''),
@@ -50,10 +40,15 @@ const Dashboard = () => {
             desc: it.description || '',
             cat: it.category || 'Misc',
             catColor: 'bg-white',
-            badge: '',
-            badgeColor: '',
+            badge: it.item_condition === 'new' ? 'NEW' : '',
+            badgeColor: it.item_condition === 'new' ? 'bg-emerald-100 text-emerald-600' : '',
             stars: it.stars || 4,
-            image: it.image || it.image_url || undefined,
+            image: it.item_image 
+              ? (it.item_image.startsWith('http') || it.item_image.startsWith('data:') 
+                  ? it.item_image 
+                  : `http://localhost:5000${it.item_image}`)
+              : undefined,
+            rawItem: it
           }));
           setItems(mapped);
         }
