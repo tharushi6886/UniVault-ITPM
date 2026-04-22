@@ -15,6 +15,15 @@ export const getMyComplaints = (token) =>
 export const getComplaintsAgainstMe = (token) =>
   axios.get(`${API}/against-me`, authHeader(token));
 
+export const getAllComplaints = (token, params = {}) =>
+  axios.get(`${API}/admin/all`, {
+    ...authHeader(token),
+    params,
+  });
+
+export const updateComplaintStatus = (token, id, data) =>
+  axios.patch(`${API}/admin/${id}/status`, data, authHeader(token));
+
 export const replyToComplaint = (token, id, text) =>
   axios.post(`${API}/${id}/reply`, { text }, authHeader(token));
 

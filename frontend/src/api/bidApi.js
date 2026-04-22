@@ -15,5 +15,11 @@ export const getMyBids = (token) =>
 export const getReceivedBids = (token) =>
   axios.get(`${API}/received`, authHeader(token));
 
+export const getAllBidsAdmin = (token, params = {}) =>
+  axios.get(`${API}/admin/all`, {
+    ...authHeader(token),
+    params,
+  });
+
 export const updateBidStatus = (token, bidId, data) =>
   axios.patch(`${API}/${bidId}/status`, data, authHeader(token));
