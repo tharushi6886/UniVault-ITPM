@@ -194,7 +194,7 @@ export default function Bid() {
     try {
       const res = await sendComplaintMessage(token, complaintId, text);
       const newMessages = res.data.messages || [];
-      toast.success("Message sent!");
+      toast.success("Message sent.");
       setChatMsgMap((prev) => ({ ...prev, [complaintId]: "" }));
       if (isSellerSending) {
         setReceivedBidComplaints((prev) => ({ ...prev, [bidId]: { ...prev[bidId], messages: newMessages } }));
@@ -234,7 +234,7 @@ export default function Bid() {
 
   const handleSubmitComplaint = async (e) => {
     e.preventDefault();
-    if (!complaintSubject.trim() || !complaintDesc.trim()) { toast.error("Required fields missing."); return; }
+    if (!complaintSubject.trim() || !complaintDesc.trim()) { toast.error("Subject and description are required."); return; }
     setComplaintLoading(true);
     try {
       const isSeller = complaintTarget.isSeller || false;
@@ -249,7 +249,7 @@ export default function Bid() {
         description: complaintDesc.trim(),
         linkedItemId: complaintTarget.bid._id,
       });
-      toast.success("Complaint submitted.");
+      toast.success("Complaint submitted successfully.");
       if (isSeller) {
         setComplaintReceivedBidIds((prev) => new Set([...prev, complaintTarget.bid._id]));
       } else {
@@ -555,7 +555,7 @@ export default function Bid() {
                               onClick={(e) => { e.stopPropagation(); setBidTarget(item); setBidAmount(Math.round(item.startingPrice * 1.1)); }}
                               className="px-6 py-3 bg-white border-2 border-violet-100 text-violet-700 text-sm font-black rounded-2xl group-hover:bg-violet-600 group-hover:border-violet-600 group-hover:text-white transition-all shadow-sm active:scale-95"
                             >
-                              Bid
+                              Place a Bid
                             </button>
                           </div>
                         </div>
@@ -615,6 +615,16 @@ export default function Bid() {
                     ))}
                   </div>
 
+                  {/* Filter buttons */}
+                  <div className="flex gap-2 flex-wrap">
+                    {["all", "pending", "accepted", "rejected"].map((f) => (
+                      <button key={f} onClick={() => setFilterTab(f)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all ${filterTab === f ? "bg-violet-600 text-white shadow-sm" : "bg-white/80 text-slate-500 border border-slate-200 hover:border-violet-300"}`}>
+                        {f === "all" ? "All" : `${f.charAt(0).toUpperCase() + f.slice(1)} (${receivedBids.filter(b => b.status === f).length})`}
+                      </button>
+                    ))}
+                  </div>
+
                   {filteredReceived.length === 0 && (
                     <div className="py-20 text-center bg-white/60 backdrop-blur-xl rounded-[3rem] border border-white">
                        <p className="text-slate-600 font-bold text-lg">No bids match your criteria.</p>
@@ -623,45 +633,133 @@ export default function Bid() {
 
                   <div className="space-y-4">
                     {filteredReceived.map((bid) => (
-                      <div key={bid._id} className="bg-white/80 backdrop-blur-lg rounded-[2rem] border border-white shadow-sm p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:shadow-md transition-shadow">
-                        <div className="flex gap-5 items-center">
-                          <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-violet-100 to-indigo-50 flex items-center justify-center text-violet-700 font-black text-2xl shadow-inner border border-violet-200 shrink-0">
-                            {bid.bidder?.name?.charAt(0).toUpperCase()}
+                      <div key={bid._id} className="bg-white/80 backdrop-blur-lg rounded-[2rem] border border-white shadow-sm p-6 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                          <div className="flex gap-5 items-center">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-violet-100 to-indigo-50 flex items-center justify-center text-violet-700 font-black text-2xl shadow-inner border border-violet-200 shrink-0">
+                              {bid.bidder?.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-extrabold text-slate-900">{bid.bidder?.name || "Student Bidder"}</h4>
+                              <p className="text-sm text-slate-600 font-medium mb-2">Rating: {bidderRatings[bid.bidder?._id]?.avgRating || "New"} ★</p>
+                              <span className={statusBadge(bid.status)}>{bid.status}</span>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="text-lg font-extrabold text-slate-900">{bid.bidder?.name || "Student Bidder"}</h4>
-                            <p className="text-sm text-slate-600 font-medium mb-2">Rating: {bidderRatings[bid.bidder?._id]?.avgRating || "New"} ★</p>
-                            <span className={statusBadge(bid.status)}>{bid.status}</span>
+
+                          <div className="flex-1 lg:border-l border-slate-200 lg:pl-6">
+                             <p className="text-sm font-bold text-slate-500">Interested in:</p>
+                             <p className="text-lg font-extrabold text-slate-900">{bid.bidItem?.title}</p>
                           </div>
+
+                          <div className="bg-white/60 p-5 rounded-3xl min-w-[180px] text-center border border-white">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Offer Amount</p>
+                            <p className="text-2xl font-black text-violet-700 leading-none">LKR {Number(bid.amount).toLocaleString()}</p>
+                            <p className="text-xs text-slate-500 mt-2 font-bold">{new Date(bid.createdAt).toLocaleDateString()}</p>
+                          </div>
+
+                          {bid.status === "pending" && (
+                            <div className="flex lg:flex-col gap-3 shrink-0">
+                              <button
+                                disabled={actionLoadingId === bid._id}
+                                onClick={() => handleBidAction(bid._id, "accepted")}
+                                className="flex-1 px-6 py-3 bg-slate-900 text-white text-sm font-bold rounded-2xl hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+                              >
+                                ✓ Accept
+                              </button>
+                              <button
+                                disabled={actionLoadingId === bid._id}
+                                onClick={() => handleBidAction(bid._id, "rejected")}
+                                className="flex-1 px-6 py-3 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-2xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
+                              >
+                                ✕ Reject
+                              </button>
+                            </div>
+                          )}
+
+                          {bid.status === "accepted" && (
+                            <div className="flex gap-2 shrink-0">
+                              {!reviewedReceivedBidIds.has(bid._id) ? (
+                                <button onClick={() => setReviewTarget({ bid, isSeller: true })}
+                                  className="px-4 py-2 bg-amber-50 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 hover:bg-amber-500 hover:text-white transition-all active:scale-95">
+                                  ⭐ Leave a Review
+                                </button>
+                              ) : (
+                                <span className="px-3 py-1.5 bg-amber-50 text-amber-600 text-xs font-bold rounded-xl border border-amber-200">Reviewed</span>
+                              )}
+                            </div>
+                          )}
                         </div>
 
-                        <div className="flex-1 lg:border-l border-slate-200 lg:pl-6">
-                           <p className="text-sm font-bold text-slate-500">Interested in:</p>
-                           <p className="text-lg font-extrabold text-slate-900">{bid.bidItem?.title}</p>
-                        </div>
+                        {/* Buyer's Review section */}
+                        {bid.status === "accepted" && receivedBidReviews[bid._id] && (
+                          <div className="bg-amber-50/60 rounded-2xl p-4 border border-amber-100 mt-2">
+                            <p className="text-xs font-black text-amber-700 uppercase tracking-widest mb-1">Buyer's Review</p>
+                            <p className="text-sm text-slate-700 font-medium">{"★".repeat(receivedBidReviews[bid._id].rating)} · {receivedBidReviews[bid._id].comment || "No comment."}</p>
+                          </div>
+                        )}
 
-                        <div className="bg-white/60 p-5 rounded-3xl min-w-[180px] text-center border border-white">
-                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Offer Amount</p>
-                          <p className="text-2xl font-black text-violet-700 leading-none">LKR {Number(bid.amount).toLocaleString()}</p>
-                          <p className="text-xs text-slate-500 mt-2 font-bold">{new Date(bid.createdAt).toLocaleDateString()}</p>
-                        </div>
-
-                        {bid.status === "pending" && (
-                          <div className="flex lg:flex-col gap-3 shrink-0">
-                            <button 
-                              disabled={actionLoadingId === bid._id}
-                              onClick={() => handleBidAction(bid._id, "accepted")}
-                              className="flex-1 px-6 py-3 bg-slate-900 text-white text-sm font-bold rounded-2xl hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
-                            >
-                              Accept
-                            </button>
-                            <button 
-                              disabled={actionLoadingId === bid._id}
-                              onClick={() => handleBidAction(bid._id, "rejected")}
-                              className="flex-1 px-6 py-3 bg-white border border-slate-200 text-slate-600 text-sm font-bold rounded-2xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all active:scale-95 disabled:opacity-50 shadow-sm"
-                            >
-                              Decline
-                            </button>
+                        {/* Buyer Complaint section with chat */}
+                        {bid.status === "accepted" && receivedBidComplaints[bid._id] && (
+                          <div className="bg-rose-50/60 rounded-2xl p-4 border border-rose-100 mt-2">
+                            <p className="text-xs font-black text-rose-600 uppercase tracking-widest mb-1">Buyer Complaint</p>
+                            <p className="text-sm font-bold text-slate-800">{receivedBidComplaints[bid._id].subject}</p>
+                            <p className="text-xs text-slate-500 mt-1">{receivedBidComplaints[bid._id].description}</p>
+                            {/* Conversation */}
+                            {receivedBidComplaints[bid._id].messages?.length > 0 && (
+                              <div className="mt-3 space-y-2">
+                                <p className="text-xs font-bold text-slate-500">Conversation</p>
+                                {receivedBidComplaints[bid._id].messages.map((msg, i) => {
+                                  const senderId = msg.sender?._id || msg.sender;
+                                  const isOwn = String(senderId) === String(currentUser?._id || currentUser?.id);
+                                  const cId = receivedBidComplaints[bid._id]._id;
+                                  return editingMsgId === msg._id ? (
+                                    <div key={i} className="flex gap-2">
+                                      <input
+                                        value={editingText}
+                                        onChange={(e) => setEditingText(e.target.value)}
+                                        className="flex-1 bg-white border border-violet-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-violet-400"
+                                      />
+                                      <button onClick={() => handleEditComplaintMessage(cId, msg._id, bid._id)}
+                                        disabled={editLoadingId === msg._id}
+                                        className="px-3 py-1.5 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 disabled:opacity-50">
+                                        Save
+                                      </button>
+                                      <button onClick={() => { setEditingMsgId(null); setEditingText(""); }}
+                                        className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200">
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div key={i} className="flex items-center gap-2 group">
+                                      <div className={`flex-1 rounded-xl px-3 py-2 text-xs border ${isOwn ? "bg-violet-50 border-violet-100 text-violet-900" : "bg-white border-slate-100 text-slate-700"}`}>
+                                        {msg.text}
+                                      </div>
+                                      {isOwn && (
+                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <button onClick={() => { setEditingMsgId(msg._id); setEditingText(msg.text); }}
+                                            className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-violet-100 hover:text-violet-600 text-[10px]">✏️</button>
+                                          <button onClick={() => handleDeleteComplaintMessage(cId, msg._id, bid._id)}
+                                            disabled={deleteLoadingId === msg._id}
+                                            className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 text-[10px] disabled:opacity-50">🗑️</button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                            <div className="flex gap-2 mt-3">
+                              <input
+                                type="text" placeholder="Type a message..."
+                                value={chatMsgMap[receivedBidComplaints[bid._id]._id] || ""}
+                                onChange={(e) => setChatMsgMap((p) => ({ ...p, [receivedBidComplaints[bid._id]._id]: e.target.value }))}
+                                className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-violet-400"
+                              />
+                              <button onClick={() => handleSendComplaintMessage(receivedBidComplaints[bid._id]._id, bid._id, true)}
+                                className="w-8 h-8 flex items-center justify-center bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-all text-xs font-bold">
+                                ➤
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -679,7 +777,8 @@ export default function Bid() {
                     </div>
                   ) : (
                     myBids.map((bid) => (
-                      <div key={bid._id} className="bg-white/80 backdrop-blur-lg rounded-[2rem] border border-white shadow-sm p-5 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
+                      <React.Fragment key={bid._id}>
+                      <div className="bg-white/80 backdrop-blur-lg rounded-[2rem] border border-white shadow-sm p-5 flex flex-col md:flex-row md:items-center gap-6 hover:shadow-md transition-shadow">
                         <div className="w-24 h-24 rounded-[1.5rem] bg-slate-100/50 overflow-hidden shrink-0 border border-white">
                           {bid.bidItem?.image ? <img src={bid.bidItem.image} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center opacity-20 text-4xl">📦</div>}
                         </div>
@@ -692,17 +791,91 @@ export default function Bid() {
                           <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Your Offer</p>
                           <p className="text-3xl font-black text-violet-700">LKR {Number(bid.amount).toLocaleString()}</p>
                         </div>
-                        {bid.status === "accepted" && !reviewedBidIds.has(bid._id) && (
-                          <div className="md:pl-6 shrink-0">
-                            <button 
-                              onClick={() => setReviewTarget({ bid })}
-                              className="w-full px-6 py-4 bg-amber-100/80 backdrop-blur-sm text-amber-800 text-sm font-black rounded-2xl hover:bg-amber-500 hover:text-white border border-amber-200 shadow-sm transition-all active:scale-95"
-                            >
-                              ⭐ Rate Seller
-                            </button>
+                        {bid.status === "accepted" && (
+                          <div className="flex flex-wrap gap-2 md:pl-6 shrink-0">
+                            {!reviewedBidIds.has(bid._id) ? (
+                              <button onClick={() => setReviewTarget({ bid })}
+                                className="px-5 py-2.5 bg-amber-100/80 text-amber-800 text-xs font-black rounded-2xl hover:bg-amber-500 hover:text-white border border-amber-200 transition-all active:scale-95">
+                                ⭐ Leave a Review
+                              </button>
+                            ) : (
+                              <span className="px-3 py-1.5 bg-amber-50 text-amber-600 text-xs font-bold rounded-xl border border-amber-200">Reviewed</span>
+                            )}
+                            {!filedComplaintBidIds.has(bid._id) ? (
+                              <button onClick={() => setComplaintTarget({ bid })}
+                                className="px-5 py-2.5 bg-rose-50 text-rose-600 text-xs font-black rounded-2xl hover:bg-rose-500 hover:text-white border border-rose-200 transition-all active:scale-95">
+                                🚨 File a Complaint
+                              </button>
+                            ) : (
+                              <span className="px-3 py-1.5 bg-rose-50 text-rose-500 text-xs font-bold rounded-xl border border-rose-200">Complaint Filed</span>
+                            )}
                           </div>
                         )}
                       </div>
+
+                      {/* Complaint chat thread for buyer */}
+                      {bid.status === "accepted" && myBidComplaints[bid._id] && (
+                        <div className="bg-rose-50/60 rounded-2xl p-4 border border-rose-100 mt-2 mx-2">
+                          <p className="text-xs font-black text-rose-600 uppercase tracking-widest mb-2">Your Complaint</p>
+                          <p className="text-sm font-bold text-slate-800">{myBidComplaints[bid._id].subject}</p>
+                          {myBidComplaints[bid._id].messages?.length > 0 && (
+                            <div className="mt-3 space-y-2">
+                              <p className="text-xs font-bold text-slate-500">Conversation</p>
+                              {myBidComplaints[bid._id].messages.map((msg, i) => {
+                                const senderId = msg.sender?._id || msg.sender;
+                                const isOwn = String(senderId) === String(currentUser?._id || currentUser?.id);
+                                const cId = myBidComplaints[bid._id]._id;
+                                return editingMsgId === msg._id ? (
+                                  <div key={i} className="flex gap-2">
+                                    <input
+                                      value={editingText}
+                                      onChange={(e) => setEditingText(e.target.value)}
+                                      className="flex-1 bg-white border border-violet-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-violet-400"
+                                    />
+                                    <button onClick={() => handleEditComplaintMessage(cId, msg._id, bid._id)}
+                                      disabled={editLoadingId === msg._id}
+                                      className="px-3 py-1.5 bg-violet-600 text-white rounded-xl text-xs font-bold hover:bg-violet-700 disabled:opacity-50">
+                                      Save
+                                    </button>
+                                    <button onClick={() => { setEditingMsgId(null); setEditingText(""); }}
+                                      className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200">
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div key={i} className="flex items-center gap-2 group">
+                                    <div className={`flex-1 rounded-xl px-3 py-2 text-xs border ${isOwn ? "bg-violet-50 border-violet-100 text-violet-900" : "bg-white border-slate-100 text-slate-700"}`}>
+                                      {msg.text}
+                                    </div>
+                                    {isOwn && (
+                                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onClick={() => { setEditingMsgId(msg._id); setEditingText(msg.text); }}
+                                          className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-violet-100 hover:text-violet-600 text-[10px]">✏️</button>
+                                        <button onClick={() => handleDeleteComplaintMessage(cId, msg._id, bid._id)}
+                                          disabled={deleteLoadingId === msg._id}
+                                          className="w-6 h-6 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-rose-100 hover:text-rose-600 text-[10px] disabled:opacity-50">🗑️</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          <div className="flex gap-2 mt-3">
+                            <input
+                              type="text" placeholder="Type a message..."
+                              value={chatMsgMap[myBidComplaints[bid._id]._id] || ""}
+                              onChange={(e) => setChatMsgMap((p) => ({ ...p, [myBidComplaints[bid._id]._id]: e.target.value }))}
+                              className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-violet-400"
+                            />
+                            <button onClick={() => handleSendComplaintMessage(myBidComplaints[bid._id]._id, bid._id, false)}
+                              className="w-8 h-8 flex items-center justify-center bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-all text-xs font-bold">
+                              ➤
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      </React.Fragment>
                     ))
                   )}
                  </div>
@@ -722,7 +895,7 @@ export default function Bid() {
             {/* Modal Header */}
             <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-white/50">
               <h2 className="text-xl font-black text-slate-900 tracking-tight">
-                {showForm ? "Create Listing" : bidTarget ? "Submit Your Offer" : reviewTarget ? "Rate Transaction" : "File a Report"}
+                {showForm ? "Create Listing" : bidTarget ? "Submit Your Offer" : reviewTarget ? "Leave a Review" : "🚨 File a Complaint"}
               </h2>
               <button 
                 onClick={() => { setShowForm(false); setBidTarget(null); setReviewTarget(null); setComplaintTarget(null); }}
@@ -842,7 +1015,7 @@ export default function Bid() {
                     type="submit" disabled={bidLoading}
                     className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm hover:bg-slate-800 shadow-xl shadow-slate-200 transition-all active:scale-95"
                   >
-                    {bidLoading ? "Processing..." : "Place Binding Offer"}
+                    {bidLoading ? "Processing..." : "Place Bid"}
                   </button>
                 </form>
               )}
@@ -867,15 +1040,60 @@ export default function Bid() {
                   </div>
                   <textarea
                     rows={4} value={reviewComment} onChange={(e) => setReviewComment(e.target.value)}
-                    placeholder="Describe your transaction experience..."
+                    placeholder="Share your experience with this seller..."
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-sm font-medium focus:ring-4 focus:ring-amber-500/20 focus:border-amber-400 text-slate-900 resize-none"
                   />
                   <button 
                     type="submit" disabled={reviewLoading}
                     className="w-full py-4 bg-amber-500 text-white rounded-2xl font-black text-sm hover:bg-amber-600 shadow-lg shadow-amber-200 transition-all active:scale-95"
                   >
-                    {reviewLoading ? "Sending..." : "Publish Review"}
+                    {reviewLoading ? "Sending..." : "Submit Review ⭐"}
                   </button>
+                </form>
+              )}
+
+              {complaintTarget && (
+                <form onSubmit={handleSubmitComplaint} className="space-y-5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-2 pl-1">Complaint Type</label>
+                    <select
+                      value={complaintType}
+                      onChange={(e) => setComplaintType(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 font-bold text-slate-900 appearance-none"
+                    >
+                      {["item_not_delivered", "fraud", "damaged_item", "wrong_item", "other"].map(t => (
+                        <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-2 pl-1">Subject</label>
+                    <input
+                      type="text" required value={complaintSubject}
+                      onChange={(e) => setComplaintSubject(e.target.value)}
+                      placeholder="Brief title of your complaint"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 font-medium text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-2 pl-1">Description</label>
+                    <textarea
+                      rows={4} required value={complaintDesc}
+                      onChange={(e) => setComplaintDesc(e.target.value)}
+                      placeholder="Describe the issue in detail..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 font-medium text-slate-900 resize-none placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button type="button" onClick={() => setComplaintTarget(null)}
+                      className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-200 transition-all">
+                      Cancel
+                    </button>
+                    <button type="submit" disabled={complaintLoading}
+                      className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-black text-sm hover:bg-rose-700 shadow-lg shadow-rose-200 transition-all active:scale-95 disabled:opacity-50">
+                      {complaintLoading ? "Submitting..." : "🚨 Submit Complaint"}
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
