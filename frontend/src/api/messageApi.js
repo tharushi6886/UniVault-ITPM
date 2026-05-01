@@ -17,3 +17,10 @@ export const getMessages = (token, userId) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const getNotifications = (token) =>
+  API.get('/notifications', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

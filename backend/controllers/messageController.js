@@ -47,7 +47,26 @@ const getMessages = async (req, res) => {
   }
 };
 
+// @desc    Get recent messages/notifications for a user
+// @route   GET /api/messages/notifications
+// @access  Private
+const getNotifications = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    const notifications = await Message.find({ receiver: currentUserId })
+      .populate('sender', 'name profileImage')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   sendMessage,
-  getMessages
+  getMessages,
+  getNotifications
 };

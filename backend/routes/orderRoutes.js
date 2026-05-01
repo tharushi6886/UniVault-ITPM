@@ -20,4 +20,10 @@ const upload = multer({ storage });
 // POST create order
 router.post("/", protect, upload.single("receipt"), orderController.createOrder);
 
+// GET seller orders
+router.get("/seller", protect, orderController.getSellerOrders);
+
+// PUT update order status
+router.put("/:id/status", protect, orderController.updateOrderStatus);
+
 module.exports = router;

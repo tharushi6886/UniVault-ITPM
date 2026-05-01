@@ -26,6 +26,9 @@ const io = new Server(server, {
   }
 });
 
+// Make io accessible in routers
+app.set("io", io);
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
   socket.on('send_message', (data) => {

@@ -1,28 +1,75 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getSellerOrders, updateOrderStatus } from '../../../api/orderApi';
+import { getNotifications } from '../../../api/messageApi';
 
 const OrderPage = () => {
   const navigate = useNavigate();
-  const ORDERS = [
-    { id: 'ORD-0841', buyer: 'Amaya Silva', fac: 'Science · Yr 2', av: 0, item: 'Casio FX-991EX Calculator', price: 2850, loc: 'Mahapola Hostel, Room 214', opt: 'Hostel Drop', time: '2–4 PM', date: '25 Mar', dateMs: 20260325, pay: 'pending', status: 'pending', ref: 'BOC·TXN892047' },
-    { id: 'ORD-0842', buyer: 'Nuwan Perera', fac: 'Engineering · Yr 3', av: 1, item: 'Engineering Drawing Kit', price: 1450, loc: 'Uni Front Gate', opt: 'Front Gate', time: '12 PM', date: '25 Mar', dateMs: 20260325, pay: 'verified', status: 'accepted', ref: 'HSBC·TXN774821' },
-    { id: 'ORD-0843', buyer: 'Dilani Fernando', fac: 'IT · Yr 1', av: 2, item: 'USB-C Hub 7-in-1', price: 3200, loc: 'IT Faculty Lobby', opt: 'Faculty Lobby', time: '10 AM', date: '24 Mar', dateMs: 20260324, pay: 'paid', status: 'completed', ref: 'Sampath·TXN663910' },
-    { id: 'ORD-0844', buyer: 'Kasun Bandara', fac: 'Law · Yr 4', av: 3, item: 'Legal Drafting Guide 2024', price: 980, loc: 'Library Entrance', opt: 'Library', time: '3 PM', date: '24 Mar', dateMs: 20260324, pay: 'rejected', status: 'rejected', ref: 'NSB·TXN551209' },
-    { id: 'ORD-0845', buyer: 'Thilini Jayasekara', fac: 'Arts · Yr 2', av: 4, item: 'Watercolour Set 24pc', price: 1750, loc: 'Arts Faculty Lobby', opt: 'Faculty Lobby', time: '1–2 PM', date: '23 Mar', dateMs: 20260323, pay: 'pending', status: 'pending', ref: 'BOC·TXN440773' },
-    { id: 'ORD-0846', buyer: 'Roshan Gunawardena', fac: 'Medicine · Yr 3', av: 5, item: 'Anatomy Atlas 9th Ed.', price: 4500, loc: 'Medical Faculty Gate', opt: 'Faculty Gate', time: '9 AM', date: '23 Mar', dateMs: 20260323, pay: 'verified', status: 'accepted', ref: 'Sampath·TXN338890' },
-    { id: 'ORD-0847', buyer: 'Malsha Wickramasinghe', fac: 'Business · Yr 1', av: 0, item: 'HP 15s Laptop Bag', price: 2100, loc: 'Hostel B, Room 108', opt: 'Hostel Drop', time: '5 PM', date: '22 Mar', dateMs: 20260322, pay: 'paid', status: 'completed', ref: 'Seylan·TXN229991' },
-    { id: 'ORD-0848', buyer: 'Isuru Rajapaksha', fac: 'Science · Yr 3', av: 1, item: 'Lab Coat + Safety Glasses', price: 890, loc: 'Science Block, Rm 301', opt: 'Classroom', time: '11 AM', date: '22 Mar', dateMs: 20260322, pay: 'pending', status: 'pending', ref: 'BOC·TXN118820' },
-  ];
-
-  const [orders, setOrders] = useState(ORDERS);
+  
+  const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [toast, setToast] = useState('');
+  
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
-  const ini = (name) => name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const ini = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/');
+          return;
+        }
+        const { data } = await getSellerOrders(token);
+        
+        const mapped = data.map((order, i) => {
+          const dateObj = new Date(order.createdAt);
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return {
+            _id: order._id,
+            id: `ORD-${order._id.substring(order._id.length - 4).toUpperCase()}`,
+            buyer: order.buyerId?.name || 'Unknown',
+            fac: order.buyerId?.faculty || 'Unknown Faculty',
+            av: i % 6,
+            item: order.itemId?.item_name || 'Deleted Item',
+            price: order.totalPrice || order.itemId?.price || 0,
+            loc: `${order.building}, Room ${order.room}`,
+            opt: order.deliveryMethod === 'courier' ? 'Courier' : 'Pickup',
+            time: order.timeWindow,
+            date: `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]}`,
+            dateMs: dateObj.getTime(),
+            pay: order.paymentStatus || 'pending',
+            status: order.status || 'pending',
+            ref: `TXN·${order._id.substring(order._id.length - 6).toUpperCase()}`,
+            receiptImage: order.receiptImage
+          };
+        });
+        setOrders(mapped);
+
+        // Fetch notifications
+        try {
+          const notifs = await getNotifications(token);
+          setNotifications(notifs.data || []);
+        } catch (err) {
+          console.error("Error fetching notifications", err);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('❌ Error fetching orders');
+      }
+    };
+    fetchOrders();
+  }, [navigate]);
 
   const getFiltered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -56,27 +103,46 @@ const OrderPage = () => {
     setTimeout(() => setToast(''), 2400);
   };
 
-  const doAct = (id, action) => {
-    setOrders(prev => prev.map(o => {
-      if (o.id !== id) return o;
-      const updated = { ...o };
-      if (action === 'accept') updated.status = 'accepted';
-      if (action === 'reject') updated.status = 'rejected';
-      if (action === 'verify') updated.pay = 'verified';
-      if (action === 'complete') {
-        updated.status = 'completed';
-        updated.pay = 'paid';
-      }
-      return updated;
-    }));
+  const doAct = async (id, action) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return showToast('Please login');
 
-    const msgs = {
-      accept: '✅ Order accepted!',
-      reject: '❌ Order rejected.',
-      verify: '💳 Payment verified!',
-      complete: '🏁 Order marked as completed!'
-    };
-    showToast(msgs[action] || '✓ Done');
+      let newStatus = null;
+      let newPay = null;
+      
+      if (action === 'accept') newStatus = 'accepted';
+      if (action === 'reject') newStatus = 'rejected';
+      if (action === 'verify') newPay = 'verified';
+      if (action === 'complete') {
+        newStatus = 'completed';
+        newPay = 'paid';
+      }
+
+      const orderObj = orders.find(o => o.id === id);
+      if (!orderObj) return;
+
+      await updateOrderStatus(token, orderObj._id, { status: newStatus, paymentStatus: newPay });
+
+      setOrders(prev => prev.map(o => {
+        if (o.id !== id) return o;
+        const updated = { ...o };
+        if (newStatus) updated.status = newStatus;
+        if (newPay) updated.pay = newPay;
+        return updated;
+      }));
+
+      const msgs = {
+        accept: '✅ Order accepted!',
+        reject: '❌ Order rejected.',
+        verify: '💳 Payment verified!',
+        complete: '🏁 Order marked as completed!'
+      };
+      showToast(msgs[action] || '✓ Done');
+    } catch (err) {
+      console.error(err);
+      showToast('❌ Error updating order');
+    }
   };
 
   const openModal = (order) => {
@@ -163,12 +229,45 @@ const OrderPage = () => {
             <div className="text-xs text-gray-500">Manage and track all customer orders</div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
           <div className="bg-purple-100 border border-purple-200 px-3 py-1 rounded-full text-xs font-bold text-purple-800">📅 25 Mar 2026</div>
-          <div className="w-8 h-8 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center relative cursor-pointer">
+          <div 
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="w-8 h-8 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center relative cursor-pointer hover:bg-purple-200 transition"
+          >
             🔔
-            <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></div>
+            {notifications.length > 0 && (
+              <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></div>
+            )}
           </div>
+
+          {/* Notifications Dropdown */}
+          {showNotifications && (
+            <div className="absolute top-12 right-0 w-80 bg-white rounded-2xl shadow-xl border border-purple-200 z-50 overflow-hidden flex flex-col">
+              <div className="bg-purple-50 border-b border-purple-100 px-4 py-3 flex items-center justify-between">
+                <span className="text-sm font-bold text-gray-900">Notifications</span>
+                <span className="bg-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">{notifications.length} New</span>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500 text-sm">No new notifications</div>
+                ) : (
+                  notifications.map((n, i) => (
+                    <div key={n._id || i} className="px-4 py-3 border-b border-purple-50 hover:bg-purple-50 transition cursor-pointer flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-200 to-purple-300 flex items-center justify-center flex-shrink-0 text-sm">
+                        {n.sender?.name ? n.sender.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-gray-900 mb-0.5">{n.sender?.name || 'User'}</div>
+                        <div className="text-xs text-gray-600 line-clamp-2">{n.text}</div>
+                        <div className="text-[10px] text-gray-400 mt-1 font-medium">{new Date(n.createdAt).toLocaleDateString()} · {new Date(n.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -362,11 +461,17 @@ const OrderPage = () => {
               </div>
               <button onClick={closeModal} className="w-7 h-7 rounded-lg bg-purple-100 border-0 cursor-pointer text-gray-500 text-sm flex items-center justify-center hover:bg-purple-200">✕</button>
             </div>
-            <div className="w-full h-48 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-300 flex flex-col items-center justify-center gap-2 mb-4">
-              <div className="text-5xl">🧾</div>
-              <div className="text-sm text-purple-800 font-bold">{selectedOrder.ref}</div>
-              <div className="text-xs text-gray-500">{selectedOrder.date} 2026</div>
-            </div>
+            {selectedOrder.receiptImage ? (
+              <div className="w-full h-48 rounded-2xl mb-4 overflow-hidden border border-purple-300">
+                <img src={`http://localhost:5000${selectedOrder.receiptImage}`} alt="Receipt" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-full h-48 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-300 flex flex-col items-center justify-center gap-2 mb-4">
+                <div className="text-5xl">🧾</div>
+                <div className="text-sm text-purple-800 font-bold">{selectedOrder.ref}</div>
+                <div className="text-xs text-gray-500">{selectedOrder.date}</div>
+              </div>
+            )}
             <div className="bg-purple-50 rounded-2xl p-3 grid grid-cols-2 gap-2 mb-4">
               <div className="space-y-1">
                 <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Amount</div>
