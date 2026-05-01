@@ -151,7 +151,7 @@ const updateItem = async (req, res, next) => {
   try {
     const item = await Item.findById(req.params.id);
     if (!item) return res.status(404).json({ message: "Item not found" });
-    if (item.userId.toString() !== req.user._id.toString()) {
+    if (item.userId.toString() !== req.user._id.toString() && req.user.role !== "Admin") {
       return res.status(403).json({ message: "Not authorized" });
     }
     const updated = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });

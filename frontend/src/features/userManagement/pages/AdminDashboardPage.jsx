@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../homepage/components/Navbar";
 import { getAdminDashboardStats, getUsers, blockUser, unblockUser, deleteUser, updateUserRole, getUserById } from "../../../api/userApi";
-import { getAllItems, getAllLostItems, getAllFoundItems } from "../../../api/itemApi";
-import { getActivityLog, exportUsersData } from "../../../api/adminApi";
+import { getAllItems, getAllLostItems, getAllFoundItems, updateMarketplaceItem } from "../../../api/itemApi";
+import { getActivityLog, exportUsersData, getAdminOrders, deleteAdminOrder, deleteAdminItem } from "../../../api/adminApi";
 import { toast } from "react-toastify";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -281,8 +281,14 @@ const AdminDashboardPage = () => {
   const [selectedUserDetail, setSelectedUserDetail] = useState(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [marketplaceOrders, setMarketplaceOrders] = useState([]);
+  const [marketplaceItems, setMarketplaceItems] = useState([]);
+  const [marketplaceSubTab, setMarketplaceSubTab] = useState("Items");
+  const [loadingMarketplace, setLoadingMarketplace] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
-  const tabs = ["Overview", "User Directory", "System Modules"];
+  const tabs = ["Overview", "User Directory", "Marketplace", "System Modules"];
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -319,6 +325,30 @@ const AdminDashboardPage = () => {
 
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "Marketplace") {
+      fetchMarketplaceData();
+    }
+  }, [activeTab]);
+
+  const fetchMarketplaceData = async () => {
+    setLoadingMarketplace(true);
+    const token = localStorage.getItem("token");
+    try {
+      const [itemsRes, ordersRes] = await Promise.all([
+        getAllItems(),
+        getAdminOrders(token)
+      ]);
+      setMarketplaceItems(itemsRes.data.items || itemsRes.data || []);
+      setMarketplaceOrders(ordersRes.data || []);
+    } catch (error) {
+      console.error("Marketplace fetch error:", error);
+      toast.error("Failed to fetch marketplace data");
+    } finally {
+      setLoadingMarketplace(false);
+    }
+  };
 
   const handleBlock = async (userId) => {
     if (!window.confirm("Are you sure you want to block this user?")) return;
@@ -470,6 +500,67 @@ const AdminDashboardPage = () => {
       setSelectedUserIds([]);
     } catch (error) {
       toast.error("Bulk deletion failed partially");
+    }
+  };
+
+  const handleDeleteAdminOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this order?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await deleteAdminOrder(token, orderId);
+      toast.success("Order deleted successfully");
+      setMarketplaceOrders(prev => prev.filter(o => o._id !== orderId));
+    } catch (error) {
+      toast.error("Failed to delete order");
+    }
+  };
+
+  const handleDeleteAdminItem = async (itemId) => {
+    if (!window.confirm("Are you sure you want to delete this listing?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await deleteAdminItem(token, itemId);
+      toast.success("Item deleted successfully");
+      setMarketplaceItems(prev => prev.filter(i => i._id !== itemId));
+    } catch (error) {
+      toast.error("Failed to delete item");
+    }
+  };
+
+  const handleEditAdminItem = (item) => {
+    setEditingItem({ ...item });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateAdminItem = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      // Create a clean object for update
+      const updateData = { ...editingItem };
+      // Payment details might need to be structured if we kept it, but user asked to remove from form.
+      // We keep the existing ones in the object if not touched.
+      
+      await updateMarketplaceItem(editingItem._id, updateData, token);
+      toast.success("Item updated in database successfully");
+      setMarketplaceItems(prev => prev.map(i => i._id === editingItem._id ? editingItem : i));
+      setIsEditModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to update database record");
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        return toast.error("Image too large (max 2MB)");
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditingItem({ ...editingItem, item_image: reader.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -746,10 +837,11 @@ const AdminDashboardPage = () => {
                           <QuickCard
                             title="Marketplace Admin"
                             desc="Manage shop inventory."
-                            active={false}
+                            active={true}
                             iconBg="bg-slate-50"
-                            iconColor="text-slate-500"
+                            iconColor="text-indigo-600"
                             iconIcon="🛒"
+                            onClick={() => setActiveTab("Marketplace")}
                           />
                           <QuickCard
                             title="Bidding Control"
@@ -1114,6 +1206,183 @@ const AdminDashboardPage = () => {
               </div>
             )}
 
+            {/* MARKETPLACE TAB */}
+            {activeTab === "Marketplace" && (
+              <div className="animate-fade-in-up space-y-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex gap-2 bg-white/50 backdrop-blur-sm p-1 rounded-2xl border border-white/40 shadow-sm">
+                    {["Items", "Orders"].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setMarketplaceSubTab(t)}
+                        className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                          marketplaceSubTab === t
+                            ? "bg-indigo-600 text-white shadow-lg"
+                            : "text-slate-400 hover:text-slate-600 hover:bg-white"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="relative group">
+                       <span className="absolute inset-y-0 left-4 flex items-center text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                       </span>
+                       <input 
+                         type="text" 
+                         placeholder={`Search ${marketplaceSubTab}...`}
+                         className="bg-white/70 backdrop-blur-md border border-white px-10 py-2.5 rounded-2xl text-[11px] font-bold text-slate-700 w-[280px] focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all shadow-sm"
+                         value={searchTerm}
+                         onChange={(e) => setSearchTerm(e.target.value)}
+                       />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="ag-card overflow-hidden border-white">
+                  {loadingMarketplace ? (
+                    <div className="p-20 text-center animate-pulse">
+                      <div className="w-10 h-10 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Accessing Market Grid...</p>
+                    </div>
+                  ) : marketplaceSubTab === "Items" ? (
+                    <div className="overflow-x-auto max-h-[600px]">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="bg-slate-50/80 sticky top-0 z-10 border-b border-slate-100">
+                          <tr>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Listing</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Seller</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Category</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Qty</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {marketplaceItems.filter(i => {
+                            const search = searchTerm.toLowerCase();
+                            return (
+                              (i.item_name || "").toLowerCase().includes(search) ||
+                              (i.userId?.name || "").toLowerCase().includes(search) ||
+                              (i.description || "").toLowerCase().includes(search) ||
+                              (i.category || "").toLowerCase().includes(search) ||
+                              (i.availability_status || "").toLowerCase().includes(search) ||
+                              (i.price?.toString() || "").includes(search)
+                            );
+                          }).map((item, idx) => (
+                            <tr key={item._id} className={`border-b border-slate-50 hover:bg-indigo-50/30 transition-colors ${idx % 2 === 0 ? "bg-white/40" : "bg-white/20"}`}>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-lg bg-indigo-100 overflow-hidden border border-white flex-shrink-0">
+                                    {item.item_image ? (
+                                      <img src={item.item_image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center text-indigo-400 text-xs">📦</div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-bold text-slate-800">{item.item_name}</p>
+                                    <p className="text-[9px] text-slate-400 font-mono">ID: {item._id.slice(-6).toUpperCase()}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <p className="text-[11px] font-bold text-slate-600">{item.userId?.name || 'Unknown'}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                <p className="text-[10px] text-slate-500 max-w-[150px] truncate" title={item.description}>{item.description || 'No description'}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-[10px] font-black px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md">{item.category}</span>
+                              </td>
+                              <td className="px-6 py-4 text-[10px] font-bold text-slate-600">
+                                {item.quantity || 1}
+                              </td>
+                              <td className="px-6 py-4 font-black text-slate-800 text-xs whitespace-nowrap">LKR {item.price?.toLocaleString()}</td>
+                              <td className="px-6 py-4">
+                                <p className="text-[10px] font-bold text-slate-500 uppercase">{item.payment_details?.payment_method || 'N/A'}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                                  item.availability_status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-slate-50 text-slate-500 border-slate-200'
+                                }`}>{item.availability_status}</span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <div className="flex gap-2 justify-end">
+                                  <button onClick={() => handleEditAdminItem(item)} className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center border border-indigo-100 shadow-sm">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                  </button>
+                                  <button onClick={() => handleDeleteAdminItem(item._id)} className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center border border-rose-100 shadow-sm">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto max-h-[600px]">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="bg-slate-50/80 sticky top-0 z-10 border-b border-slate-100">
+                          <tr>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Order ID</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Buyer</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Seller</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Total</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {marketplaceOrders.filter(o => {
+                            const search = searchTerm.toLowerCase();
+                            return (
+                              (o._id || "").toLowerCase().includes(search) || 
+                              (o.buyerId?.name || "").toLowerCase().includes(search) ||
+                              (o.sellerId?.name || "").toLowerCase().includes(search) ||
+                              (o.status || "").toLowerCase().includes(search) ||
+                              (o.totalPrice?.toString() || "").includes(search)
+                            );
+                          }).map((order, idx) => (
+                            <tr key={order._id} className={`border-b border-slate-50 hover:bg-indigo-50/30 transition-colors ${idx % 2 === 0 ? "bg-white/40" : "bg-white/20"}`}>
+                              <td className="px-6 py-4">
+                                <p className="text-[10px] font-black text-indigo-600 font-mono">ORD-{order._id.slice(-4).toUpperCase()}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                <p className="text-[11px] font-bold text-slate-700">{order.buyerId?.name || 'Unknown'}</p>
+                              </td>
+                              <td className="px-6 py-4">
+                                <p className="text-[11px] font-bold text-slate-600">{order.sellerId?.name || 'Unknown'}</p>
+                              </td>
+                              <td className="px-6 py-4 font-black text-slate-800 text-xs">LKR {order.totalPrice?.toLocaleString()}</td>
+                              <td className="px-6 py-4">
+                                <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                                  order.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                                  order.status === 'rejected' ? 'bg-rose-50 text-rose-600 border-rose-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+                                }`}>{order.status}</span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button onClick={() => handleDeleteAdminOrder(order._id)} className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center border border-rose-100 shadow-sm ml-auto">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* SYSTEM MODULES TAB */}
             {activeTab === "System Modules" && (
               <div className="animate-fade-in-up">
@@ -1136,6 +1405,134 @@ const AdminDashboardPage = () => {
 
         </div>
       </div>
+
+      {/* --- Edit Marketplace Item Modal --- */}
+      {isEditModalOpen && editingItem && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl border border-white/20 animate-scale-in">
+            <div className="bg-indigo-600 px-8 py-6 flex justify-between items-center">
+              <div>
+                <h3 className="text-xl font-black text-white tracking-tight font-epilogue">Edit Marketplace Listing</h3>
+                <p className="text-indigo-100 text-[10px] font-bold uppercase tracking-widest mt-1">Ref ID: {editingItem._id}</p>
+              </div>
+              <button onClick={() => setIsEditModalOpen(false)} className="text-white/60 hover:text-white transition-colors text-2xl">✕</button>
+            </div>
+            
+            <form onSubmit={handleUpdateAdminItem} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Item Name</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all"
+                    value={editingItem.item_name}
+                    onChange={(e) => setEditingItem({...editingItem, item_name: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Price (LKR)</label>
+                  <input 
+                    type="number" 
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all"
+                    value={editingItem.price}
+                    onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Category</label>
+                  <select 
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all appearance-none"
+                    value={editingItem.category}
+                    onChange={(e) => setEditingItem({...editingItem, category: e.target.value})}
+                  >
+                    <option value="Electronics">Electronics</option>
+                    <option value="Textbooks">Textbooks</option>
+                    <option value="Lab Equipment">Lab Equipment</option>
+                    <option value="Hostel Gear">Hostel Gear</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Quantity</label>
+                  <input 
+                    type="number" 
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all"
+                    value={editingItem.quantity}
+                    onChange={(e) => setEditingItem({...editingItem, quantity: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Description</label>
+                <textarea 
+                  rows="3"
+                  className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all resize-none"
+                  value={editingItem.description}
+                  onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Availability</label>
+                  <select 
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all appearance-none"
+                    value={editingItem.availability_status}
+                    onChange={(e) => setEditingItem({...editingItem, availability_status: e.target.value})}
+                  >
+                    <option value="available">Available</option>
+                    <option value="sold">Sold</option>
+                    <option value="unavailable">Unavailable</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Item Image</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
+                      {editingItem.item_image ? (
+                        <img src={editingItem.item_image} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">📷</div>
+                      )}
+                    </div>
+                    <label className="flex-1 cursor-pointer">
+                      <div className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-[10px] font-black text-indigo-600 text-center hover:bg-slate-50 transition-all border-dashed">
+                        CHOOSE NEW IMAGE
+                      </div>
+                      <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
+                >
+                  Discard Changes
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest bg-indigo-600 text-white shadow-lg shadow-indigo-200 hover:scale-[1.02] active:scale-95 transition-all"
+                >
+                  Save Intelligence
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* --- Overlay Backdrop --- */}
       {drawerStat && (
