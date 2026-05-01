@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const dbConnection = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
@@ -12,9 +14,25 @@ const foundItemRoutes = require("./routes/foundItemRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 const path = require("path");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000", // Frontend URL
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+  socket.on('send_message', (data) => {
+    // Broadcast the message to everyone (frontend will filter by ID)
+    io.emit('receive_message', data);
+  });
+});
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -30,6 +48,7 @@ app.use("/api/found-items", foundItemRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/messages", messageRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -38,11 +57,11 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
 
-module.exports = app;
+module.exports = server;
 
 // Error handler for payload too large and other body parsing errors
 app.use((err, req, res, next) => {

@@ -22,6 +22,13 @@ export const getPublicSystemStats = () => API.get("/public-stats");
 export const getTrustLeaderboard = () => API.get("/leaderboard");
 export const getUserTrust = (studentId) => API.get(`/trust/${studentId}`);
 
+export const searchUsers = (token, searchQuery = "") =>
+  API.get(`/search?search=${searchQuery}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const updateProfile = (token, data) =>
   API.put("/profile", data, {
     headers: {

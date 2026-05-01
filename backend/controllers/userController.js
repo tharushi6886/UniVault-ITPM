@@ -323,6 +323,27 @@ const getUsers = async (req, res) => {
   }
 };
 
+// Search Users (Student)
+const searchUsers = async (req, res) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          name: { $regex: req.query.search, $options: "i" },
+          status: "active"
+        }
+      : { status: "active" };
+
+    // Don't return the logged in user
+    const users = await User.find({ ...keyword, _id: { $ne: req.user._id } })
+      .select("name profileImage faculty studentId role")
+      .limit(10); // Limit to 10 for performance
+
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get User By ID (Admin)
 const getUserById = async (req, res) => {
   try {
@@ -667,4 +688,5 @@ module.exports = {
   updateUserRole,
   uploadAvatar,
   getUserTrustByStudentId,
+  searchUsers,
 };
