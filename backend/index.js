@@ -42,6 +42,8 @@ app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
 
+module.exports = app;
+
 // Error handler for payload too large and other body parsing errors
 app.use((err, req, res, next) => {
   if (err) {

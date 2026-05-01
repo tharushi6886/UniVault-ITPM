@@ -25,6 +25,7 @@ export default function PurchaseDone() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     const setSize = () => {
       canvas.width = window.innerWidth;
