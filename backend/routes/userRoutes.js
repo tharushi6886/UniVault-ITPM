@@ -23,6 +23,7 @@ const {
   updateUserRole,
   uploadAvatar,
   getUserTrustByStudentId,
+  searchUsers,
 } = require("../controllers/userController");
 
 const upload = require("../middlewares/uploadMiddleware");
@@ -55,6 +56,7 @@ router.post("/reset-password", resetPassword);
 
 // User profile
 router.get("/profile", protect, getUserProfile);
+router.get("/search", protect, searchUsers);
 router.get("/public/:id", getPublicProfile);
 router.get("/public-stats", getPublicSystemStats);
 router.get("/leaderboard", getTrustLeaderboard);

@@ -3,6 +3,7 @@ const Item = require("../models/itemModels");
 const LostItem = require("../models/LostItem");
 const FoundItem = require("../models/FoundItem");
 const Review = require("../models/Review");
+const Order = require("../models/Order");
 
 const getActivityLog = async (req, res) => {
   try {
@@ -109,4 +110,45 @@ const getUsersForExport = async (req, res) => {
   }
 };
 
-module.exports = { getActivityLog, getUsersForExport };
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("buyerId", "name email studentId")
+      .populate("sellerId", "name email studentId")
+      .populate("itemId", "item_name price")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    console.error("Admin fetch orders error:", error);
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
+};
+
+const deleteOrder = async (req, res) => {
+  try {
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Admin delete order error:", error);
+    res.status(500).json({ message: "Failed to delete order" });
+  }
+};
+
+const deleteMarketplaceItem = async (req, res) => {
+  try {
+    await Item.findByIdAndDelete(req.params.id);
+    res.json({ message: "Item deleted successfully" });
+  } catch (error) {
+    console.error("Admin delete item error:", error);
+    res.status(500).json({ message: "Failed to delete item" });
+  }
+};
+
+module.exports = { 
+  getActivityLog, 
+  getUsersForExport, 
+  getAllOrders, 
+  deleteOrder, 
+  deleteMarketplaceItem 
+};

@@ -2,7 +2,8 @@ const User = require("../models/User");
 const LostItem = require("../models/LostItem");
 const FoundItem = require("../models/FoundItem");
 const generateToken = require("../utils/generateToken");
-const nodemailer = require("nodemailer");
+const sendEmail = require("../utils/sendEmail");
+const { getOtpTemplate } = require("../utils/emailTemplates");
 const Lost = require("../models/lost");
 const Item = require("../models/itemModels");
 const calculateTrustScore = require("../utils/trustScore");
@@ -30,69 +31,54 @@ const registerUser = async (req, res) => {
       $or: [{ email }, { studentId }],
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       return res.status(400).json({
-        message: "User already exists with this email or student ID",
+        message: "User already exists with this email or student ID. Please sign in.",
       });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    let user;
 
-    const user = await User.create({
-      name,
-      email,
-      studentId,
-      password,
-      role: "Student",
-      phone,
-      faculty,
-      otp,
-      otpExpires: Date.now() + 10 * 60 * 1000,
-      isVerified: false,
-      status: "pending",
-    });
+    if (existingUser && !existingUser.isVerified) {
+      // Update unverified user instead of creating new one
+      existingUser.name = name;
+      existingUser.password = password;
+      existingUser.phone = phone;
+      existingUser.faculty = faculty;
+      existingUser.otp = otp;
+      existingUser.otpExpires = Date.now() + 10 * 60 * 1000;
+      user = await existingUser.save();
+    } else {
+      user = await User.create({
+        name,
+        email,
+        studentId,
+        password,
+        role: "Student",
+        phone,
+        faculty,
+        otp,
+        otpExpires: Date.now() + 10 * 60 * 1000,
+        isVerified: false,
+        status: "pending",
+      });
+    }
 
     try {
-      // Validate environment variables
-      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.error("Email environment variables not configured");
-        await User.findByIdAndDelete(user._id);
-        return res.status(500).json({
-          message: "Email service not configured. Please try again later.",
-        });
-      }
+      const emailHtml = getOtpTemplate(otp, name, "registration");
+      const emailSubject = "UniVault OTP Verification";
+      const emailText = `Hello ${name}, your OTP for UniVault verification is ${otp}. It will expire in 10 minutes.`;
 
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER, 
-          pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-
-      // Verify transporter connection
-      await transporter.verify();
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "UniVault OTP Verification",
-        html: `
-          <h2>UniVault OTP Verification</h2>
-          <p>Your OTP code is: <strong>${otp}</strong></p>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you did not request this, please ignore this email.</p>
-        `,
-      };
-
-      await transporter.sendMail(mailOptions);
+      await sendEmail(email, emailSubject, emailText, emailHtml);
       console.log(`OTP email sent successfully to ${email}`);
     } catch (mailError) {
       console.error("Email sending error:", mailError.message);
-      await User.findByIdAndDelete(user._id);
+      
+      // Clean up the created user if email fails
+      if (user && user._id) {
+        await User.findByIdAndDelete(user._id);
+      }
 
       return res.status(500).json({
         message: "Failed to send OTP email. Please check your email address and try again.",
@@ -172,7 +158,7 @@ const loginUser = async (req, res) => {
 
     if (!user.isVerified || user.status === "pending") {
       return res.status(403).json({
-        message: "Please verify your university email with OTP before login.",
+        message: "Account not verified. Please check your email for OTP or register again to resend code.",
       });
     }
 
@@ -189,6 +175,7 @@ const loginUser = async (req, res) => {
         phone: user.phone,
         faculty: user.faculty,
         status: user.status,
+        profileImage: user.profileImage,
       },
     });
   } catch (error) {
@@ -296,6 +283,7 @@ const updateUserProfile = async (req, res) => {
           phone: updatedUser.phone,
           faculty: updatedUser.faculty,
           status: updatedUser.status,
+          profileImage: updatedUser.profileImage,
         },
       });
     } else {
@@ -329,6 +317,27 @@ const changePassword = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select("-password -otp -otpExpires");
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Search Users (Student)
+const searchUsers = async (req, res) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          name: { $regex: req.query.search, $options: "i" },
+          status: "active"
+        }
+      : { status: "active" };
+
+    // Don't return the logged in user
+    const users = await User.find({ ...keyword, _id: { $ne: req.user._id } })
+      .select("name profileImage faculty studentId role")
+      .limit(10); // Limit to 10 for performance
+
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -547,22 +556,20 @@ const forgotPassword = async (req, res) => {
     user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    try {
+      const emailHtml = getOtpTemplate(otp, user.name, "reset");
+      const emailSubject = "UniVault Password Reset OTP";
+      const emailText = `Hello ${user.name}, your OTP for password reset is ${otp}. It will expire in 10 minutes.`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "UniVault Password Reset OTP",
-      text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
-    });
-
-    res.json({ message: "Password reset OTP sent to your university email" });
+      await sendEmail(email, emailSubject, emailText, emailHtml);
+      res.json({ message: "Password reset OTP sent to your university email" });
+    } catch (mailError) {
+      console.error("Forgot password email error:", mailError.message);
+      res.status(500).json({ 
+        message: "Failed to send reset OTP. Please try again later.",
+        error: process.env.NODE_ENV === "development" ? mailError.message : undefined 
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -681,4 +688,5 @@ module.exports = {
   updateUserRole,
   uploadAvatar,
   getUserTrustByStudentId,
+  searchUsers,
 };

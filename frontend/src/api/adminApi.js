@@ -18,3 +18,23 @@ export const exportUsersData = (token, filters) =>
     },
     params: filters
   });
+export const getAdminOrders = (token) =>
+  API.get("/orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const deleteAdminOrder = (token, id) =>
+  API.delete(`/orders/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const deleteAdminItem = (token, id) =>
+  API.delete(`/items/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

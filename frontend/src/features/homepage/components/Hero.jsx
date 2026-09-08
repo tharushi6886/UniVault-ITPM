@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getPublicSystemStats } from '../../../api/userApi';
 
 const NODE_DATA = [
@@ -26,6 +27,7 @@ const Hero = () => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('lost-and-found');
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -163,50 +165,100 @@ const Hero = () => {
                     The ultimate campus platform for item recovery and student marketplace. <span className="text-cyan-400 font-semibold">Secure, verified, and community-driven.</span>
                 </p>
 
-                <div className="max-w-[560px] mx-auto mb-[34px]">
-                    <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/82 backdrop-blur-2xl border border-white/85 rounded-2xl p-2 shadow-[0_18px_40px_rgba(42,76,109,0.18)] focus-within:border-cyan-300 focus-within:shadow-[0_14px_32px_rgba(125,211,252,0.22)] transition-all duration-300">
-                        <select
-                            value={searchType}
-                            onChange={(e) => setSearchType(e.target.value)}
-                            className="bg-transparent text-slate-700 border-none outline-none font-epilogue text-sm font-semibold pl-3 pr-8 py-3 cursor-pointer appearance-none rounded-xl hover:bg-sky-50/80"
-                            style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23475569%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px top 50%', backgroundSize: '10px auto' }}
-                        >
-                            <option value="lost-and-found" className="text-slate-800">Lost &amp; Found</option>
-                            <option value="marketplace" className="text-slate-800">Marketplace</option>
-                        </select>
+                <div className="max-w-[640px] mx-auto mb-[34px] relative group">
+                    {/* Mode Toggle */}
+                    <div className="flex justify-center mb-5">
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-1 rounded-xl flex gap-1 shadow-lg">
+                            {['lost-and-found', 'marketplace'].map((type) => (
+                                <button
+                                    key={type}
+                                    onClick={() => setSearchType(type)}
+                                    className="relative px-5 py-2 rounded-lg font-epilogue text-xs font-bold transition-all duration-300 whitespace-nowrap z-10"
+                                >
+                                    {searchType === type && (
+                                        <motion.div 
+                                            layoutId="active-pill"
+                                            className="absolute inset-0 bg-[#00D9FF] rounded-lg shadow-[0_4px_12px_rgba(0,217,255,0.4)]"
+                                            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                        />
+                                    )}
+                                    <span className={`relative z-20 ${searchType === type ? 'text-[#0F0A2E]' : 'text-white/60 hover:text-white'}`}>
+                                        {type === 'lost-and-found' ? '🔍 LOST & FOUND' : '🛍️ MARKETPLACE'}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                        <div className="hidden sm:block w-[1px] h-8 bg-slate-200 mx-1"></div>
-
-                        <input
-                            type="text"
-                            placeholder={searchType === 'marketplace' ? 'Search for textbooks, laptops...' : 'Search for keys, IDs, phones...'}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSearch();
-                            }}
-                            className="bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 font-epilogue text-sm w-full py-3 px-2"
-                        />
+                    {/* Main Search Bar */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col sm:flex-row items-center gap-2 bg-white/90 backdrop-blur-3xl border-[1.5px] border-white/40 rounded-2xl p-2.5 shadow-[0_22px_50px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.1)] focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(0,217,255,0.2),0_22px_50px_rgba(0,0,0,0.4)] transition-all duration-500"
+                    >
+                        <div className="flex-1 flex items-center w-full px-3">
+                            <span className="text-cyan-500 mr-3 animate-pulse">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </span>
+                            <input
+                                type="text"
+                                placeholder={searchType === 'marketplace' ? 'Search textbooks, electronics, dorm gear...' : 'Search for keys, student IDs, phones...'}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSearch();
+                                }}
+                                className="bg-transparent border-none outline-none text-slate-800 placeholder-slate-400 font-epilogue text-[15px] font-medium w-full py-2.5"
+                            />
+                        </div>
 
                         <button
                             onClick={handleSearch}
-                            className="bg-gradient-to-r from-[#00D9FF] to-[#34D399] text-[#0F0A2E] p-3 rounded-xl hover:-translate-y-0.5 transition-transform shadow-[0_8px_22px_rgba(0,217,255,0.3)] w-full sm:w-auto flex items-center justify-center shrink-0"
+                            className="bg-gradient-to-r from-[#00D9FF] to-[#34D399] text-[#0F0A2E] font-epilogue font-bold text-sm px-8 py-3.5 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_25px_rgba(0,217,255,0.4)] w-full sm:w-auto flex items-center justify-center gap-2 shrink-0 group/btn"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            <span>Search</span>
+                            <svg className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                             </svg>
                         </button>
-                    </div>
+                    </motion.div>
+
+                    {/* Quick Categories */}
+                    <AnimatePresence>
+                        {isSearchFocused && (
+                            <motion.div 
+                                key={searchType}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex gap-2.5 justify-center mt-6 flex-wrap z-20"
+                            >
+                                {(searchType === 'lost-and-found' 
+                                    ? ['📱 Phone', '🪪 ID Card', '🔑 Keys', '📚 Books', '🎒 Bag'] 
+                                    : ['📖 Textbooks', '💻 Laptops', '🎧 Gadgets', '👗 Fashion', '🛋️ Dorm']
+                                ).map((cat) => (
+                                    <motion.button
+                                        key={cat}
+                                        whileHover={{ y: -3, scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => {
+                                            const val = cat.split(' ')[1];
+                                            setSearchQuery(val);
+                                        }}
+                                        className="bg-white/95 backdrop-blur-xl border border-white/40 text-[#0F0A2E] shadow-[0_8px_20px_rgba(0,0,0,0.1)] hover:bg-[#00D9FF] hover:text-[#0F0A2E] px-4 py-1.5 rounded-full text-[12px] font-bold font-epilogue transition-all duration-300"
+                                    >
+                                        {cat}
+                                    </motion.button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
-                <div className="flex gap-3 justify-center flex-wrap">
-                    <Link to="/report-item" className="flex items-center gap-2 bg-[#8B5CF6] text-white font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(139,92,246,0.3)] transition-all duration-300 hover:bg-[#7e56db] hover:-translate-y-1 no-underline">
-                        Report Lost Item
-                    </Link>
-                    <Link to="/marketplace" className="flex items-center gap-2 bg-transparent backdrop-blur-xl border border-[#00D9FF]/40 text-[#00D9FF] font-epilogue text-[14px] font-bold py-[12px] px-6 rounded-xl shadow-[0_10px_24px_rgba(0,217,255,0.1)] transition-all duration-300 hover:border-[#00D9FF] hover:bg-white/5 hover:-translate-y-1 no-underline">
-                        Explore Marketplace
-                    </Link>
-                </div>
             </div>
 
             <div className="relative w-full h-[300px] mt-[60px] shrink-0" ref={stageRef}>
@@ -233,22 +285,35 @@ const Hero = () => {
                 ))}
             </div>
 
-            <div className="flex relative z-30 bg-[#1A103C]/80 backdrop-blur-xl border border-white/10 rounded-[20px] py-[26px] px-10 shadow-[0_26px_60px_rgba(0,0,0,0.5)] mt-10 mx-auto w-fit hidden md:flex hover:border-[#00D9FF]/30 transition-colors">
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.itemsRecovered}<span className="text-[#00D9FF]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Items Recovered</div>
+            <div className="flex flex-col items-center gap-10 mt-10 relative z-30 w-full px-4">
+                <div className="flex bg-[#1A103C]/85 backdrop-blur-2xl border border-white/15 rounded-[24px] py-[30px] px-8 shadow-[0_30px_70px_rgba(0,0,0,0.6)] w-full max-w-[1020px] mx-auto hidden md:flex hover:border-[#00D9FF]/40 transition-all duration-500 group/stats">
+                    {stats.itemsRecovered > 0 && (
+                        <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                            <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.itemsRecovered}<span className="text-[#00D9FF] animate-pulse">+</span></div>
+                            <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Items Recovered</div>
+                        </div>
+                    )}
+                    <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.studentsCount}<span className="text-[#8B5CF6]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Students</div>
+                    </div>
+                    <div className="flex-1 px-4 text-center border-r border-white/10 group-hover/stats:border-white/20 transition-colors">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.marketplaceListingsCount}<span className="text-[#34D399]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Active Listings</div>
+                    </div>
+                    <div className="flex-1 px-4 text-center">
+                        <div className="text-[32px] font-bold text-white leading-none font-clash">{stats.activeReports}<span className="text-[#EC4899]">+</span></div>
+                        <div className="text-[13px] text-white/50 mt-2 font-epilogue font-medium uppercase tracking-wider">Active Reports</div>
+                    </div>
                 </div>
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.studentsCount}<span className="text-[#8B5CF6]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Students</div>
-                </div>
-                <div className="px-9 text-center border-r border-white/10">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.marketplaceListingsCount}<span className="text-[#34D399]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Active Listings</div>
-                </div>
-                <div className="px-9 text-center">
-                    <div className="text-[28px] font-bold text-white leading-none font-clash">{stats.activeReports}<span className="text-[#EC4899]">+</span></div>
-                    <div className="text-xs text-white/50 mt-1 font-epilogue">Reports</div>
+
+                <div className="flex gap-4 justify-center flex-wrap animate-fade-in-up">
+                    <Link to="/report-item" className="flex items-center gap-2 bg-[#8B5CF6] text-white font-epilogue text-[14px] font-bold py-[14px] px-8 rounded-2xl shadow-[0_12px_28px_rgba(139,92,246,0.35)] transition-all duration-300 hover:bg-[#7e56db] hover:-translate-y-1 hover:shadow-[0_15px_32px_rgba(139,92,246,0.45)] no-underline">
+                        <span className="text-lg">📢</span> Report Lost Item
+                    </Link>
+                    <Link to="/marketplace" className="flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-epilogue text-[14px] font-bold py-[14px] px-8 rounded-2xl shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-all duration-300 hover:bg-white/20 hover:-translate-y-1 no-underline">
+                        <span className="text-lg">🛍️</span> Explore Marketplace
+                    </Link>
                 </div>
             </div>
         </section>
